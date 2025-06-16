@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUAF Academic Chatbot - Fixed Reply System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .chat-container {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .message-bubble {
+            animation: slideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .user-message {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 25px 25px 8px 25px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            position: relative;
+            word-wrap: break-word;
+            max-width: 85%;
+        }
+        
+        .user-message::before {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: 15px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid #764ba2;
+            transform: rotate(45deg);
+        }
+        
+        .bot-message {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 25px 25px 25px 8px;
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3);
+            position: relative;
+            word-wrap: break-word;
+            max-width: 85%;
+            white-space: pre-wrap;
+        }
+        
+        .bot-message::before {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 15px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid #f5576c;
+            transform: rotate(-45deg);
+        }
+        
+        .bot-message a {
+            color: #FFE4E1;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+        
+        .bot-message a:hover {
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .bot-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .typing-indicator {
+            display: none;
+        }
+        
+        .typing-indicator.show {
+            display: flex;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        .input-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+        }
+        
+        .input-container:focus-within {
+            border-color: #667eea;
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        .message-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #374151;
+            font-size: 16px;
+            padding: 12px 16px;
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .message-input::placeholder {
+            color: #9CA3AF;
+        }
+        
+        .send-btn {
+            background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 50%, #45B7D1 100%);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            min-width: 45px;
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        
+        .send-btn::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4, #45B7D1, #FF6B6B);
+            border-radius: 50%;
+            z-index: -1;
+            animation: rotateBorder 3s linear infinite;
+        }
+        
+        @keyframes rotateBorder {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .send-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: all 0.6s;
+        }
+        
+        .send-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(255, 107, 107, 0.6);
+            background: linear-gradient(135deg, #FF5722 0%, #00BCD4 50%, #2196F3 100%);
+        }
+        
+        .send-btn:hover::after {
+            left: 100%;
+        }
+        
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .send-btn i {
+            font-size: 16px;
+            transition: all 0.4s ease;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        .send-btn:hover i {
+            transform: translateX(2px) scale(1.1);
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+        }
+        
+        .send-btn:disabled {
+            opacity: 0.5;
+            transform: scale(0.9);
+            cursor: not-allowed;
+        }
+        
+        .send-btn:disabled::before {
+            animation: none;
+        }
+        
+        .logo-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50%;
+            padding: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border: 3px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .chat-messages {
+            max-height: 500px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
+            padding-right: 5px;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 12px;
+            height: 12px;
+            background: #10B981;
+            border-radius: 50%;
+            border: 2px solid white;
+            animation: statusPulse 2s infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .message-time {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .loading-dots {
+            display: inline-block;
+        }
+
+        .loading-dots span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+            margin: 0 2px;
+            animation: loadingDots 1.4s infinite both;
+        }
+
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes loadingDots {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Enhanced Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .chat-container {
+                margin: 10px;
+                padding: 20px;
+                border-radius: 20px;
+                max-height: calc(100vh - 20px);
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .chat-messages {
+                max-height: calc(100vh - 300px);
+                min-height: 300px;
+            }
+            
+            .send-btn {
+                width: 40px;
+                height: 40px;
+                min-width: 40px;
+                min-height: 40px;
+            }
+            
+            .send-btn i {
+                font-size: 14px;
+            }
+            
+            .input-container {
+                padding: 6px;
+                gap: 8px;
+                border-radius: 25px;
+                position: sticky;
+                bottom: 0;
+                z-index: 10;
+            }
+            
+            .message-input {
+                font-size: 16px;
+                padding: 10px 12px;
+            }
+            
+            .bot-avatar {
+                width: 35px;
+                height: 35px;
+                margin-right: 8px;
+            }
+            
+            .user-message, .bot-message {
+                max-width: 90%;
+                padding: 12px 16px;
+            }
+            
+            .logo-container {
+                padding: 12px;
+            }
+            
+            .logo-container img {
+                width: 60px;
+                height: 60px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chat-container {
+                margin: 5px;
+                padding: 15px;
+                border-radius: 15px;
+            }
+            
+            .chat-messages {
+                max-height: calc(100vh - 280px);
+            }
+            
+            .send-btn {
+                width: 38px;
+                height: 38px;
+                min-width: 38px;
+                min-height: 38px;
+            }
+            
+            .message-input {
+                font-size: 16px;
+                padding: 8px 10px;
+            }
+            
+            .input-container {
+                padding: 5px;
+                gap: 6px;
+            }
+            
+            .user-message, .bot-message {
+                padding: 10px 14px;
+                font-size: 14px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+
+        /* Landscape mobile orientation */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .chat-messages {
+                max-height: calc(100vh - 250px);
+            }
+        }
+
+        /* Prevent zoom on input focus (iOS) */
+        @media (max-width: 768px) {
+            .message-input {
+                font-size: 16px !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-2 sm:p-4">
+    <div class="chat-container w-full max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-6 sm:mb-8">
+            <div class="logo-container inline-block mb-4 sm:mb-6 relative">
+                <img src="https://quaf.netlify.app/logo.png" alt="QUAF Logo" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover">
+                <div class="status-indicator"></div>
+            </div>
+            <h1 class="text-2xl sm:text-4xl font-bold text-gray-800 mb-2 sm:mb-3">QUAF AI</h1>
+            <p class="text-gray-600 text-sm sm:text-lg">Academic assistant chat bot </p>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages mb-6 sm:mb-8" id="chatMessages">
+            <!-- Messages will be added here -->
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator items-start mb-4 sm:mb-6" id="typingIndicator">
+            <div class="flex items-start">
+                <div class="bot-avatar">
+                    <img src="https://quaf.netlify.app/logo.png" alt="Bot" class="w-5 h-5 sm:w-6 sm:h-6 rounded-full">
+                </div>
+                <div class="bot-message px-4 py-3 sm:px-6 sm:py-4 max-w-xs">
+                    <div class="loading-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-container">
+            <input 
+                type="text" 
+                id="messageInput" 
+                placeholder="Type your message here..." 
+                class="message-input"
+                onkeypress="handleKeyPress(event)"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+            >
+            <button 
+                id="sendButton"
+                onclick="sendMessage()" 
+                class="send-btn focus:outline-none focus:ring-4 focus:ring-purple-500 focus:ring-opacity-30"
+                disabled
+                type="button"
+            >
+                <i class="fas fa-share"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let chatData = [];
+        let isDataLoaded = false;
+        let retryCount = 0;
+        const maxRetries = 3;
+
+        // Google Sheets CSV URL
+        const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSzPTwRn9_fq5RwG9_i5ykSqAmA7COBGOFbKcytNvDmNNqRantWHXX9bAZ8az4cKE5Qx7P-u7ujksOG/pub?gid=0&single=true&output=csv';
+
+        // Enhanced CSV parsing function to handle complete replies
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n');
+            const result = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line) {
+                    // Advanced CSV parsing that handles commas, quotes, and newlines in replies
+                    const columns = [];
+                    let current = '';
+                    let inQuotes = false;
+                    let quoteCount = 0;
+                    
+                    for (let j = 0; j < line.length; j++) {
+                        const char = line[j];
+                        
+                        if (char === '"') {
+                            quoteCount++;
+                            if (quoteCount % 2 === 1) {
+                                inQuotes = true;
+                            } else {
+                                inQuotes = false;
+                            }
+                            // Don't add quotes to the content
+                        } else if (char === ',' && !inQuotes) {
+                            columns.push(current);
+                            current = '';
+                        } else {
+                            current += char;
+                        }
+                    }
+                    
+                    // Add the last column (the complete reply)
+                    columns.push(current);
+                    
+                    // Extract user and complete reply
+                    if (columns.length >= 2) {
+                        const user = columns[0].trim().toLowerCase();
+                        // Join all remaining columns as the complete reply (in case reply contains commas)
+                        const reply = columns.slice(1).join(',').trim();
+                        
+                        if (user && reply) {
+                            result.push({ 
+                                user: user,
+                                reply: reply,
+                                originalUser: columns[0].trim()
+                            });
+                        }
+                    }
+                }
+            }
+            
+            console.log('Parsed chat data:', result);
+            return result;
+        }
+
+        // Enhanced data loading with retry mechanism
+        async function loadChatData() {
+            try {
+                const response = await fetch(SHEETS_URL + '&t=' + Date.now(), {
+                    method: 'GET',
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const csvText = await response.text();
+                
+                if (!csvText || csvText.trim().length === 0) {
+                    throw new Error('Empty response from Google Sheets');
+                }
+                
+                console.log('Raw CSV data:', csvText);
+                
+                // Enhanced CSV parsing
+                chatData = parseCSV(csvText);
+                
+                if (chatData.length === 0) {
+                    throw new Error('No valid data found in Google Sheets');
+                }
+                
+                isDataLoaded = true;
+                retryCount = 0;
+                document.getElementById('sendButton').disabled = false;
+                
+                console.log('Chat data loaded successfully:', chatData);
+                
+                // Show success message
+                setTimeout(() => {
+                    addMessage("Hello! I'm your QUAF Academic Assistant. I've successfully loaded all my knowledge and I'm ready to help you with your academic queries. How can I assist you today?", false);
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Error loading chat data:', error);
+                retryCount++;
+                
+                if (retryCount < maxRetries) {
+                    console.log(`Retrying... Attempt ${retryCount}/${maxRetries}`);
+                    setTimeout(() => loadChatData(), 2000 * retryCount);
+                } else {
+                    // Enhanced fallback data
+                    chatData = [
+                        { user: "hi", reply: "Hello, welcome to QUAF Academic System! How can I help you today?", originalUser: "Hi" },
+                        { user: "hello", reply: "Hello, welcome to QUAF Academic System! How can I help you today?", originalUser: "Hello" },
+                        { user: "sugalle", reply: "Aa, suagan, Alhamdulillah", originalUser: "Sugalle" },
+                        { user: "how are you", reply: "I'm doing great, thank you for asking! How can I assist you with your academic queries?", originalUser: "How are you" },
+                        { user: "what is quaf", reply: "QUAF is an Academic Management System designed to help students with their educational needs.", originalUser: "What is QUAF" },
+                        { user: "help", reply: "I'm here to help you with academic queries. You can ask me about courses, assignments, or any educational topics!", originalUser: "Help" }
+                    ];
+                    
+                    isDataLoaded = true;
+                    document.getElementById('sendButton').disabled = false;
+                    
+                    setTimeout(() => {
+                        addMessage("Hello! I'm running in offline mode with limited responses. You can still ask me basic questions. For full support, please check your internet connection.", false);
+                    }, 1000);
+                }
+            }
+        }
+
+        // Enhanced matching algorithm
+        function findBestMatch(userInput) {
+            const input = userInput.toLowerCase().trim();
+            
+            if (!isDataLoaded || chatData.length === 0) {
+                return "I'm still loading my knowledge base. Please wait a moment and try again.";
+            }
+            
+            console.log('Searching for match:', input);
+            console.log('Available data:', chatData);
+            
+            // Step 1: Exact match
+            for (let data of chatData) {
+                if (data.user === input) {
+                    console.log('Exact match found:', data);
+                    return data.reply;
+                }
+            }
+            
+            // Step 2: Contains match (user input contains a keyword)
+            for (let data of chatData) {
+                if (input.includes(data.user)) {
+                    console.log('Contains match found:', data);
+                    return data.reply;
+                }
+            }
+            
+            // Step 3: Keyword match (keyword contains user input)
+            for (let data of chatData) {
+                if (data.user.includes(input)) {
+                    console.log('Keyword match found:', data);
+                    return data.reply;
+                }
+            }
+            
+            // Step 4: Word-by-word matching
+            const inputWords = input.split(' ').filter(word => word.length > 2);
+            let bestMatch = null;
+            let maxScore = 0;
+            
+            for (let data of chatData) {
+                const keywordWords = data.user.split(' ');
+                let score = 0;
+                
+                for (let inputWord of inputWords) {
+                    for (let keywordWord of keywordWords) {
+                        if (inputWord === keywordWord) {
+                            score += 2; // Exact word match
+                        } else if (inputWord.includes(keywordWord) || keywordWord.includes(inputWord)) {
+                            score += 1; // Partial word match
+                        }
+                    }
+                }
+                
+                if (score > maxScore && score > 0) {
+                    maxScore = score;
+                    bestMatch = data;
+                }
+            }
+            
+            if (bestMatch && maxScore >= 1) {
+                console.log('Word match found:', bestMatch);
+                return bestMatch.reply;
+            }
+            
+            // Step 5: Fuzzy matching for typos and similar words
+            for (let data of chatData) {
+                const similarity = calculateSimilarity(input, data.user);
+                if (similarity > 0.6) { // 60% similarity threshold
+                    console.log('Fuzzy match found:', data);
+                    return data.reply;
+                }
+            }
+            
+            // Step 6: No match found - enhanced default response
+            const fallbackResponses = [
+                'I don\'t have specific information about that topic. You can contact our support team via <a href="https://wa.me/message/76OKA3KAKHINC1" target="_blank">WhatsApp</a> for detailed assistance.',
+                'That\'s an interesting question! For comprehensive help with this topic, please <a href="https://wa.me/message/76OKA3KAKHINC1" target="_blank">reach out to our WhatsApp support</a>.',
+                'I\'m still learning about that subject. For immediate assistance, you can <a href="https://wa.me/message/76OKA3KAKHINC1" target="_blank">contact us on WhatsApp</a>.'
+            ];
+            
+            return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+        }
+
+        // Enhanced similarity calculation with better accuracy
+        function calculateSimilarity(str1, str2) {
+            if (str1 === str2) return 1.0;
+            
+            const longer = str1.length > str2.length ? str1 : str2;
+            const shorter = str1.length > str2.length ? str2 : str1;
+            
+            if (longer.length === 0) return 1.0;
+            
+            const editDistance = levenshteinDistance(longer, shorter);
+            const similarity = (longer.length - editDistance) / longer.length;
+            
+            // Bonus for common words
+            const words1 = str1.split(' ');
+            const words2 = str2.split(' ');
+            let commonWords = 0;
+            
+            for (let word1 of words1) {
+                for (let word2 of words2) {
+                    if (word1 === word2 && word1.length > 2) {
+                        commonWords++;
+                    }
+                }
+            }
+            
+            const wordBonus = commonWords * 0.1;
+            return Math.min(1.0, similarity + wordBonus);
+        }
+
+        function levenshteinDistance(str1, str2) {
+            const matrix = [];
+            
+            for (let i = 0; i <= str2.length; i++) {
+                matrix[i] = [i];
+            }
+            
+            for (let j = 0; j <= str1.length; j++) {
+                matrix[0][j] = j;
+            }
+            
+            for (let i = 1; i <= str2.length; i++) {
+                for (let j = 1; j <= str1.length; j++) {
+                    if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1,
+                            matrix[i][j - 1] + 1,
+                            matrix[i - 1][j] + 1
+                        );
+                    }
+                }
+            }
+            
+            return matrix[str2.length][str1.length];
+        }
+
+        function getCurrentTime() {
+            return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function addMessage(message, isUser = false) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message-bubble flex ${isUser ? 'justify-end' : 'justify-start items-start'} mb-4 sm:mb-6`;
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = `flex ${isUser ? 'flex-row-reverse items-end' : 'items-start'} w-full`;
+            
+            if (!isUser) {
+                const avatarDiv = document.createElement('div');
+                avatarDiv.className = 'bot-avatar';
+                avatarDiv.innerHTML = `<img src="https://quaf.netlify.app/logo.png" alt="Bot" class="w-5 h-5 sm:w-6 sm:h-6 rounded-full">`;
+                messageContent.appendChild(avatarDiv);
+            }
+            
+            const messageBubble = document.createElement('div');
+            messageBubble.className = `${isUser ? 'user-message' : 'bot-message'} px-4 py-3 sm:px-6 sm:py-4 ${isUser ? 'mr-2 sm:mr-3' : 'ml-0'}`;
+            
+            const messageText = document.createElement('div');
+            // Preserve line breaks and formatting in bot messages
+            if (isUser) {
+                messageText.textContent = message;
+            } else {
+                messageText.innerHTML = message.replace(/\n/g, '<br>');
+            }
+            messageBubble.appendChild(messageText);
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'message-time';
+            timeDiv.textContent = getCurrentTime();
+            messageBubble.appendChild(timeDiv);
+            
+            messageContent.appendChild(messageBubble);
+            messageDiv.appendChild(messageContent);
+            chatMessages.appendChild(messageDiv);
+            
+            // Smooth scroll to bottom
+            setTimeout(() => {
+                chatMessages.scrollTo({
+                    top: chatMessages.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 100);
+        }
+
+        function showTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            typingIndicator.classList.add('show');
+            
+            setTimeout(() => {
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.scrollTo({
+                    top: chatMessages.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 100);
+        }
+
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            typingIndicator.classList.remove('show');
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message === '' || !isDataLoaded) return;
+            
+            // Add user message
+            addMessage(message, true);
+            input.value = '';
+            
+            // Update send button state
+            updateSendButton();
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Simulate realistic response time
+            const responseTime = 800 + Math.random() * 1200; // 0.8-2 seconds
+            setTimeout(() => {
+                hideTypingIndicator();
+                const reply = findBestMatch(message);
+                console.log('Final reply:', reply);
+                addMessage(reply, false);
+            }, responseTime);
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function updateSendButton() {
+            const input = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            const hasText = input.value.trim().length > 0;
+            
+            sendButton.disabled = !hasText || !isDataLoaded;
+            
+            if (hasText && isDataLoaded) {
+                sendButton.style.opacity = '1';
+                sendButton.style.transform = 'scale(1)';
+            } else {
+                sendButton.style.opacity = '0.6';
+                sendButton.style.transform = 'scale(0.9)';
+            }
+        }
+
+        // Input event listener for real-time button updates
+        document.getElementById('messageInput').addEventListener('input', updateSendButton);
+
+        // Auto-refresh data every 5 minutes for more frequent updates
+        setInterval(loadChatData, 300000);
+
+        // Initialize the chatbot
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load chat data from Google Sheets
+            loadChatData();
+            
+            // Focus on input when page loads (with delay for mobile)
+            setTimeout(() => {
+                const input = document.getElementById('messageInput');
+                if (window.innerWidth > 768) {
+                    input.focus();
+                }
+            }, 1000);
+        });
+
+        // Handle page visibility changes (refresh data when user returns)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden && isDataLoaded) {
+                // Refresh data when user returns to the tab
+                setTimeout(loadChatData, 1000);
+            }
+        });
+
+        // Prevent zoom on iOS when focusing input
+        document.getElementById('messageInput').addEventListener('focus', function() {
+            if (window.innerWidth <= 768) {
+                document.querySelector('meta[name=viewport]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
+            }
+        });
+
+        document.getElementById('messageInput').addEventListener('blur', function() {
+            if (window.innerWidth <= 768) {
+                document.querySelector('meta[name=viewport]').setAttribute('content', 'width=device-width, initial-scale=1.0');
+            }
+        });
+    </script>
+</body>
+</html>
