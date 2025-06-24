@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+<title>Black Man Runner Game</title>
+<style>
+  /* Reset and base */
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #222 0%, #111 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none;
+    -webkit-user-select:none;
+    touch-action: manipulation;
+  }
+  #gameContainer {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(to top, #334, #556);
+    overflow: hidden;
+  }
+
+  canvas {
+    display: block;
+    background: linear-gradient(to bottom, #7db9e8, #4a6b8a);
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Controls Container */
+  #controls {
+    position: absolute;
+    bottom: 12px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    pointer-events: auto;
+    user-select:none;
+    z-index: 10;
+  }
+
+  /* Arrow buttons container */
+  #arrowControls {
+    display: flex;
+    gap: 10px;
+  }
+
+  /* Bomb controls container */
+  #bombControls {
+    display: none;
+    gap: 10px;
+  }
+
+  /* Control Button Styles */
+  button.control-btn {
+    background: #222;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    border: 2px solid #555;
+    box-shadow: inset 0 0 10px #000, 0 4px 8px rgb(0 0 0 / 0.6);
+    position: relative;
+    color: #eee;
+    font-weight: 700;
+    font-size: 24px;
+    user-select:none;
+    touch-action: manipulation;
+    transition: background 0.3s, border-color 0.3s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  button.control-btn:active {
+    background: #555;
+    border-color: #aaa;
+    color: #fff;
+    transform: scale(0.95);
+  }
+  button.control-btn:focus {
+    outline: none;
+    border-color: #f90;
+    box-shadow: 0 0 8px 3px #f90;
+  }
+  /* Arrow icons using svg and path shapes */
+  button#leftBtn::before {
+    content: '';
+    display: block;
+    width: 20px; height: 20px;
+    margin-left: 2px;
+    border: solid #eee;
+    border-width: 0 4px 4px 0;
+    padding: 4px;
+    transform: rotate(135deg);
+  }
+  button#rightBtn::before {
+    content: '';
+    display: block;
+    width: 20px; height: 20px;
+    margin-left: 2px;
+    border: solid #eee;
+    border-width: 0 4px 4px 0;
+    padding: 4px;
+    transform: rotate(-45deg);
+  }
+  button#topBtn::before {
+    content: '';
+    display: block;
+    width: 20px; height: 20px;
+    margin-left: 2px;
+    border: solid #eee;
+    border-width: 0 4px 4px 0;
+    padding: 4px;
+    transform: rotate(-135deg);
+  }
+
+  #swordBtn {
+    width: 72px;
+    font-size: 18px;
+    background: linear-gradient(145deg, #550000, #bb2222);
+    border: 2px solid #a00;
+    box-shadow: 0 0 10px #a00 inset;
+    color: #fdd;
+    font-weight: 900;
+    user-select:none;
+  }
+  #bombBtn {
+    width: 72px;
+    background: linear-gradient(145deg, #333333, #555555);
+    border: 2px solid #888;
+    color: #eee;
+    font-weight: 900;
+    font-size: 18px;
+    box-shadow: 0 0 8px #666 inset;
+    user-select:none;
+  }
+
+  #scoreBoard {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    color: #eee;
+    font-size: 22px;
+    font-weight: 700;
+    text-shadow: 2px 2px 5px #000;
+    user-select: none;
+    pointer-events: none;
+    z-index: 11;
+    font-family: 'Segoe UI Black', sans-serif;
+  }
+
+  #lifeBar {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 180px;
+    height: 25px;
+    border: 2px solid #555;
+    border-radius: 14px;
+    background: #222;
+    box-shadow: inset 0 0 8px #000;
+    overflow: hidden;
+    user-select: none;
+    pointer-events:none;
+    z-index: 11;
+  }
+  #lifeBarFill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #ff3b3b, #bb0000);
+    border-radius: 14px 14px 14px 14px;
+    transition: width 0.3s ease;
+  }
+
+  #gameOverOverlay {
+    position: absolute;
+    top: 0; left: 0; right:0; bottom:0;
+    background: rgba(0,0,0,0.85);
+    color: #f33;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 48px;
+    font-weight: 900;
+    text-shadow: 0 0 8px #f00;
+    z-index: 20;
+    user-select:none;
+    flex-direction: column;
+  }
+  #restartBtn {
+    margin-top: 20px;
+    background: #f33;
+    color: #fff;
+    border:none;
+    padding: 14px 24px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 0 12px #f33;
+    user-select:none;
+    transition: background 0.3s;
+  }
+  #restartBtn:hover {
+    background: #faa;
+  }
+
+  /* Responsive adjustments for mobile */
+  @media (max-width: 768px) {
+    button.control-btn {
+      width: 50px;
+      height: 50px;
+      font-size: 20px;
+    }
+    #swordBtn, #bombBtn {
+      width: 60px;
+      font-size: 16px;
+    }
+    #scoreBoard {
+      font-size: 18px;
+      top: 8px;
+      left: 8px;
+    }
+    #lifeBar {
+      width: 140px;
+      height: 20px;
+      top: 8px;
+      right: 8px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="gameContainer">
+  <!-- We will draw game on canvas -->
+  <canvas id="gameCanvas" width="1920" height="1080" style="image-rendering: crisp-edges;"></canvas>
+
+  <!-- UI Controls -->
+  <div id="controls" aria-label="Game controls" role="region">
+    <div id="arrowControls" aria-label="Movement and jump controls">
+      <button id="leftBtn" class="control-btn" aria-label="Move Left"></button>
+      <button id="topBtn" class="control-btn" aria-label="Move Forward / Back / Jump"></button>
+      <button id="rightBtn" class="control-btn" aria-label="Move Right"></button>
+    </div>
+    <button id="swordBtn" class="control-btn" aria-label="Sword Attack Button" title="Press and Hold to attack with sword">Sword</button>
+    <div id="bombWrapper">
+      <button id="bombBtn" class="control-btn" aria-label="Bomb Throw Button" title="Press and Hold to throw bomb">Bomb</button>
+      <div id="bombControls" aria-label="Bomb throw directions">
+        <button id="bombLeft" class="control-btn" aria-label="Throw Bomb Left">&#8592;</button>
+        <button id="bombBack" class="control-btn" aria-label="Throw Bomb Back">&#8593;</button>
+        <button id="bombRight" class="control-btn" aria-label="Throw Bomb Right">&#8594;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Score and Life -->
+  <div id="scoreBoard" aria-live="polite">Points: 0</div>
+  <div id="lifeBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" aria-label="Player Life">
+    <div id="lifeBarFill"></div>
+  </div>
+
+  <!-- Game Over Screen -->
+  <div id="gameOverOverlay" style="display:none;" role="alert" aria-live="assertive">
+    <div>GAME OVER</div>
+    <button id="restartBtn" aria-label="Restart Game Button">Restart</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  // Canvas and Context
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  let cw = canvas.width;
+  let ch = canvas.height;
+
+  // Scaling for responsiveness
+  let scaleX, scaleY, scale;
+
+  const gameContainer = document.getElementById('gameContainer');
+  const scoreBoard = document.getElementById('scoreBoard');
+  const lifeBarFill = document.getElementById('lifeBarFill');
+  const lifeBar = document.getElementById('lifeBar');
+  const gameOverOverlay = document.getElementById('gameOverOverlay');
+  const restartBtn = document.getElementById('restartBtn');
+
+  // Controls
+  const leftBtn = document.getElementById('leftBtn');
+  const rightBtn = document.getElementById('rightBtn');
+  const topBtn = document.getElementById('topBtn');
+  const swordBtn = document.getElementById('swordBtn');
+  const bombBtn = document.getElementById('bombBtn');
+
+  const bombControls = document.getElementById('bombControls');
+  const bombLeft = document.getElementById('bombLeft');
+  const bombBack = document.getElementById('bombBack');
+  const bombRight = document.getElementById('bombRight');
+
+  // Game variables
+  const G = 0.9; // Gravity for jump/fall
+  const floorY = ch * 0.85;
+
+  let keysDown = {
+    left: false,
+    right: false,
+    top: false,
+  };
+
+  let doubleClickTimers = {
+    left: 0,
+    right: 0,
+    top: 0,
+  };
+
+  // Player constants
+  const PLAYER_WIDTH = 60;
+  const PLAYER_HEIGHT = 100;
+  const PLAYER_RUN_SPEED = 5;
+  const PLAYER_RUN_SPEED_FAST = 10;
+  const PLAYER_JUMP_VEL = 15;
+  const PLAYER_JUMP_VEL_HIGH = 25;
+  const SWORD_ATTACK_INTERVAL = 250; // ms between sword attack animations
+  const BOMB_THROW_DISTANCE = 1000; // distance in px bomb will travel
+  const BOMB_THROW_SPEED = 20;
+
+  // Enemy constants
+  const ENEMY_WIDTH = 50;
+  const ENEMY_HEIGHT = 90;
+  const ENEMY_SPEED_MIN = 1.8;
+  const ENEMY_SPEED_MAX = 3.5;
+  const ENEMY_SPAWN_INTERVAL = 2200; // ms spawn rate initially
+
+  // Bomb throw directions
+  const BOMB_DIRECTIONS = {
+    left: {x: -1, y: 0},
+    right:{x: 1, y: 0},
+    back: {x: 0, y: -1},
+  };
+
+  // Game state
+  let player = null;
+  let enemies = [];
+  let bombs = [];
+  let particles = [];
+  let points = 0;
+  let life = 100;
+  let gameOver = false;
+
+  // Timing & Animation
+  let lastFrameTime = 0;
+
+  // Assets cache (colors & sprite styles)
+  const colorsCaps = ['#e22', '#2e2', '#22e', '#ee2', '#e2e', '#2ee'];
+  const enemyColors = ['#880000','#008800','#000088','#886600', '#660088', '#228844'];
+
+  // Predefined simple sword skill attack effects (basic sword arcs)
+  const swordSkillFrames = [
+    {angleStart: -40, angleEnd: 20, radius: 80},
+    {angleStart: -60, angleEnd: 60, radius: 75},
+    {angleStart: -20, angleEnd: 40, radius: 90},
+    {angleStart: -70, angleEnd: 10, radius: 85}
+  ];
+
+  /**
+   * Utility functions
+   */
+  function clamp(n, min, max) {
+    return Math.min(max, Math.max(min, n));
+  }
+  function dist(ax, ay, bx, by) {
+    return Math.sqrt((ax - bx) ** 2 + (ay - by) ** 2);
+  }
+  function rectIntersect(r1, r2) {
+    return !(r2.x > r1.x + r1.w || 
+             r2.x + r2.w < r1.x || 
+             r2.y > r1.y + r1.h ||
+             r2.y + r2.h < r1.y);
+  }
+
+  /**
+   * Scale canvas to fit device and keep aspect ratio
+   */
+  function scaleCanvas() {
+    let w = window.innerWidth;
+    let h = window.innerHeight;
+    let sr = cw / ch;
+
+    let gameW, gameH;
+    if (w/h > sr) { // screen wider than canvas ratio
+      gameH = h;
+      gameW = gameH * sr;
+    } else {
+      gameW = w;
+      gameH = gameW / sr;
+    }
+
+    canvas.style.width = gameW + 'px';
+    canvas.style.height = gameH + 'px';
+
+    scaleX = gameW / cw;
+    scaleY = gameH / ch;
+    scale = Math.min(scaleX, scaleY);
+  }
+
+  /**
+   * Player Class - black man runner
+   */
+  class Player {
+    constructor() {
+      this.x = cw/2;
+      this.y = floorY - PLAYER_HEIGHT;
+      this.w = PLAYER_WIDTH;
+      this.h = PLAYER_HEIGHT;
+      this.vx = 0;
+      this.vy = 0; // vertical velocity for jump/fall
+      this.onGround = true;
+      this.facing = 1; // 1:right, -1:left
+      this.running = false;
+      this.runningFast = false;
+      this.jumping = false;
+      this.jumpHigh = false;
+      this.capsColorIndex = 0; // always black cap by default (black man)
+      this.colorBody = '#121212';
+      this.life = 100;
+      this.isAttacking = false;
+      this.swordAttackStartTime = 0;
+      this.swordAttackFrameIndex = 0;
+      this.swordAttackFrameElapsed = 0;
+      this.isThrowingBomb = false;
+    }
+
+    update(delta) {
+      // Horizontal movement
+      if (this.running) {
+        const speed = this.runningFast ? PLAYER_RUN_SPEED_FAST : PLAYER_RUN_SPEED;
+        this.vx = this.facing * speed;
+      } else {
+        this.vx = 0;
+      }
+      this.x += this.vx;
+
+      // Clamp player in horizontal bounds
+      this.x = clamp(this.x, 20, cw - this.w - 20);
+
+      // Vertical movement - Gravity, Jump
+      if (!this.onGround) {
+        this.vy += G;
+        this.y += this.vy;
+        if (this.y >= floorY - this.h) {
+          this.y = floorY - this.h;
+          this.vy = 0;
+          this.onGround = true;
+          this.jumping = false;
+          this.jumpHigh = false;
+        }
+      }
+
+      // Sword Attack frame update
+      if (this.isAttacking) {
+        this.swordAttackFrameElapsed += delta;
+        if (this.swordAttackFrameElapsed > SWORD_ATTACK_INTERVAL) {
+          this.swordAttackFrameElapsed = 0;
+          this.swordAttackFrameIndex++;
+          if (this.swordAttackFrameIndex >= swordSkillFrames.length) {
+            this.swordAttackFrameIndex = 0;
+          }
+        }
+      }
+
+      // Clamp y
+      this.y = clamp(this.y, 0, floorY - this.h);
+    }
+
+    startRunning(direction, fast = false) {
+      this.facing = direction;
+      this.running = true;
+      this.runningFast = fast;
+    }
+    stopRunning() {
+      this.running = false;
+      this.runningFast = false;
+      this.vx = 0;
+    }
+
+    jump(high = false) {
+      if (!this.jumping && this.onGround) {
+        this.jumping = true;
+        this.onGround = false;
+        this.jumpHigh = high;
+        this.vy = high ? -PLAYER_JUMP_VEL_HIGH : -PLAYER_JUMP_VEL;
+      }
+    }
+
+    draw(ctx) {
+      ctx.save();
+      ctx.translate(this.x + this.w/2, this.y + this.h);
+      ctx.scale(this.facing, 1);
+
+      // Draw body
+      ctx.fillStyle = this.colorBody;
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 3;
+
+      // Body shape (black man, pixel classic style)
+      ctx.beginPath();
+      ctx.moveTo(-20, 0);
+      ctx.lineTo(-22, -30);
+      ctx.lineTo(-18, -90);
+      ctx.lineTo(18, -90);
+      ctx.lineTo(22, -30);
+      ctx.lineTo(20, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Head (circle)
+      ctx.beginPath();
+      ctx.fillStyle = '#121212';
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#000';
+      ctx.arc(0, -120, 20, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Cap (colored oval on head)
+      ctx.fillStyle = colorsCaps[this.capsColorIndex] || '#000';
+      ctx.beginPath();
+      ctx.ellipse(0, -135, 25, 12, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Eyes (white dots)
+      ctx.fillStyle = '#fafafa';
+      ctx.beginPath();
+      ctx.arc(-7, -121, 5, 0, Math.PI * 2);
+      ctx.arc(7, -121, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pupils
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      ctx.arc(-7, -120, 2.5, 0, Math.PI * 2);
+      ctx.arc(7, -120, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Legs running animation (simple)
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = '#111';
+      let step = this.running ? ((Date.now() / 200) % 2) : 0;
+      let legMove = step < 1 ? step : 2 - step;
+      // Left leg
+      ctx.beginPath();
+      ctx.moveTo(-10, 0);
+      ctx.lineTo(-10 + 12 * legMove, 35);
+      ctx.stroke();
+      // Right leg
+      ctx.beginPath();
+      ctx.moveTo(10, 0);
+      ctx.lineTo(10 - 12 * legMove, 35);
+      ctx.stroke();
+
+      ctx.restore();
+
+      // Sword Draw if attacking
+      if (this.isAttacking) {
+        this.drawSwordAttack(ctx);
+      }
+    }
+
+    drawSwordAttack(ctx) {
+      ctx.save();
+
+      const sf = swordSkillFrames[this.swordAttackFrameIndex];
+      const cx = this.x + this.w/2 + this.facing * this.w/2;
+      const cy = this.y + this.h - 60;
+
+      ctx.strokeStyle = 'silver';
+      ctx.lineWidth = 6;
+      ctx.shadowColor = '#eeaa55';
+      ctx.shadowBlur = 20;
+      ctx.lineCap = 'round';
+
+      let startAngle = (sf.angleStart * Math.PI) / 180;
+      let endAngle = (sf.angleEnd * Math.PI) / 180;
+
+      if (this.facing === -1) { // invert angles for left
+        startAngle = Math.PI - startAngle;
+        endAngle = Math.PI - endAngle;
+      }
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, sf.radius, startAngle, endAngle, this.facing === -1);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    attackSwordStart() {
+      if (!this.isAttacking) {
+        this.isAttacking = true;
+        this.swordAttackStartTime = Date.now();
+        this.swordAttackFrameIndex = 0;
+        this.swordAttackFrameElapsed = 0;
+      }
+    }
+    attackSwordStop() {
+      this.isAttacking = false;
+    }
+  }
+
+  /**
+   * Enemy Class: Different types with different colors and caps
+   */
+  class Enemy {
+    constructor(type, x, y) {
+      this.type = type; // 'enemy', 'animal', 'bird', 'blackmanCap'
+      this.x = x;
+      this.y = y;
+      this.w = ENEMY_WIDTH;
+      this.h = ENEMY_HEIGHT;
+      this.vx = 0;
+      this.vy = 0;
+      this.isDead = false;
+      this.life = 20 + Math.floor(Math.random() * 20);
+      this.speed = ENEMY_SPEED_MIN + Math.random() * (ENEMY_SPEED_MAX - ENEMY_SPEED_MIN);
+      this.capsColorIndex = 0;
+      this.colorBody = '#880000';
+
+      this.spawnTime = Date.now();
+      this.bloods = [];
+      this.bloodFrame = 0;
+      this.bloodAlpha = 1;
+
+      // position y based on type
+      if (type === 'bird') {
+        this.y = floorY - this.h - 110 - Math.random()*40;
+        this.w = 70;
+        this.h = 50;
+      } else if (type === 'animal') {
+        this.y = floorY - this.h + 10;
+        this.w = 90;
+        this.h = 70;
+      } else if (type === 'blackmanCap') {
+        this.y = floorY - this.h;
+        this.capsColorIndex = Math.floor(Math.random()*colorsCaps.length);
+        this.colorBody = '#222222';
+      } else {
+        this.y = floorY - this.h;
+        this.colorBody = enemyColors[Math.floor(Math.random()*enemyColors.length)];
+        this.capsColorIndex = Math.floor(Math.random()*colorsCaps.length);
+      }
+
+      // Direction: generally move toward player
+      this.dir = (x > cw/2) ? -1 : 1;
+      this.vx = this.speed * this.dir;
+
+      // Animation variables
+      this.runCycle = 0;
+      this.punched = false; // is blood showing?
+      this.bloodTimer = 0;
+      this.bloodFade = 1;
+      this.deadTimer = 0;
+    }
+
+    update(delta) {
+      if (this.isDead) {
+        this.deadTimer += delta;
+        if (this.deadTimer > 600) {
+          // marking for removal
+          this.shouldRemove = true;
+        }
+        return;
+      }
+
+      // Move
+      this.x += this.vx;
+      if (this.type === 'bird') {
+        // Birds fly with sine oscillation on y axis
+        let flyOsc = Math.sin(Date.now() / 400) * 10;
+        this.y = floorY - this.h - 110 + flyOsc;
+      }
+
+      // Keep with some margin in screen horizontally, enemies reverse direction when outside screen
+      if (this.x < -this.w - 50) this.vx = Math.abs(this.vx);
+      if (this.x > cw + 50) this.vx = -Math.abs(this.vx);
+
+      // Move toward player horizontally
+      // Adjust speed to always chase near player x
+      if (!this.punched) {
+        if (Math.abs(player.x - this.x) > 300) {
+          this.vx = -this.vx * 0.99;
+          if (this.x < player.x) this.vx = Math.abs(this.vx);
+          else this.vx = -Math.abs(this.vx);
+        }
+      }
+
+      // Run animation cycle
+      this.runCycle += delta * 0.005;
+      if (this.runCycle > 2) this.runCycle -= 2;
+
+      // Blood fading timer
+      if (this.punched) {
+        this.bloodTimer += delta;
+        if (this.bloodTimer > 500) {
+          this.bloodFade -= delta * 0.003;
+          if (this.bloodFade < 0) {
+            this.bloodFade = 0;
+            this.isDead = true;
+            this.deadTimer = 0;
+          }
+        }
+      }
+    }
+
+    draw(ctx) {
+      ctx.save();
+      ctx.translate(this.x + this.w/2, this.y + this.h);
+      ctx.scale(this.vx > 0 ? 1 : -1, 1);
+
+      // Body shape (rectangle base)
+      ctx.fillStyle = this.colorBody;
+      ctx.strokeStyle = '#111';
+      ctx.lineWidth = 2;
+
+      ctx.beginPath();
+      ctx.moveTo(-this.w/2+10, 0);
+      ctx.lineTo(-this.w/2+5, -20);
+      ctx.lineTo(-this.w/2+10, -this.h+30);
+      ctx.lineTo(this.w/2-10, -this.h+30);
+      ctx.lineTo(this.w/2-5, -20);
+      ctx.lineTo(this.w/2-10, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Head
+      ctx.beginPath();
+      ctx.fillStyle = this.colorBody;
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#111';
+      ctx.arc(0, -this.h, 25, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Cap
+      if (this.type !== 'animal' && this.type !== 'bird') {
+        const c = colorsCaps[this.capsColorIndex] || '#000';
+        ctx.fillStyle = c;
+        ctx.beginPath();
+        ctx.ellipse(0, -this.h - 20, 30, 14, 0, 0, Math.PI*2);
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      // Eyes (white)
+      ctx.fillStyle = '#fafafa';
+      ctx.beginPath();
+      ctx.arc(-7, -this.h-8, 6, 0, Math.PI*2);
+      ctx.arc(7, -this.h-8, 6, 0, Math.PI*2);
+      ctx.fill();
+
+      // Pupils (black)
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      ctx.arc(-7, -this.h-7, 3, 0, Math.PI*2);
+      ctx.arc(7, -this.h-7, 3, 0, Math.PI*2);
+      ctx.fill();
+
+      // Legs simple run animation: oscillate using sin wave
+      let runLegMove = this.runCycle < 1 ? this.runCycle : 2 - this.runCycle;
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#000';
+
+      ctx.beginPath();
+      ctx.moveTo(-this.w/4, 0);
+      ctx.lineTo(-this.w/4 + 15 * runLegMove, 40);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(this.w/4, 0);
+      ctx.lineTo(this.w/4 - 15 * runLegMove, 40);
+      ctx.stroke();
+
+      // Blood effect when punched
+      if (this.punched && this.bloodFade > 0) {
+        ctx.globalAlpha = this.bloodFade;
+        ctx.fillStyle = 'rgba(255,0,0,0.8)';
+        // Blood splatter: 3 circles
+        ctx.beginPath();
+        ctx.arc(-10, -this.h + 20, 8, 0, Math.PI * 2);
+        ctx.arc(10, -this.h + 40, 6, 0, Math.PI *2);
+        ctx.arc(0, -this.h + 30, 12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      ctx.restore();
+    }
+
+    handlePunch() {
+      if (!this.punched) {
+        this.punched = true;
+        this.bloodTimer = 0;
+        this.bloodFade = 1;
+        points += 10;
+        updateScore();
+        playSound('punch');
+      }
+    }
+
+    handleBombExplosion() {
+      if (!this.isDead) {
+        this.isDead = true;
+        this.deadTimer = 0;
+        points += 20;
+        updateScore();
+        playSound('explosion');
+        // Create ashes particle effect on death
+        spawnAshes(this.x + this.w/2, this.y + this.h/2);
+      }
+    }
+  }
+
+  /**
+   * Bomb Class
+   */
+  class Bomb {
+    constructor(x, y, dir) {
+      this.x = x;
+      this.y = y;
+      this.w = 24;
+      this.h = 24;
+      this.dir = dir; // object with x and y components normalized
+      this.speed = BOMB_THROW_SPEED;
+      this.distanceTraveled = 0;
+      this.active = true;
+      this.exploded = false;
+      this.explodeTime = 0;
+
+      this.startX = x;
+      this.startY = y;
+    }
+
+    update(delta) {
+      if (!this.active) return;
+
+      // Move bomb
+      this.x += this.dir.x * this.speed;
+      this.y += this.dir.y * this.speed;
+      this.distanceTraveled = dist(this.startX, this.startY, this.x, this.y);
+
+      // Bomb collision with floor for back direction - if throwing back (up)
+      if (this.dir.y < 0) {
+        // Simulate parabolic arc for bomb flying back (jump arc)
+        this.y = this.startY - (this.distanceTraveled * 0.5) + Math.sin(this.distanceTraveled / 40) * 50;
+        if (this.y > floorY - this.h) this.y = floorY - this.h;
+      } else if (this.dir.y === 0) {
+        // On same level, do nothing special
+        this.y = floorY - this.h - 5;
+      }
+
+      // Explode at max distance
+      if (this.distanceTraveled >= BOMB_THROW_DISTANCE) {
+        this.bombExplode();
+      }
+
+      // Collision with enemies
+      enemies.forEach(enemy => {
+        if (!enemy.isDead && rectIntersect(
+          {x: this.x, y:this.y, w: this.w, h: this.h},
+          {x: enemy.x, y: enemy.y, w: enemy.w, h: enemy.h})) {
+          this.bombExplode();
+          enemy.handleBombExplosion();
+        }
+      });
+    }
+
+    bombExplode() {
+      if (!this.exploded) {
+        this.exploded = true;
+        this.active = false;
+        this.explodeTime = Date.now();
+        spawnExplosion(this.x + this.w/2, this.y + this.h/2);
+      }
+    }
+
+    draw(ctx) {
+      if (this.exploded) {
+        // Draw fire explosion animation handled by particles
+        return;
+      }
+
+      ctx.save();
+      ctx.fillStyle = '#2b2b2b';
+      ctx.strokeStyle = '#111';
+      ctx.lineWidth = 2;
+      ctx.shadowColor = '#cc3300';
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.ellipse(this.x + this.w/2, this.y + this.h/2, 12, 16, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Bomb fuse (small red glow)
+      ctx.fillStyle = 'red';
+      ctx.shadowColor = 'red';
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(this.x + this.w/2, this.y + 4, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+  }
+
+  /**
+   * Particles Class for explosions and ashes
+   */
+  class Particle {
+    constructor(x, y, type) {
+      this.x = x;
+      this.y = y;
+      this.type = type; // 'explosion', 'ash'
+      this.life = 0;
+      this.maxLife = type === 'explosion' ? 600 : 1500;
+      this.vx = Math.random()*8 - 4;
+      this.vy = Math.random()* -7 - 2;
+      this.size = Math.random() * 20 + 12;
+      this.alpha = 1;
+      this.rotation = Math.random()*360;
+      this.rotationSpeed = (Math.random()-0.5) * 10;
+    }
+
+    update(delta) {
+      this.life += delta;
+      if (this.life >= this.maxLife) {
+        this.alpha = 0;
+      } else {
+        this.alpha = 1 - this.life / this.maxLife;
+      }
+
+      this.x += this.vx;
+      this.y += this.vy;
+      this.vy += 0.25; // gravity
+
+      this.rotation += this.rotationSpeed;
+    }
+
+    draw(ctx) {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rotation * Math.PI/180);
+      if (this.type === 'explosion') {
+        let gradient = ctx.createRadialGradient(0,0,this.size*0.1, 0,0,this.size);
+        gradient.addColorStop(0, 'rgba(255,160,30,'+this.alpha+')');
+        gradient.addColorStop(0.5, 'rgba(255,60,0,'+(this.alpha*0.6)+')');
+        gradient.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(0,0,this.size,0,Math.PI*2);
+        ctx.fill();
+      } else if (this.type === 'ash') {
+        ctx.fillStyle = `rgba(100, 100, 100, ${this.alpha})`;
+        ctx.fillRect(-this.size/2,-this.size/8,this.size,this.size/4);
+      }
+      ctx.restore();
+    }
+  }
+
+  /**
+   * Spawn ashes effect on bomb explosion kill
+   * @param {number} x 
+   * @param {number} y 
+   */
+  function spawnAshes(x,y) {
+    for (let i=0; i<12; i++){
+      particles.push(new Particle(x + (Math.random()*60 - 30), y + (Math.random()*60 - 30), 'ash'));
+    }
+  }
+  /**
+   * Spawn explosion particles on bomb detonate
+   * @param {number} x 
+   * @param {number} y 
+   */
+  function spawnExplosion(x,y) {
+    for(let i=0; i<30; i++){
+      particles.push(new Particle(x, y, 'explosion'));
+    }
+    playSound('explosion');
+  }
+
+  /**
+   * Reset all game variables & start the game fresh
+   */
+  function startGame() {
+    player = new Player();
+    enemies = [];
+    bombs = [];
+    particles = [];
+    points = 0;
+    life = 100;
+    gameOver = false;
+    updateScore();
+    updateLifeBar();
+    spawnEnemyLoop();
+    loop();
+    gameOverOverlay.style.display = 'none';
+  }
+
+  /**
+   * Spawn enemies at random edges
+   */
+  function spawnEnemy() {
+    if (gameOver) return;
+
+    let types = ['enemy', 'animal', 'bird', 'blackmanCap'];
+    let type = types[Math.floor(Math.random()*types.length)];
+    let spawnAtRight = Math.random() < 0.5;
+
+    let spawnX = spawnAtRight ? cw + 50 : -100;
+    let spawnY = floorY;
+
+    // Adjust Y spawn for birds and animals inside Enemy constructor
+    enemies.push(new Enemy(type, spawnX, spawnY));
+  }
+
+  /**
+   * Spawning enemies timer loop
+   */
+  let spawnTimer = null;
+  function spawnEnemyLoop() {
+    if (spawnTimer) clearInterval(spawnTimer);
+    spawnTimer = setInterval(() => {
+      spawnEnemy();
+      // Increase difficulty by increasing spawn rate as points grow
+      let rate = clamp(ENEMY_SPAWN_INTERVAL - points * 4, 800, ENEMY_SPAWN_INTERVAL);
+      clearInterval(spawnTimer);
+      spawnTimer = setInterval(spawnEnemyLoop, rate);
+    }, ENEMY_SPAWN_INTERVAL);
+  }
+
+  /**
+   * Update score on UI
+   */
+  function updateScore() {
+    scoreBoard.textContent = `Points: ${points}`;
+  }
+
+  /**
+   * Update life bar on UI
+   */
+  function updateLifeBar() {
+    lifeBarFill.style.width = `${life}%`;
+    lifeBar.setAttribute('aria-valuenow', life);
+    if(life > 60) lifeBarFill.style.background = 'linear-gradient(90deg, #4caf50, #309030)';
+    else if (life > 30) lifeBarFill.style.background = 'linear-gradient(90deg, #ffbf00, #cc9900)';
+    else lifeBarFill.style.background = 'linear-gradient(90deg, #f44336, #aa0000)';
+  }
+
+  /**
+   * Sound play stub - for realistic games add audio files for punch, explosion etc.
+   * Here we use small beep from Web Audio API to simulate.
+   */
+  function playSound(type) {
+    if (!window.AudioContext && !window.webkitAudioContext) return;
+    if (!playSound.ctx) playSound.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = playSound.ctx;
+
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+    let osc = ctx.createOscillator();
+    let gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    if (type === 'punch') {
+      osc.frequency.setValueAtTime(320, ctx.currentTime);
+      osc.type = 'square';
+    } else if (type === 'explosion') {
+      osc.frequency.setValueAtTime(60, ctx.currentTime);
+      osc.type = 'sawtooth';
+    }
+    osc.start();
+    osc.stop(ctx.currentTime + 0.1);
+  }
+
+  /**
+   * Game Over state handler
+   */
+  function triggerGameOver() {
+    gameOver = true;
+    gameOverOverlay.style.display = 'flex';
+    clearInterval(spawnTimer);
+  }
+
+  /**
+   * Handle device resizes for canvas resize and responsive scales
+   */
+  function onResize() {
+    scaleCanvas();
+  }
+
+  /**
+   * Detect double taps / clicks per button
+   * Return true if double clicked within 350 ms
+   */
+  function detectDoubleTap(btnName) {
+    let now = Date.now();
+    if (now - doubleClickTimers[btnName] < 350) {
+      doubleClickTimers[btnName] = 0;
+      return true;
+    }
+    doubleClickTimers[btnName] = now;
+    return false;
+  }
+
+  /**
+   * Main Game Loop
+   */
+  function loop(time=0) {
+    if (gameOver) return;
+
+    let delta = time - lastFrameTime;
+    lastFrameTime = time;
+
+    update(delta);
+    draw();
+
+    requestAnimationFrame(loop);
+  }
+
+  /**
+   * Update game state
+   */
+  function update(delta) {
+    // Update player
+    player.update(delta);
+
+    // Update enemies
+    enemies.forEach(e => e.update(delta));
+
+    // Update bombs
+    bombs.forEach(b => b.update(delta));
+
+    // Update particles
+    particles.forEach((p,i) => {
+      p.update(delta);
+      if (p.alpha <= 0) {
+        particles.splice(i, 1);
+      }
+    });
+
+    // Remove dead enemies flagged for removal
+    enemies = enemies.filter(e => !e.shouldRemove);
+
+    // Remove exploded bombs not active
+    bombs = bombs.filter(b => b.active || !b.exploded);
+
+    // Enemies attack player (collision detection)
+    enemies.forEach(enemy => {
+      if (enemy.isDead) return;
+
+      let hitBoxEnemy = {x: enemy.x, y: enemy.y, w: enemy.w, h:enemy.h};
+      let playerBox = {x: player.x, y: player.y, w: player.w, h:player.h};
+
+      if (rectIntersect(playerBox, hitBoxEnemy)) {
+        // Enemy touches player: reduce life - reduce only once each 800 ms per enemy
+        if (!enemy.lastAttackTime || (Date.now() - enemy.lastAttackTime > 800)) {
+          enemy.lastAttackTime = Date.now();
+          life -= 12;
+          updateLifeBar();
+          if (life <= 0) {
+            life = 0;
+            updateLifeBar();
+            triggerGameOver();
+          }
+        }
+      }
+    });
+
+    // Sword attack detect enemies
+    if (player.isAttacking) {
+      let attackCircle = getSwordAttackArea();
+      enemies.forEach(enemy => {
+        if (!enemy.isDead && !enemy.punched) {
+          let enemyBox = {x: enemy.x, y: enemy.y, w: enemy.w, h: enemy.h};
+          if (circleRectIntersect(attackCircle, enemyBox)) {
+            enemy.handlePunch();
+          }
+        }
+      });
+    }
+  }
+
+  /**
+   * Draw game state
+   */
+  function draw() {
+    // Clear canvas
+    ctx.clearRect(0, 0, cw, ch);
+
+    // Background layers: classic style sky
+    let skyGradient = ctx.createLinearGradient(0,0,cw, ch);
+    skyGradient.addColorStop(0, '#88c8f4');
+    skyGradient.addColorStop(1, '#336699');
+    ctx.fillStyle = skyGradient;
+    ctx.fillRect(0,0,cw,ch);
+
+    // Draw distant mountains/background shape
+    drawMountains(ctx);
+
+    // Floor ground
+    ctx.fillStyle = '#333633';
+    ctx.fillRect(0, floorY, cw, ch - floorY);
+
+    // Draw player
+    player.draw(ctx);
+
+    // Draw enemies
+    enemies.forEach(enemy => enemy.draw(ctx));
+
+    // Draw bombs
+    bombs.forEach(b => b.draw(ctx));
+
+    // Draw particles for explosions and ashes
+    particles.forEach(p => p.draw(ctx));
+  }
+
+  /**
+   * Draw background mountains for classic graphic look
+   */
+  function drawMountains(ctx) {
+    ctx.save();
+    ctx.fillStyle = '#445533';
+    ctx.shadowColor = '#223311';
+    ctx.shadowBlur = 20;
+    let baseY = floorY + 100;
+
+    for(let i=0; i < 8; i++) {
+      let x = i * 290 - (Date.now() / 300 % 290);
+      let h = 300 + Math.sin(i * 1.5 + Date.now()/1000) * 80;
+      ctx.beginPath();
+      ctx.moveTo(x, baseY);
+      ctx.lineTo(x+145, baseY - h);
+      ctx.lineTo(x+290, baseY);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  /**
+   * Sword attack area (circle) for hit detection in front of player
+   * returns {x, y, r}
+   */
+  function getSwordAttackArea() {
+    let cx = player.x + player.w/2 + player.facing * 85;
+    let cy = player.y + player.h - 70;
+    let radius = 90;
+    return {x: cx, y: cy, r: radius};
+  }
+
+  /**
+   * Circle-rect intersection detection
+   * @param {object} circle {x,y,r}
+   * @param {object} rect {x,y,w,h}
+   * @returns boolean
+   */
+  function circleRectIntersect(circle, rect){
+    // Find closest point on rect to circle center
+    let closestX = clamp(circle.x, rect.x, rect.x + rect.w);
+    let closestY = clamp(circle.y, rect.y, rect.y + rect.h);
+
+    let distanceX = circle.x - closestX;
+    let distanceY = circle.y - closestY;
+
+    let distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
+
+    return distanceSquared < (circle.r * circle.r);
+  }
+
+  /* Input handling & controls */
+
+  // Run direction handles on press and release
+  let runningFastMode = {
+    left: false,
+    right: false,
+    top: false,
+  };
+
+  // Movement buttons
+
+  function onDirBtnPress(directionBtn) {
+    switch(directionBtn) {
+      case 'left':
+        const isDoubleLeft = detectDoubleTap('left');
+        player.facing = -1;
+        player.startRunning(-1, isDoubleLeft);
+        runningFastMode.left = isDoubleLeft;
+        break;
+      case 'right':
+        const isDoubleRight = detectDoubleTap('right');
+        player.facing = 1;
+        player.startRunning(1, isDoubleRight);
+        runningFastMode.right = isDoubleRight;
+        break;
+      case 'top':
+        const isDoubleTop = detectDoubleTap('top');
+        if (isDoubleTop) {
+          player.jump(true);
+        } else {
+          player.jump(false);
+        }
+        break;
+    }
+  }
+
+  function onDirBtnRelease(directionBtn) {
+    switch(directionBtn) {
+      case 'left':
+        runningFastMode.left = false;
+        if (runningFastMode.right) {
+          player.startRunning(1, true);
+        } else {
+          player.stopRunning();
+        }
+        break;
+      case 'right':
+        runningFastMode.right = false;
+        if (runningFastMode.left) {
+          player.startRunning(-1, true);
+        } else {
+          player.stopRunning();
+        }
+        break;
+      case 'top':
+        // No running on top release, just jump on click
+        break;
+    }
+  }
+
+  // Attach events on buttons for mobile & desktop
+
+  // Helper to add press and release events cross platform
+  function addControlEvents(elem, downFn, upFn) {
+    // Desktop mouse
+    elem.addEventListener('mousedown', e => {
+      e.preventDefault();
+      downFn();
+    });
+    elem.addEventListener('mouseup', e => {
+      e.preventDefault();
+      upFn();
+    });
+    elem.addEventListener('mouseleave', e => {
+      e.preventDefault();
+      upFn();
+    });
+
+    // Touch devices
+    elem.addEventListener('touchstart', e => {
+      e.preventDefault();
+      downFn();
+    }, {passive:false});
+    elem.addEventListener('touchend', e => {
+      e.preventDefault();
+      upFn();
+    });
+    elem.addEventListener('touchcancel', e => {
+      e.preventDefault();
+      upFn();
+    });
+  }
+
+  // Movement buttons handlers
+  addControlEvents(leftBtn,
+    () => onDirBtnPress('left'),
+    () => onDirBtnRelease('left'));
+
+  addControlEvents(rightBtn,
+    () => onDirBtnPress('right'),
+    () => onDirBtnRelease('right'));
+
+  addControlEvents(topBtn,
+    () => onDirBtnPress('top'),
+    () => onDirBtnRelease('top'));
+
+  // Sword attack - Press and hold to attack sword with skills
+  let swordAttackInterval = null;
+  swordBtn.addEventListener('mousedown', startSwordAttack);
+  swordBtn.addEventListener('touchstart', e => {e.preventDefault(); startSwordAttack();}, {passive:false});
+  swordBtn.addEventListener('mouseup', stopSwordAttack);
+  swordBtn.addEventListener('mouseleave', stopSwordAttack);
+  swordBtn.addEventListener('touchend', stopSwordAttack);
+  swordBtn.addEventListener('touchcancel', stopSwordAttack);
+
+  function startSwordAttack() {
+    if (gameOver) return;
+    if (player.isAttacking) return;
+    player.attackSwordStart();
+    playSound('punch');
+    // Continue attack skill ticks every SWORD_ATTACK_INTERVAL
+    swordAttackInterval = setInterval(() => {
+      player.swordAttackFrameIndex = (player.swordAttackFrameIndex + 1) % swordSkillFrames.length;
+      playSound('punch');
+    }, SWORD_ATTACK_INTERVAL);
+  }
+  function stopSwordAttack() {
+    if (!player.isAttacking) return;
+    player.attackSwordStop();
+    if (swordAttackInterval) {
+      clearInterval(swordAttackInterval);
+      swordAttackInterval = null;
+    }
+  }
+
+  // Bomb throw controls
+
+  // bomb button press and hold to show directional buttons
+  let bombHoldTimeout = null;
+  let bombThrowDirection = null;
+
+  bombBtn.addEventListener('mousedown', bombBtnHoldStart);
+  bombBtn.addEventListener('touchstart', e => {e.preventDefault(); bombBtnHoldStart();}, {passive:false});
+
+  bombBtn.addEventListener('mouseup', bombBtnHoldEnd);
+  bombBtn.addEventListener('mouseleave', bombBtnHoldEnd);
+  bombBtn.addEventListener('touchend', bombBtnHoldEnd);
+  bombBtn.addEventListener('touchcancel', bombBtnHoldEnd);
+
+  function bombBtnHoldStart() {
+    if (gameOver) return;
+    bombHoldTimeout = setTimeout(() => {
+      // Show bomb direction controls after hold 350ms
+      bombControls.style.display = 'flex';
+    }, 350);
+  }
+  function bombBtnHoldEnd() {
+    if (bombHoldTimeout) {
+      clearTimeout(bombHoldTimeout);
+      bombHoldTimeout = null;
+    }
+    // Hide direction controls immediately if hold ends without throwing
+    setTimeout(() => {
+      bombControls.style.display = 'none';
+    }, 350);
+  }
+
+  function bombThrow(dirName) {
+    if (gameOver) return;
+    // Throw bomb from player position in specific direction
+    let dir = BOMB_DIRECTIONS[dirName];
+    if (!dir) return;
+
+    if (player.isThrowingBomb) return; // cannot throw multiple bombs at once
+    player.isThrowingBomb = true;
+
+    const bombX = player.x + player.w/2;
+    const bombY = player.y + player.h - 24;
+
+    bombs.push(new Bomb(bombX, bombY, dir));
+    playSound('explosion');
+
+    // Cooldown for throwing bomb ~700ms
+    setTimeout(() => {
+      player.isThrowingBomb = false;
+    }, 700);
+  }
+
+  // Bomb direction buttons events
+
+  bombLeft.addEventListener('click', () => {
+    bombThrow('left');
+    bombControls.style.display = 'none';
+  });
+  bombRight.addEventListener('click', () => {
+    bombThrow('right');
+    bombControls.style.display = 'none';
+  });
+  bombBack.addEventListener('click', () => {
+    bombThrow('back');
+    bombControls.style.display = 'none';
+  });
+
+  // Restart game button
+  restartBtn.addEventListener('click', () => {
+    startGame();
+  });
+
+  // Device keyboard controls for desktop (arrows and space)
+  window.addEventListener('keydown', e => {
+    if (gameOver) return;
+    if (e.repeat) return;
+    switch(e.code) {
+      case 'ArrowLeft':
+        onDirBtnPress('left');
+        break;
+      case 'ArrowRight':
+        onDirBtnPress('right');
+        break;
+      case 'ArrowUp':
+        onDirBtnPress('top');
+        break;
+      case 'KeyZ':
+        startSwordAttack();
+        break;
+      case 'KeyX':
+        bombThrow('right');
+        break;
+    }
+  });
+  window.addEventListener('keyup', e => {
+    if (gameOver) return;
+    switch(e.code) {
+      case 'ArrowLeft':
+        onDirBtnRelease('left');
+        break;
+      case 'ArrowRight':
+        onDirBtnRelease('right');
+        break;
+      case 'ArrowUp':
+        onDirBtnRelease('top');
+        break;
+      case 'KeyZ':
+        stopSwordAttack();
+        break;
+    }
+  });
+
+  // On window resize
+  window.addEventListener('resize', onResize);
+
+  // Initial setup: scale canvas and start game
+  onResize();
+  startGame();
+
+})();
+</script>
+
+</body>
+</html>
