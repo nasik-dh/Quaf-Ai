@@ -3,954 +3,767 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="P9BCmQCGDsbkZutfQgEIkZYmWTdu7SRtPFz4VC4HBJw"/>
-    <link rel="shortcut icon" href="logo.png">
-    <title>QUAF AI</title>
-  <meta name="viewport" content=
-  "width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="27TH BATCH OF DHDC MANOOR">
-  <meta property="og:url" content="https://quaf.netlify.app">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Qualitative Union For Academic Focus">
-  <meta property="og:description" content=
-  "27TH BATCH OF DHDC MANOOR">
-  <meta property="og:image" content="https://dqdhdc.netlify.app/quaf/footer.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta property="twitter:domain" content="dqdhdc.app">
-  <meta property="twitter:url" content="https://dqdhdc.quaf.app">
-  <meta name="twitter:title" content="Qualitative Union For Academic Focus">
-  <meta name="twitter:description" content=
-  "27TH BATCH OF DHDC MANOOR">
-  <meta name="twitter:image" content=
-  "https://dqdhdc.netlify.app/quaf/footer.png">
+    <title>Hacker Simulation Game</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            font-family: 'Orbitron', monospace;
+            background: #000;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
         
-        .chat-container {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(15px);
-            border-radius: 25px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        #matrixCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            pointer-events: none;
         }
         
-        .message-bubble {
-            animation: slideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        
-        .user-message {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 25px 25px 8px 25px;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        .game-container {
             position: relative;
-            word-wrap: break-word;
-            max-width: 85%;
-        }
-        
-        .user-message::before {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            right: 15px;
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 10px solid #764ba2;
-            transform: rotate(45deg);
-        }
-        
-        .bot-message {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            border-radius: 25px 25px 25px 8px;
-            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3);
-            position: relative;
-            word-wrap: break-word;
-            max-width: 85%;
-            white-space: pre-wrap;
-        }
-        
-        .bot-message::before {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 15px;
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 10px solid #f5576c;
-            transform: rotate(-45deg);
-        }
-        
-        .bot-message a {
-            color: #FFE4E1;
-            text-decoration: underline;
-            font-weight: bold;
-        }
-        
-        .bot-message a:hover {
-            color: white;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-        
-        .bot-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 10;
+            height: 100vh;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-            margin-right: 10px;
-            flex-shrink: 0;
+            align-items: center;
         }
         
-        .typing-indicator {
-            display: none;
+        .start-btn {
+            background: linear-gradient(45deg, #00ff00, #00aa00);
+            border: 2px solid #00ff00;
+            color: #000;
+            font-size: 2rem;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
         }
         
-        .typing-indicator.show {
-            display: flex;
-            animation: pulse 1.5s infinite;
+        .start-btn:hover {
+            background: linear-gradient(45deg, #00aa00, #00ff00);
+            box-shadow: 0 0 30px #00ff00;
+            transform: scale(1.05);
         }
         
         @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
+            0%, 100% { box-shadow: 0 0 20px #00ff00; }
+            50% { box-shadow: 0 0 40px #00ff00, 0 0 60px #00ff00; }
         }
         
-        .input-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 30px;
-            border: 2px solid rgba(102, 126, 234, 0.2);
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px;
+        .security-panel {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.5s ease;
         }
         
-        .input-container:focus-within {
-            border-color: #667eea;
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.25);
-            transform: translateY(-2px);
+        .security-title {
+            color: #00ff00;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px #00ff00;
         }
         
-        .message-input {
+        .pin-input {
             background: transparent;
-            border: none;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            font-size: 1.5rem;
+            padding: 1rem;
+            text-align: center;
+            letter-spacing: 5px;
+            border-radius: 10px;
+            width: 300px;
+            margin: 1rem 0;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .pin-input:focus {
             outline: none;
-            color: #374151;
-            font-size: 16px;
-            padding: 12px 16px;
+            box-shadow: 0 0 30px #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .submit-btn {
+            background: linear-gradient(45deg, #00ff00, #00aa00);
+            border: none;
+            color: #000;
+            font-size: 1.2rem;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background: linear-gradient(45deg, #00aa00, #00ff00);
+            box-shadow: 0 0 20px #00ff00;
+        }
+        
+        .command-interface {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+        }
+        
+        .command-header {
+            color: #00ff00;
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px #00ff00;
+        }
+        
+        .terminal {
             flex: 1;
-            min-width: 0;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 1rem;
+            font-family: 'Orbitron', monospace;
+            overflow-y: auto;
+            margin-bottom: 1rem;
         }
         
-        .message-input::placeholder {
-            color: #9CA3AF;
+        .command-output {
+            color: #00ff00;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            margin-bottom: 1rem;
         }
         
-        .send-btn {
-            background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 50%, #45B7D1 100%);
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            min-width: 45px;
-            min-height: 45px;
+        .command-input-container {
             display: flex;
             align-items: center;
-            justify-content: center;
-            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
-            position: relative;
-            overflow: hidden;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            gap: 1rem;
+        }
+        
+        .command-prompt {
+            color: #00ff00;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        .command-input {
+            flex: 1;
+            background: transparent;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            font-size: 1rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .command-input:focus {
+            outline: none;
+            box-shadow: 0 0 20px #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        .exit-btn {
+            background: linear-gradient(45deg, #ff0000, #aa0000);
+            border: 2px solid #ff0000;
+            color: #fff;
+            font-size: 1rem;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
             cursor: pointer;
-            flex-shrink: 0;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
         }
         
-        .send-btn::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #FF6B6B, #4ECDC4, #45B7D1, #FF6B6B);
-            border-radius: 50%;
-            z-index: -1;
-            animation: rotateBorder 3s linear infinite;
+        .exit-btn:hover {
+            background: linear-gradient(45deg, #aa0000, #ff0000);
+            box-shadow: 0 0 20px #ff0000;
         }
         
-        @keyframes rotateBorder {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .alert-mode {
+            background: #ff0000 !important;
+            color: #fff !important;
         }
         
-        .send-btn::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: all 0.6s;
+        .alert-mode .pin-input {
+            border-color: #ff0000;
+            color: #ff0000;
         }
         
-        .send-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 30px rgba(255, 107, 107, 0.6);
-            background: linear-gradient(135deg, #FF5722 0%, #00BCD4 50%, #2196F3 100%);
+        .alert-mode .security-title {
+            color: #ff0000;
+            text-shadow: 0 0 20px #ff0000;
         }
         
-        .send-btn:hover::after {
-            left: 100%;
+        .hidden {
+            display: none !important;
         }
         
-        .send-btn:active {
-            transform: scale(0.95);
+        .fade-in {
+            animation: fadeIn 0.5s ease;
         }
         
-        .send-btn i {
-            font-size: 16px;
-            transition: all 0.4s ease;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        .send-btn:hover i {
-            transform: translateX(2px) scale(1.1);
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+        .warning-text {
+            color: #ff0000;
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            text-shadow: 0 0 15px #ff0000;
+            animation: blink 1s infinite;
         }
         
-        .send-btn:disabled {
-            opacity: 0.5;
-            transform: scale(0.9);
-            cursor: not-allowed;
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
         }
         
-        .send-btn:disabled::before {
-            animation: none;
-        }
-        
-        .logo-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 50%;
-            padding: 15px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-            border: 3px solid rgba(102, 126, 234, 0.2);
-        }
-
-        .chat-messages {
-            max-height: 500px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
-            padding-right: 5px;
-        }
-
-        .chat-messages::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .chat-messages::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 10px;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
-        }
-
-        .chat-messages::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-        }
-
-        .status-indicator {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 12px;
-            height: 12px;
-            background: #10B981;
-            border-radius: 50%;
-            border: 2px solid white;
-            animation: statusPulse 2s infinite;
-        }
-
-        @keyframes statusPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        .message-time {
-            font-size: 10px;
+        .game-disclaimer {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #00ff00;
+            font-size: 0.8rem;
+            text-align: center;
             opacity: 0.7;
-            margin-top: 5px;
+            z-index: 100;
         }
-
-        .loading-dots {
-            display: inline-block;
-        }
-
-        .loading-dots span {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: white;
-            margin: 0 2px;
-            animation: loadingDots 1.4s infinite both;
-        }
-
-        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
-        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
-
-        @keyframes loadingDots {
-            0%, 80%, 100% {
-                transform: scale(0.8);
-                opacity: 0.5;
-            }
-            40% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        /* Enhanced Mobile Responsiveness */
+        
         @media (max-width: 768px) {
-            .chat-container {
-                margin: 10px;
-                padding: 20px;
-                border-radius: 20px;
-                max-height: calc(100vh - 20px);
-                display: flex;
-                flex-direction: column;
+            .start-btn {
+                font-size: 1.5rem;
+                padding: 0.8rem 1.5rem;
             }
             
-            .chat-messages {
-                max-height: calc(100vh - 300px);
-                min-height: 300px;
+            .pin-input {
+                width: 250px;
+                font-size: 1.2rem;
             }
             
-            .send-btn {
-                width: 40px;
-                height: 40px;
-                min-width: 40px;
-                min-height: 40px;
+            .security-title {
+                font-size: 1.5rem;
             }
             
-            .send-btn i {
-                font-size: 14px;
-            }
-            
-            .input-container {
-                padding: 6px;
-                gap: 8px;
-                border-radius: 25px;
-                position: sticky;
-                bottom: 0;
-                z-index: 10;
-            }
-            
-            .message-input {
-                font-size: 16px;
-                padding: 10px 12px;
-            }
-            
-            .bot-avatar {
-                width: 35px;
-                height: 35px;
-                margin-right: 8px;
-            }
-            
-            .user-message, .bot-message {
-                max-width: 90%;
-                padding: 12px 16px;
-            }
-            
-            .logo-container {
-                padding: 12px;
-            }
-            
-            .logo-container img {
-                width: 60px;
-                height: 60px;
-            }
-            
-            h1 {
-                font-size: 28px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .chat-container {
-                margin: 5px;
-                padding: 15px;
-                border-radius: 15px;
-            }
-            
-            .chat-messages {
-                max-height: calc(100vh - 280px);
-            }
-            
-            .send-btn {
-                width: 38px;
-                height: 38px;
-                min-width: 38px;
-                min-height: 38px;
-            }
-            
-            .message-input {
-                font-size: 16px;
-                padding: 8px 10px;
-            }
-            
-            .input-container {
-                padding: 5px;
-                gap: 6px;
-            }
-            
-            .user-message, .bot-message {
-                padding: 10px 14px;
-                font-size: 14px;
-            }
-            
-            h1 {
-                font-size: 24px;
-            }
-        }
-
-        /* Landscape mobile orientation */
-        @media (max-width: 768px) and (orientation: landscape) {
-            .chat-messages {
-                max-height: calc(100vh - 250px);
-            }
-        }
-
-        /* Prevent zoom on input focus (iOS) */
-        @media (max-width: 768px) {
-            .message-input {
-                font-size: 16px !important;
+            .command-interface {
+                padding: 1rem;
             }
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-2 sm:p-4">
-    <div class="chat-container w-full max-w-4xl mx-auto">
-        <!-- Header -->
-        <div class="text-center mb-6 sm:mb-8">
-            <div class="logo-container inline-block mb-4 sm:mb-6 relative">
-                <img src="https://quaf.netlify.app/logo.png" alt="QUAF Logo" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover">
-                <div class="status-indicator"></div>
+<body>
+    <canvas id="matrixCanvas"></canvas>
+    
+    <div class="game-container">
+        <div id="startScreen" class="text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-green-400 mb-8 text-center">
+                <i class="fas fa-terminal mr-4"></i>
+                HACKER SIMULATOR
+            </h1>
+            <button class="start-btn" onclick="startGame()">
+                <i class="fas fa-play mr-2"></i>
+                INITIALIZE
+            </button>
+        </div>
+        
+        <div id="securityPanel" class="security-panel hidden">
+            <div class="security-title">
+                <i class="fas fa-lock mb-2"></i><br>
+                SECURITY ACCESS REQUIRED
             </div>
-            <h1 class="text-2xl sm:text-4xl font-bold text-gray-800 mb-2 sm:mb-3">QUAF AI</h1>
-            <p class="text-gray-600 text-sm sm:text-lg">Academic assistant chat bot </p>
-        </div>
-
-        <!-- Chat Messages -->
-        <div class="chat-messages mb-6 sm:mb-8" id="chatMessages">
-            <!-- Messages will be added here -->
-        </div>
-
-        <!-- Typing Indicator -->
-        <div class="typing-indicator items-start mb-4 sm:mb-6" id="typingIndicator">
-            <div class="flex items-start">
-                <div class="bot-avatar">
-                    <img src="https://quaf.netlify.app/logo.png" alt="Bot" class="w-5 h-5 sm:w-6 sm:h-6 rounded-full">
-                </div>
-                <div class="bot-message px-4 py-3 sm:px-6 sm:py-4 max-w-xs">
-                    <div class="loading-dots">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                </div>
+            <div class="text-green-400 mb-4">Enter authorization code to proceed:</div>
+            <input type="password" class="pin-input" id="pinInput" placeholder="••••••••••" maxlength="9">
+            <br>
+            <button class="submit-btn" onclick="checkPin()">
+                <i class="fas fa-key mr-2"></i>
+                AUTHORIZE
+            </button>
+            <div id="warningMessage" class="warning-text hidden">
+                <i class="fas fa-exclamation-triangle"></i>
+                ACCESS DENIED - SECURITY BREACH DETECTED
             </div>
         </div>
-
-        <!-- Input Area -->
-        <div class="input-container">
-            <input 
-                type="text" 
-                id="messageInput" 
-                placeholder="Type your message here..." 
-                class="message-input"
-                onkeypress="handleKeyPress(event)"
-                autocomplete="off"
-                autocorrect="off"
-                autocapitalize="off"
-                spellcheck="false"
-            >
-            <button 
-                id="sendButton"
-                onclick="sendMessage()" 
-                class="send-btn focus:outline-none focus:ring-4 focus:ring-purple-500 focus:ring-opacity-30"
-                disabled
-                type="button"
-            >
-                <i class="fas fa-share"></i>
+    </div>
+    
+    <div id="commandInterface" class="command-interface hidden">
+        <div class="command-header">
+            <i class="fas fa-terminal mr-2"></i>
+            HACKER COMMAND INTERFACE - SYSTEM ACCESS GRANTED
+        </div>
+        
+        <div class="terminal" id="terminal">
+            <div class="command-output" id="commandOutput">
+SYSTEM INITIALIZED...
+WELCOME TO THE HACKER TERMINAL
+TYPE 'help' FOR AVAILABLE COMMANDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            </div>
+        </div>
+        
+        <div class="command-input-container">
+            <span class="command-prompt">HACKER@TERMINAL:~$</span>
+            <input type="text" class="command-input" id="commandInput" placeholder="Enter command..." autocomplete="off">
+            <button class="exit-btn" onclick="exitCommandInterface()">
+                <i class="fas fa-times mr-2"></i>
+                EXIT
             </button>
         </div>
     </div>
+    
+    <div class="game-disclaimer">
+        <i class="fas fa-gamepad mr-2"></i>
+        GAME SIMULATION - FOR ENTERTAINMENT PURPOSES ONLY
+    </div>
 
     <script>
-        // Global variables
-        let chatData = [];
-        let isDataLoaded = false;
-        let retryCount = 0;
-        const maxRetries = 3;
-
-        // Google Sheets CSV URL
-        const SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSzPTwRn9_fq5RwG9_i5ykSqAmA7COBGOFbKcytNvDmNNqRantWHXX9bAZ8az4cKE5Qx7P-u7ujksOG/pub?gid=0&single=true&output=csv';
-
-        // Enhanced CSV parsing function to handle complete replies
-        function parseCSV(csvText) {
-            const lines = csvText.split('\n');
-            const result = [];
+        let audioContext;
+        let matrixMode = 'green';
+        let alertSound = null;
+        let gameStarted = false;
+        let commandHistory = [];
+        
+        // Initialize Audio Context
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+        
+        // Generate alert sound
+        function playAlertSound(duration = 1000) {
+            if (!audioContext) initAudio();
             
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (line) {
-                    // Advanced CSV parsing that handles commas, quotes, and newlines in replies
-                    const columns = [];
-                    let current = '';
-                    let inQuotes = false;
-                    let quoteCount = 0;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration/1000);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration/1000);
+        }
+        
+        // Matrix Rain Effect
+        class MatrixRain {
+            constructor() {
+                this.canvas = document.getElementById('matrixCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+                this.drops = [];
+                this.fontSize = 16;
+                this.mode = 'green';
+                
+                this.resize();
+                this.init();
+                this.animate();
+                
+                window.addEventListener('resize', () => this.resize());
+            }
+            
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                this.columns = Math.floor(this.canvas.width / this.fontSize);
+                this.drops = Array(this.columns).fill(0).map(() => Math.random() * -100);
+            }
+            
+            init() {
+                this.ctx.fillStyle = '#000';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+            
+            animate() {
+                this.ctx.fillStyle = this.mode === 'green' ? 'rgba(0, 0, 0, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                const color = this.mode === 'green' ? '#00ff00' : '#ff0000';
+                this.ctx.fillStyle = color;
+                this.ctx.font = `${this.fontSize}px 'Orbitron', monospace`;
+                
+                for (let i = 0; i < this.drops.length; i++) {
+                    const char = this.characters[Math.floor(Math.random() * this.characters.length)];
+                    const x = i * this.fontSize;
+                    const y = this.drops[i] * this.fontSize;
                     
-                    for (let j = 0; j < line.length; j++) {
-                        const char = line[j];
-                        
-                        if (char === '"') {
-                            quoteCount++;
-                            if (quoteCount % 2 === 1) {
-                                inQuotes = true;
-                            } else {
-                                inQuotes = false;
-                            }
-                            // Don't add quotes to the content
-                        } else if (char === ',' && !inQuotes) {
-                            columns.push(current);
-                            current = '';
-                        } else {
-                            current += char;
-                        }
-                    }
+                    this.ctx.fillText(char, x, y);
                     
-                    // Add the last column (the complete reply)
-                    columns.push(current);
-                    
-                    // Extract user and complete reply
-                    if (columns.length >= 2) {
-                        const user = columns[0].trim().toLowerCase();
-                        // Join all remaining columns as the complete reply (in case reply contains commas)
-                        const reply = columns.slice(1).join(',').trim();
-                        
-                        if (user && reply) {
-                            result.push({ 
-                                user: user,
-                                reply: reply,
-                                originalUser: columns[0].trim()
-                            });
-                        }
+                    if (y > this.canvas.height && Math.random() > 0.975) {
+                        this.drops[i] = 0;
                     }
+                    this.drops[i]++;
                 }
+                
+                requestAnimationFrame(() => this.animate());
             }
             
-            console.log('Parsed chat data:', result);
-            return result;
-        }
-
-        // Enhanced data loading with retry mechanism
-        async function loadChatData() {
-            try {
-                const response = await fetch(SHEETS_URL + '&t=' + Date.now(), {
-                    method: 'GET',
-                    headers: {
-                        'Cache-Control': 'no-cache',
-                        'Pragma': 'no-cache'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const csvText = await response.text();
-                
-                if (!csvText || csvText.trim().length === 0) {
-                    throw new Error('Empty response from Google Sheets');
-                }
-                
-                console.log('Raw CSV data:', csvText);
-                
-                // Enhanced CSV parsing
-                chatData = parseCSV(csvText);
-                
-                if (chatData.length === 0) {
-                    throw new Error('No valid data found in Google Sheets');
-                }
-                
-                isDataLoaded = true;
-                retryCount = 0;
-                document.getElementById('sendButton').disabled = false;
-                
-                console.log('Chat data loaded successfully:', chatData);
-                
-                // Show success message
-                setTimeout(() => {
-                    addMessage("Hello! I'm your QUAF Academic Assistant. I've successfully loaded all my knowledge and I'm ready to help you with your academic queries. How can I assist you today?", false);
-                }, 1000);
-                
-            } catch (error) {
-                console.error('Error loading chat data:', error);
-                retryCount++;
-                
-                if (retryCount < maxRetries) {
-                    console.log(`Retrying... Attempt ${retryCount}/${maxRetries}`);
-                    setTimeout(() => loadChatData(), 2000 * retryCount);
-                } else {
-                    // Enhanced fallback data
-                    chatData = [
-                        { user: "hi", reply: "Hello, welcome to QUAF Academic System! How can I help you today?", originalUser: "Hi" },
-                        { user: "hello", reply: "Hello, welcome to QUAF Academic System! How can I help you today?", originalUser: "Hello" },
-                        { user: "sugalle", reply: "Aa, suagan, Alhamdulillah", originalUser: "Sugalle" },
-                        { user: "how are you", reply: "I'm doing great, thank you for asking! How can I assist you with your academic queries?", originalUser: "How are you" },
-                        { user: "what is quaf", reply: "QUAF is an Academic Management System designed to help students with their educational needs.", originalUser: "What is QUAF" },
-                        { user: "help", reply: "I'm here to help you with academic queries. You can ask me about courses, assignments, or any educational topics!", originalUser: "Help" }
-                    ];
-                    
-                    isDataLoaded = true;
-                    document.getElementById('sendButton').disabled = false;
-                    
-                    setTimeout(() => {
-                        addMessage("Hello! I'm running in offline mode with limited responses. You can still ask me basic questions. For full support, please check your internet connection.", false);
-                    }, 1000);
-                }
+            setMode(mode) {
+                this.mode = mode;
             }
         }
-
-        // Enhanced matching algorithm
-        function findBestMatch(userInput) {
-            const input = userInput.toLowerCase().trim();
+        
+        // Initialize Matrix Rain
+        const matrix = new MatrixRain();
+        
+        // Hacker Responses
+        const hackerResponses = {
+            greetings: [
+                "Hello, fellow hacker. Welcome to the matrix.",
+                "Greetings, cyber warrior. Ready to hack the system?",
+                "Hey there, digital ghost. What's your mission today?",
+                "Welcome to the underground, hacker. What brings you here?",
+                "Salutations, code breaker. The system awaits your command."
+            ],
+            help: `
+AVAILABLE COMMANDS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• help / ? - Show this help menu
+• hi / hello - Greet the system
+• status - Check system status
+• scan - Perform network scan
+• hack - Initiate hacking sequence
+• info - System information
+• time - Current system time
+• joke - Get a hacker joke
+• quote - Random hacker quote
+• clear - Clear terminal
+• exit - Exit command interface
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+            status: [
+                "SYSTEM STATUS: ONLINE\nFIREWALL: BYPASSED\nSECURITY: COMPROMISED\nACCESS LEVEL: ROOT",
+                "NETWORK STATUS: CONNECTED\nENCRYPTION: CRACKED\nSURVEILLANCE: DISABLED\nSTEALTH MODE: ACTIVE",
+                "SYSTEM ANALYSIS: COMPLETE\nVULNERABILITIES: 47 FOUND\nBACKDOORS: 12 INSTALLED\nMISSION: IN PROGRESS"
+            ],
+            scan: [
+                "SCANNING NETWORK...\n192.168.1.1 - ROUTER [VULNERABLE]\n192.168.1.100 - TARGET [SECURED]\n192.168.1.250 - HONEYPOT [DETECTED]\nSCAN COMPLETE: 3 DEVICES FOUND",
+                "PORT SCANNING INITIATED...\nPORT 22: SSH [OPEN]\nPORT 80: HTTP [OPEN]\nPORT 443: HTTPS [FILTERED]\nPORT 3389: RDP [CLOSED]\nSCAN RESULTS: 2 VULNERABLE PORTS",
+                "VULNERABILITY SCAN RUNNING...\nSQL INJECTION: POSSIBLE\nXSS DETECTED: HIGH RISK\nBUFFER OVERFLOW: CRITICAL\nRECOMMENDED ACTION: EXPLOIT IMMEDIATELY"
+            ],
+            hack: [
+                "INITIATING HACK SEQUENCE...\n[██████████] 100%\nACCESS GRANTED: SYSTEM COMPROMISED\nROOT PRIVILEGES: OBTAINED\nHACK SUCCESSFUL!",
+                "LAUNCHING CYBER ATTACK...\n[████████░░] 80%\nBYPASSING SECURITY...\n[██████████] 100%\nTARGET BREACHED: MISSION ACCOMPLISHED",
+                "EXECUTING EXPLOIT...\n[███░░░░░░░] 30%\nCRACKING PASSWORDS...\n[████████░░] 80%\nSYSTEM HACKED: FULL CONTROL ACHIEVED"
+            ],
+            info: `
+SYSTEM INFORMATION:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OS: LINUX KALI 2024.1 (HACKER EDITION)
+KERNEL: 6.8.11-amd64
+CPU: INTEL i9-14900K @ 5.8GHz
+RAM: 64GB DDR5-6000
+GPU: NVIDIA RTX 4090 (CRYPTO MINING DISABLED)
+TOOLS: METASPLOIT, NMAP, WIRESHARK, BURP SUITE
+STATUS: FULLY OPERATIONAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+            jokes: [
+                "Why do hackers prefer dark mode?\nBecause light attracts bugs!",
+                "How many hackers does it take to change a light bulb?\nNone, they just exploit the darkness.",
+                "What's a hacker's favorite type of music?\nRAP... (Remote Access Protocol)",
+                "Why don't hackers ever get lost?\nBecause they always find the backdoor!",
+                "What do you call a hacker who's also a musician?\nA bandwidth!"
+            ],
+            quotes: [
+                "\"The best way to get information is to not ask for it.\" - Anonymous",
+                "\"Security is not a product, but a process.\" - Bruce Schneier",
+                "\"In the world of hacking, today's security is tomorrow's vulnerability.\" - Unknown",
+                "\"Privacy is not about hiding something. It's about protecting everything.\" - Anonymous",
+                "\"The only truly secure system is one that is powered off.\" - Gene Spafford"
+            ],
+            unknown: [
+                "COMMAND NOT RECOGNIZED. TYPE 'help' FOR AVAILABLE COMMANDS.",
+                "UNKNOWN COMMAND. ACCESS DENIED.",
+                "SYNTAX ERROR: COMMAND NOT FOUND IN DATABASE.",
+                "INVALID INPUT. PLEASE CHECK YOUR COMMAND AND TRY AGAIN.",
+                "ERROR 404: COMMAND NOT FOUND. CONSIDER UPDATING YOUR HACKING SKILLS."
+            ]
+        };
+        
+        // Process Command
+        function processCommand(command) {
+            const cmd = command.toLowerCase().trim();
+            const output = document.getElementById('commandOutput');
+            const timestamp = new Date().toLocaleTimeString();
             
-            if (!isDataLoaded || chatData.length === 0) {
-                return "I'm still loading my knowledge base. Please wait a moment and try again.";
-            }
+            let response = '';
             
-            console.log('Searching for match:', input);
-            console.log('Available data:', chatData);
+            // Add command to history
+            commandHistory.push(command);
             
-            // Step 1: Exact match
-            for (let data of chatData) {
-                if (data.user === input) {
-                    console.log('Exact match found:', data);
-                    return data.reply;
-                }
-            }
+            // Add command to output
+            output.innerHTML += `\n[${timestamp}] HACKER@TERMINAL:~$ ${command}\n`;
             
-            // Step 2: Contains match (user input contains a keyword)
-            for (let data of chatData) {
-                if (input.includes(data.user)) {
-                    console.log('Contains match found:', data);
-                    return data.reply;
-                }
-            }
-            
-            // Step 3: Keyword match (keyword contains user input)
-            for (let data of chatData) {
-                if (data.user.includes(input)) {
-                    console.log('Keyword match found:', data);
-                    return data.reply;
-                }
-            }
-            
-            // Step 4: Word-by-word matching
-            const inputWords = input.split(' ').filter(word => word.length > 2);
-            let bestMatch = null;
-            let maxScore = 0;
-            
-            for (let data of chatData) {
-                const keywordWords = data.user.split(' ');
-                let score = 0;
-                
-                for (let inputWord of inputWords) {
-                    for (let keywordWord of keywordWords) {
-                        if (inputWord === keywordWord) {
-                            score += 2; // Exact word match
-                        } else if (inputWord.includes(keywordWord) || keywordWord.includes(inputWord)) {
-                            score += 1; // Partial word match
-                        }
-                    }
-                }
-                
-                if (score > maxScore && score > 0) {
-                    maxScore = score;
-                    bestMatch = data;
-                }
-            }
-            
-            if (bestMatch && maxScore >= 1) {
-                console.log('Word match found:', bestMatch);
-                return bestMatch.reply;
-            }
-            
-            // Step 5: Fuzzy matching for typos and similar words
-            for (let data of chatData) {
-                const similarity = calculateSimilarity(input, data.user);
-                if (similarity > 0.6) { // 60% similarity threshold
-                    console.log('Fuzzy match found:', data);
-                    return data.reply;
-                }
-            }
-            
-            // Step 6: No match found - enhanced default response
-            const fallbackResponses = [
-                'I don\'t have specific information about that topic. You can contact our support team via <a href="https://wa.me/message/76OKA3KAKHINC1" target="_blank">WhatsApp</a> for detailed assistance.',
-                'That\'s an interesting question! For comprehensive help with this topic, please <a href="https://wa.me/message/76OKA3KAKHINC1" target="_blank">reach out to our WhatsApp support</a>.',
-                'I\'m still learning about that subject. For immediate assistance, you can <a href="https://wa.me/message/76OKA3KAKHINC1" target="_blank">contact us on WhatsApp</a>.'
-            ];
-            
-            return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
-        }
-
-        // Enhanced similarity calculation with better accuracy
-        function calculateSimilarity(str1, str2) {
-            if (str1 === str2) return 1.0;
-            
-            const longer = str1.length > str2.length ? str1 : str2;
-            const shorter = str1.length > str2.length ? str2 : str1;
-            
-            if (longer.length === 0) return 1.0;
-            
-            const editDistance = levenshteinDistance(longer, shorter);
-            const similarity = (longer.length - editDistance) / longer.length;
-            
-            // Bonus for common words
-            const words1 = str1.split(' ');
-            const words2 = str2.split(' ');
-            let commonWords = 0;
-            
-            for (let word1 of words1) {
-                for (let word2 of words2) {
-                    if (word1 === word2 && word1.length > 2) {
-                        commonWords++;
-                    }
-                }
-            }
-            
-            const wordBonus = commonWords * 0.1;
-            return Math.min(1.0, similarity + wordBonus);
-        }
-
-        function levenshteinDistance(str1, str2) {
-            const matrix = [];
-            
-            for (let i = 0; i <= str2.length; i++) {
-                matrix[i] = [i];
-            }
-            
-            for (let j = 0; j <= str1.length; j++) {
-                matrix[0][j] = j;
-            }
-            
-            for (let i = 1; i <= str2.length; i++) {
-                for (let j = 1; j <= str1.length; j++) {
-                    if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-                        matrix[i][j] = matrix[i - 1][j - 1];
-                    } else {
-                        matrix[i][j] = Math.min(
-                            matrix[i - 1][j - 1] + 1,
-                            matrix[i][j - 1] + 1,
-                            matrix[i - 1][j] + 1
-                        );
-                    }
-                }
-            }
-            
-            return matrix[str2.length][str1.length];
-        }
-
-        function getCurrentTime() {
-            return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-
-        function addMessage(message, isUser = false) {
-            const chatMessages = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message-bubble flex ${isUser ? 'justify-end' : 'justify-start items-start'} mb-4 sm:mb-6`;
-            
-            const messageContent = document.createElement('div');
-            messageContent.className = `flex ${isUser ? 'flex-row-reverse items-end' : 'items-start'} w-full`;
-            
-            if (!isUser) {
-                const avatarDiv = document.createElement('div');
-                avatarDiv.className = 'bot-avatar';
-                avatarDiv.innerHTML = `<img src="https://quaf.netlify.app/logo.png" alt="Bot" class="w-5 h-5 sm:w-6 sm:h-6 rounded-full">`;
-                messageContent.appendChild(avatarDiv);
-            }
-            
-            const messageBubble = document.createElement('div');
-            messageBubble.className = `${isUser ? 'user-message' : 'bot-message'} px-4 py-3 sm:px-6 sm:py-4 ${isUser ? 'mr-2 sm:mr-3' : 'ml-0'}`;
-            
-            const messageText = document.createElement('div');
-            // Preserve line breaks and formatting in bot messages
-            if (isUser) {
-                messageText.textContent = message;
+            // Process command
+            if (cmd === 'help' || cmd === '?') {
+                response = hackerResponses.help;
+            } else if (cmd === 'hi' || cmd === 'hello') {
+                response = hackerResponses.greetings[Math.floor(Math.random() * hackerResponses.greetings.length)];
+            } else if (cmd === 'status') {
+                response = hackerResponses.status[Math.floor(Math.random() * hackerResponses.status.length)];
+            } else if (cmd === 'scan') {
+                response = hackerResponses.scan[Math.floor(Math.random() * hackerResponses.scan.length)];
+            } else if (cmd === 'hack') {
+                response = hackerResponses.hack[Math.floor(Math.random() * hackerResponses.hack.length)];
+            } else if (cmd === 'info') {
+                response = hackerResponses.info;
+            } else if (cmd === 'time') {
+                response = `CURRENT SYSTEM TIME: ${new Date().toLocaleString()}\nUTC TIME: ${new Date().toUTCString()}\nUNIX TIMESTAMP: ${Math.floor(Date.now() / 1000)}`;
+            } else if (cmd === 'joke') {
+                response = hackerResponses.jokes[Math.floor(Math.random() * hackerResponses.jokes.length)];
+            } else if (cmd === 'quote') {
+                response = hackerResponses.quotes[Math.floor(Math.random() * hackerResponses.quotes.length)];
+            } else if (cmd === 'clear') {
+                output.innerHTML = `SYSTEM INITIALIZED...
+WELCOME TO THE HACKER TERMINAL
+TYPE 'help' FOR AVAILABLE COMMANDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+                return;
+            } else if (cmd === 'exit') {
+                exitCommandInterface();
+                return;
             } else {
-                messageText.innerHTML = message.replace(/\n/g, '<br>');
+                response = hackerResponses.unknown[Math.floor(Math.random() * hackerResponses.unknown.length)];
             }
-            messageBubble.appendChild(messageText);
             
-            const timeDiv = document.createElement('div');
-            timeDiv.className = 'message-time';
-            timeDiv.textContent = getCurrentTime();
-            messageBubble.appendChild(timeDiv);
+            // Add response to output
+            output.innerHTML += `${response}\n`;
             
-            messageContent.appendChild(messageBubble);
-            messageDiv.appendChild(messageContent);
-            chatMessages.appendChild(messageDiv);
-            
-            // Smooth scroll to bottom
-            setTimeout(() => {
-                chatMessages.scrollTo({
-                    top: chatMessages.scrollHeight,
-                    behavior: 'smooth'
-                });
-            }, 100);
+            // Scroll to bottom
+            const terminal = document.getElementById('terminal');
+            terminal.scrollTop = terminal.scrollHeight;
         }
-
-        function showTypingIndicator() {
-            const typingIndicator = document.getElementById('typingIndicator');
-            typingIndicator.classList.add('show');
+        
+        // Start Game Function
+        function startGame() {
+            initAudio();
+            gameStarted = true;
             
-            setTimeout(() => {
-                const chatMessages = document.getElementById('chatMessages');
-                chatMessages.scrollTo({
-                    top: chatMessages.scrollHeight,
-                    behavior: 'smooth'
-                });
-            }, 100);
-        }
-
-        function hideTypingIndicator() {
-            const typingIndicator = document.getElementById('typingIndicator');
-            typingIndicator.classList.remove('show');
-        }
-
-        function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const message = input.value.trim();
-            
-            if (message === '' || !isDataLoaded) return;
-            
-            // Add user message
-            addMessage(message, true);
-            input.value = '';
-            
-            // Update send button state
-            updateSendButton();
-            
-            // Show typing indicator
-            showTypingIndicator();
-            
-            // Simulate realistic response time
-            const responseTime = 800 + Math.random() * 1200; // 0.8-2 seconds
-            setTimeout(() => {
-                hideTypingIndicator();
-                const reply = findBestMatch(message);
-                console.log('Final reply:', reply);
-                addMessage(reply, false);
-            }, responseTime);
-        }
-
-        function handleKeyPress(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                sendMessage();
+            // Enter fullscreen
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen();
+            } else if (document.documentElement.msRequestFullscreen) {
+                document.documentElement.msRequestFullscreen();
             }
+            
+            // Hide start screen and show security panel
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('securityPanel').classList.remove('hidden');
+            document.getElementById('pinInput').focus();
         }
-
-        function updateSendButton() {
-            const input = document.getElementById('messageInput');
-            const sendButton = document.getElementById('sendButton');
-            const hasText = input.value.trim().length > 0;
+        
+        // Check PIN Function
+        function checkPin() {
+            const pin = document.getElementById('pinInput').value;
+            const correctPin = '569786000';
             
-            sendButton.disabled = !hasText || !isDataLoaded;
-            
-            if (hasText && isDataLoaded) {
-                sendButton.style.opacity = '1';
-                sendButton.style.transform = 'scale(1)';
+            if (pin === correctPin) {
+                // Correct PIN - Show command interface
+                document.getElementById('securityPanel').classList.add('hidden');
+                document.getElementById('commandInterface').classList.remove('hidden');
+                document.getElementById('commandInput').focus();
+                
+                // Reset PIN input
+                document.getElementById('pinInput').value = '';
+                document.getElementById('warningMessage').classList.add('hidden');
+                matrix.setMode('green');
             } else {
-                sendButton.style.opacity = '0.6';
-                sendButton.style.transform = 'scale(0.9)';
+                // Wrong PIN - Trigger alert
+                triggerAlert();
             }
         }
-
-        // Input event listener for real-time button updates
-        document.getElementById('messageInput').addEventListener('input', updateSendButton);
-
-        // Auto-refresh data every 5 minutes for more frequent updates
-        setInterval(loadChatData, 300000);
-
-        // Initialize the chatbot
-        document.addEventListener('DOMContentLoaded', function() {
-            // Load chat data from Google Sheets
-            loadChatData();
+        
+        // Exit Command Interface
+        function exitCommandInterface() {
+            document.getElementById('commandInterface').classList.add('hidden');
             
-            // Focus on input when page loads (with delay for mobile)
-            setTimeout(() => {
-                const input = document.getElementById('messageInput');
-                if (window.innerWidth > 768) {
-                    input.focus();
+            // Exit fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+            
+            // Reset to start screen
+            document.getElementById('startScreen').classList.remove('hidden');
+            gameStarted = false;
+            
+            // Clear command output
+            document.getElementById('commandOutput').innerHTML = `SYSTEM INITIALIZED...
+WELCOME TO THE HACKER TERMINAL
+TYPE 'help' FOR AVAILABLE COMMANDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+        }
+        
+        // Trigger Alert System
+        function triggerAlert() {
+            document.getElementById('warningMessage').classList.remove('hidden');
+            matrix.setMode('red');
+            
+            // Play alert sounds for 10 seconds
+            let alertCount = 0;
+            const alertInterval = setInterval(() => {
+                playAlertSound(500);
+                alertCount++;
+                if (alertCount >= 20) { // 10 seconds of alerts
+                    clearInterval(alertInterval);
+                    matrix.setMode('green');
+                    document.getElementById('warningMessage').classList.add('hidden');
                 }
-            }, 1000);
-        });
-
-        // Handle page visibility changes (refresh data when user returns)
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden && isDataLoaded) {
-                // Refresh data when user returns to the tab
-                setTimeout(loadChatData, 1000);
+            }, 500);
+            
+            // Clear input
+            document.getElementById('pinInput').value = '';
+        }
+        
+        // Enhanced keyboard restrictions
+        document.addEventListener('keydown', function(e) {
+            // Block all Ctrl, Alt, Shift, Tab combinations
+            if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey || e.keyCode === 9) {
+                // Allow only basic typing in command input
+                if (document.getElementById('commandInterface').classList.contains('hidden') || 
+                    (document.activeElement !== document.getElementById('commandInput') && 
+                     document.activeElement !== document.getElementById('pinInput'))) {
+                    e.preventDefault();
+                    if (gameStarted) {
+                        triggerAlert();
+                    }
+                    return false;
+                }
+                
+                // Allow only basic text input combinations
+                if (!(e.ctrlKey && (e.keyCode === 86 || e.keyCode === 67 || e.keyCode === 88))) {
+                    e.preventDefault();
+                    if (gameStarted) {
+                        triggerAlert();
+                    }
+                    return false;
+                }
+            }
+            
+            // Block F-keys and other special keys
+            if (e.keyCode >= 112 && e.keyCode <= 123) { // F1-F12
+                e.preventDefault();
+                if (gameStarted) {
+                    triggerAlert();
+                }
+                return false;
+            }
+            
+            // Block other dangerous keys
+            if (e.keyCode === 27 || // Escape
+                e.keyCode === 91 || // Windows key
+                e.keyCode === 93 || // Context menu
+                e.keyCode === 44 || // Print Screen
+                e.keyCode === 145) { // Scroll Lock
+                e.preventDefault();
+                if (gameStarted) {
+                    triggerAlert();
+                }
+                return false;
+            }
+            
+            // Enter key to submit PIN or command
+            if (e.keyCode === 13) {
+                if (!document.getElementById('securityPanel').classList.contains('hidden')) {
+                    checkPin();
+                } else if (!document.getElementById('commandInterface').classList.contains('hidden')) {
+                    const command = document.getElementById('commandInput').value.trim();
+                    if (command) {
+                        processCommand(command);
+                        document.getElementById('commandInput').value = '';
+                    }
+                }
             }
         });
-
-        // Prevent zoom on iOS when focusing input
-        document.getElementById('messageInput').addEventListener('focus', function() {
-            if (window.innerWidth <= 768) {
-                document.querySelector('meta[name=viewport]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
+        
+        // Disable right-click
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            if (gameStarted) {
+                triggerAlert();
             }
         });
-
-        document.getElementById('messageInput').addEventListener('blur', function() {
-            if (window.innerWidth <= 768) {
-                document.querySelector('meta[name=viewport]').setAttribute('content', 'width=device-width, initial-scale=1.0');
+        
+        // Handle fullscreen changes
+        document.addEventListener('fullscreenchange', function() {
+            if (!document.fullscreenElement && gameStarted && 
+                document.getElementById('commandInterface').classList.contains('hidden')) {
+                // If user exits fullscreen without completing PIN, show security panel
+                document.getElementById('securityPanel').classList.remove('hidden');
+            }
+        }); 
+        
+        // Prevent text selection
+        document.onselectstart = function() {
+            return false;
+        };
+        
+        // Prevent drag and drop
+        document.ondragstart = function() {
+            return false;
+        };
+        
+        // Prevent copy/paste in most contexts
+        document.addEventListener('copy', function(e) {
+            if (document.activeElement !== document.getElementById('commandInput') && 
+                document.activeElement !== document.getElementById('pinInput')) {
+                e.preventDefault();
+                if (gameStarted) {
+                    triggerAlert();
+                }
+            }
+        });
+        
+        document.addEventListener('paste', function(e) {
+            if (document.activeElement !== document.getElementById('commandInput') && 
+                document.activeElement !== document.getElementById('pinInput')) {
+                e.preventDefault();
+                if (gameStarted) {
+                    triggerAlert();
+                }
             }
         });
     </script>
