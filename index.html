@@ -1,462 +1,707 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="P9BCmQCGDsbkZutfQgEIkZYmWTdu7SRtPFz4VC4HBJw" />
-     <link rel="shortcut icon" href="logo.png">
-    <title>Hacker</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Orbitron', monospace;
-            background: #000;
-            overflow: hidden;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-        }
-        
-        #matrixCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1;
-            pointer-events: none;
-        }
-        
-        .game-container {
-            position: relative;
-            z-index: 10;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .start-btn {
-            background: linear-gradient(45deg, #00ff00, #00aa00);
-            border: 2px solid #00ff00;
-            color: #000;
-            font-size: 2rem;
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-weight: 900;
-            letter-spacing: 2px;
-            transition: all 0.3s ease;
-            animation: pulse 2s infinite;
-        }
-        
-        .start-btn:hover {
-            background: linear-gradient(45deg, #00aa00, #00ff00);
-            box-shadow: 0 0 30px #00ff00;
-            transform: scale(1.05);
-        }
-        
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 20px #00ff00; }
-            50% { box-shadow: 0 0 40px #00ff00, 0 0 60px #00ff00; }
-        }
-        
-        .security-panel {
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #00ff00;
-            border-radius: 15px;
-            padding: 2rem;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            animation: fadeIn 0.5s ease;
-        }
-        
-        .security-title {
-            color: #00ff00;
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-            text-shadow: 0 0 20px #00ff00;
-        }
-        
-        .pin-input {
-            background: transparent;
-            border: 2px solid #00ff00;
-            color: #00ff00;
-            font-size: 1.5rem;
-            padding: 1rem;
-            text-align: center;
-            letter-spacing: 5px;
-            border-radius: 10px;
-            width: 300px;
-            margin: 1rem 0;
-            font-family: 'Orbitron', monospace;
-        }
-        
-        .pin-input:focus {
-            outline: none;
-            box-shadow: 0 0 30px #00ff00;
-            background: rgba(0, 255, 0, 0.1);
-        }
-        
-        .submit-btn {
-            background: linear-gradient(45deg, #00ff00, #00aa00);
-            border: none;
-            color: #000;
-            font-size: 1.2rem;
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-top: 1rem;
-            transition: all 0.3s ease;
-        }
-        
-        .submit-btn:hover {
-            background: linear-gradient(45deg, #00aa00, #00ff00);
-            box-shadow: 0 0 20px #00ff00;
-        }
-        
-        .command-interface {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            padding: 2rem;
-        }
-        
-        .command-header {
-            color: #00ff00;
-            font-size: 1.5rem;
-            text-align: center;
-            margin-bottom: 2rem;
-            text-shadow: 0 0 20px #00ff00;
-        }
-        
-        .terminal {
-            flex: 1;
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid #00ff00;
-            border-radius: 10px;
-            padding: 1rem;
-            font-family: 'Orbitron', monospace;
-            overflow-y: auto;
-            margin-bottom: 1rem;
-        }
-        
-        .command-output {
-            color: #00ff00;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            white-space: pre-wrap;
-            margin-bottom: 1rem;
-        }
-        
-        .command-input-container {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .command-prompt {
-            color: #00ff00;
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
-        
-        .command-input {
-            flex: 1;
-            background: transparent;
-            border: 2px solid #00ff00;
-            color: #00ff00;
-            font-size: 1rem;
-            padding: 0.8rem;
-            border-radius: 8px;
-            font-family: 'Orbitron', monospace;
-        }
-        
-        .command-input:focus {
-            outline: none;
-            box-shadow: 0 0 20px #00ff00;
-            background: rgba(0, 255, 0, 0.05);
-        }
-        
-        .exit-btn {
-            background: linear-gradient(45deg, #ff0000, #aa0000);
-            border: 2px solid #ff0000;
-            color: #fff;
-            font-size: 1rem;
-            padding: 0.8rem 1.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-        }
-        
-        .exit-btn:hover {
-            background: linear-gradient(45deg, #aa0000, #ff0000);
-            box-shadow: 0 0 20px #ff0000;
-        }
-        
-        .alert-mode {
-            background: #ff0000 !important;
-            color: #fff !important;
-        }
-        
-        .alert-mode .pin-input {
-            border-color: #ff0000;
-            color: #ff0000;
-        }
-        
-        .alert-mode .security-title {
-            color: #ff0000;
-            text-shadow: 0 0 20px #ff0000;
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .warning-text {
-            color: #ff0000;
-            font-size: 1.2rem;
-            margin-top: 1rem;
-            text-shadow: 0 0 15px #ff0000;
-            animation: blink 1s infinite;
-        }
-        
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }
-        
-        .game-disclaimer {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #00ff00;
-            font-size: 0.8rem;
-            text-align: center;
-            opacity: 0.7;
-            z-index: 100;
-        }
-        
-        @media (max-width: 768px) {
-            .start-btn {
-                font-size: 1.5rem;
-                padding: 0.8rem 1.5rem;
-            }
-            
-            .pin-input {
-                width: 250px;
-                font-size: 1.2rem;
-            }
-            
-            .security-title {
-                font-size: 1.5rem;
-            }
-            
-            .command-interface {
-                padding: 1rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <meta name="google-site-verification" content="P9BCmQCGDsbkZutfQgEIkZYmWTdu7SRtPFz4VC4HBJw" />
+  <link rel="shortcut icon" href="logo.png" />
+  <title>Quaf Ai</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css"
+  />
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap");
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      font-family: "Orbitron", monospace;
+      background: #000;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+
+    #matrixCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      pointer-events: none;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .game-container {
+      position: relative;
+      z-index: 10;
+      height: 100vh;
+      max-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0 1rem;
+      text-align: center;
+    }
+
+    .start-btn {
+      background: linear-gradient(45deg, #00ff00, #00aa00);
+      border: 2px solid #00ff00;
+      color: #000;
+      font-size: 2rem;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-weight: 900;
+      letter-spacing: 2px;
+      transition: all 0.3s ease;
+      animation: pulse 2s infinite;
+      max-width: 90vw;
+      word-wrap: break-word;
+      white-space: normal;
+    }
+
+    .start-btn:hover {
+      background: linear-gradient(45deg, #00aa00, #00ff00);
+      box-shadow: 0 0 30px #00ff00;
+      transform: scale(1.05);
+    }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        box-shadow: 0 0 20px #00ff00;
+      }
+      50% {
+        box-shadow: 0 0 40px #00ff00, 0 0 60px #00ff00;
+      }
+    }
+
+    .security-panel {
+      background: rgba(0, 0, 0, 0.9);
+      border: 2px solid #00ff00;
+      border-radius: 15px;
+      padding: 2rem;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      animation: fadeIn 0.5s ease;
+      max-width: 100vw;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .security-title {
+      color: #00ff00;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 20px #00ff00;
+      word-break: break-word;
+    }
+
+    .pin-input {
+      background: transparent;
+      border: 2px solid #00ff00;
+      color: #00ff00;
+      font-size: 1.5rem;
+      padding: 1rem;
+      text-align: center;
+      letter-spacing: 5px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 320px;
+      font-family: "Orbitron", monospace;
+      box-sizing: border-box;
+    }
+
+    .pin-input:focus {
+      outline: none;
+      box-shadow: 0 0 30px #00ff00;
+      background: rgba(0, 255, 0, 0.1);
+    }
+
+    .submit-btn {
+      background: linear-gradient(45deg, #00ff00, #00aa00);
+      border: none;
+      color: #000;
+      font-size: 1.2rem;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-top: 1rem;
+      transition: all 0.3s ease;
+      width: 100%;
+      max-width: 320px;
+      box-sizing: border-box;
+      word-wrap: break-word;
+      white-space: normal;
+    }
+
+    .submit-btn:hover {
+      background: linear-gradient(45deg, #00aa00, #00ff00);
+      box-shadow: 0 0 20px #00ff00;
+    }
+
+    .command-interface {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      max-height: 100dvh;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .command-header {
+      color: #00ff00;
+      font-size: 1.5rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      text-shadow: 0 0 20px #00ff00;
+      word-break: break-word;
+    }
+
+    .terminal {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #00ff00;
+      border-radius: 10px;
+      padding: 1rem;
+      font-family: "Orbitron", monospace;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      word-break: break-word;
+      white-space: pre-wrap;
+      max-height: 70vh;
+      min-height: 150px;
+    }
+
+    .command-output {
+      color: #00ff00;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      margin-bottom: 1rem;
+      word-break: break-word;
+    }
+
+    .command-input-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .command-prompt {
+      color: #00ff00;
+      font-size: 1.1rem;
+      font-weight: bold;
+      flex-shrink: 0;
+      min-width: fit-content;
+      white-space: nowrap;
+    }
+
+    .command-input {
+      flex: 1 1 auto;
+      background: transparent;
+      border: 2px solid #00ff00;
+      color: #00ff00;
+      font-size: 1rem;
+      padding: 0.8rem;
+      border-radius: 8px;
+      font-family: "Orbitron", monospace;
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .command-input:focus {
+      outline: none;
+      box-shadow: 0 0 20px #00ff00;
+      background: rgba(0, 255, 0, 0.05);
+    }
+
+    .exit-btn {
+      background: linear-gradient(45deg, #ff0000, #aa0000);
+      border: 2px solid #ff0000;
+      color: #fff;
+      font-size: 1rem;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .exit-btn:hover {
+      background: linear-gradient(45deg, #aa0000, #ff0000);
+      box-shadow: 0 0 20px #ff0000;
+    }
+
+    .alert-mode {
+      background: #ff0000 !important;
+      color: #fff !important;
+    }
+
+    .alert-mode .pin-input {
+      border-color: #ff0000;
+      color: #ff0000;
+    }
+
+    .alert-mode .security-title {
+      color: #ff0000;
+      text-shadow: 0 0 20px #ff0000;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .warning-text {
+      color: #ff0000;
+      font-size: 1.2rem;
+      margin-top: 1rem;
+      text-shadow: 0 0 15px #ff0000;
+      animation: blink 1s infinite;
+      word-wrap: break-word;
+      white-space: normal;
+      max-width: 320px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    @keyframes blink {
+      0%,
+      50% {
+        opacity: 1;
+      }
+      51%,
+      100% {
+        opacity: 0;
+      }
+    }
+
+    .game-disclaimer {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #00ff00;
+      font-size: 0.8rem;
+      text-align: center;
+      opacity: 0.7;
+      z-index: 100;
+      max-width: 90vw;
+      word-wrap: break-word;
+    }
+
+    /* Responsive tweaks for various devices */
+
+    /* Phones small to large */
+    @media (max-width: 640px) {
+      .start-btn {
+        font-size: 1.4rem;
+        padding: 0.8rem 1.4rem;
+      }
+
+      .pin-input {
+        font-size: 1.2rem;
+        width: 100%;
+        max-width: 280px;
+      }
+
+      .security-title {
+        font-size: 1.4rem;
+      }
+
+      .command-header {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .terminal {
+        max-height: 50vh;
+        font-size: 0.8rem;
+        margin-bottom: 0.7rem;
+      }
+
+      .command-output {
+        font-size: 0.8rem;
+      }
+
+      .command-input {
+        font-size: 0.9rem;
+      }
+
+      .exit-btn {
+        font-size: 0.9rem;
+        padding: 0.6rem 1rem;
+      }
+
+      .command-prompt {
+        font-size: 1rem;
+      }
+    }
+
+    /* Tablets */
+    @media (min-width: 641px) and (max-width: 1024px) {
+      .start-btn {
+        font-size: 1.6rem;
+        padding: 0.9rem 1.8rem;
+      }
+
+      .pin-input {
+        font-size: 1.4rem;
+        max-width: 300px;
+      }
+
+      .security-title {
+        font-size: 1.6rem;
+      }
+
+      .command-header {
+        font-size: 1.4rem;
+        margin-bottom: 1.7rem;
+      }
+
+      .terminal {
+        max-height: 60vh;
+        font-size: 0.85rem;
+        margin-bottom: 0.9rem;
+      }
+
+      .command-output {
+        font-size: 0.85rem;
+      }
+
+      .command-input {
+        font-size: 1rem;
+      }
+
+      .exit-btn {
+        font-size: 1rem;
+        padding: 0.75rem 1.25rem;
+      }
+
+      .command-prompt {
+        font-size: 1.05rem;
+      }
+    }
+
+    /* Large desktops and TV */
+    @media (min-width: 1025px) {
+      .start-btn {
+        font-size: 2.5rem;
+        padding: 1.2rem 2.5rem;
+      }
+
+      .pin-input {
+        font-size: 1.6rem;
+        max-width: 340px;
+      }
+
+      .security-title {
+        font-size: 2rem;
+      }
+
+      .command-header {
+        font-size: 1.8rem;
+        margin-bottom: 2.5rem;
+      }
+
+      .terminal {
+        max-height: 70vh;
+        font-size: 1rem;
+        margin-bottom: 1.2rem;
+      }
+
+      .command-output {
+        font-size: 1rem;
+      }
+
+      .command-input {
+        font-size: 1.1rem;
+      }
+
+      .exit-btn {
+        font-size: 1.1rem;
+        padding: 1rem 1.75rem;
+      }
+
+      .command-prompt {
+        font-size: 1.2rem;
+      }
+    }
+
+    /* Handle landscape orientation for phones and tablets */
+    @media (orientation: landscape) and (max-height: 480px) {
+      .game-container {
+        padding: 0 0.5rem;
+      }
+      .security-panel {
+        padding: 1rem 1.5rem;
+      }
+      .command-interface {
+        padding: 1rem 1.5rem;
+      }
+      .terminal {
+        max-height: 50vh;
+      }
+    }
+  </style>
 </head>
 <body>
-    <canvas id="matrixCanvas"></canvas>
-    
-    <div class="game-container">
-        <div id="startScreen" class="text-center">
-            <h1 class="text-4xl md:text-6xl font-bold text-green-400 mb-8 text-center">
-                <i class="fas fa-terminal mr-4"></i>
-               Quaf Ethical Hacker
-            </h1>
-            <button class="start-btn" onclick="startGame()">
-                <i class="fas fa-play mr-2"></i>
-                Enter
-            </button>
-        </div>
-        
-        <div id="securityPanel" class="security-panel hidden">
-            <div class="security-title">
-                <i class="fas fa-lock mb-2"></i><br>
-                SECURITY ACCESS REQUIRED
-            </div>
-            <div class="text-green-400 mb-4">Enter authorization code to proceed:</div>
-            <input type="password" class="pin-input" id="pinInput" placeholder="••••••••••" maxlength="9">
-            <br>
-            <button class="submit-btn" onclick="checkPin()">
-                <i class="fas fa-key mr-2"></i>
-                AUTHORIZE
-            </button>
-            <div id="warningMessage" class="warning-text hidden">
-                <i class="fas fa-exclamation-triangle"></i>
-                ACCESS DENIED - SECURITY BREACH DETECTED
-            </div>
-        </div>
-    </div>
-    
-    <div id="commandInterface" class="command-interface hidden">
-        <div class="command-header">
-            <i class="fas fa-terminal mr-2"></i>
-            HACKER COMMAND INTERFACE - SYSTEM ACCESS GRANTED
-        </div>
-        
-        <div class="terminal" id="terminal">
-            <div class="command-output" id="commandOutput">
-SYSTEM INITIALIZED...
-WELCOME TO THE HACKER TERMINAL
-TYPE 'help' FOR AVAILABLE COMMANDS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-            </div>
-        </div>
-        
-        <div class="command-input-container">
-            <span class="command-prompt">QUAF@TERMINAL:~$</span>
-            <input type="text" class="command-input" id="commandInput" placeholder="Enter command..." autocomplete="off">
-            <button class="exit-btn" onclick="exitCommandInterface()">
-                <i class="fas fa-times mr-2"></i>
-                EXIT
-            </button>
-        </div>
-    </div>
-    
-    <div class="game-disclaimer">
-        <i class="fas fa-gamepad mr-2"></i>
-        YOU ARE UNDER HACKER CONTROL
+  <canvas id="matrixCanvas"></canvas>
+
+  <div class="game-container">
+    <div id="startScreen" class="text-center">
+      <h1
+        class="text-4xl md:text-6xl font-bold text-green-400 mb-8 text-center"
+      >
+        <i class="fas fa-terminal mr-4"></i>
+        Quaf Ethical Hacker
+      </h1>
+      <button class="start-btn" onclick="startGame()">
+        <i class="fas fa-play mr-2"></i>
+        Enter
+      </button>
     </div>
 
-    <script>
-        let audioContext;
-        let matrixMode = 'green';
-        let alertSound = null;
-        let gameStarted = false;
-        let commandHistory = [];
-        
-        // Initialize Audio Context
-        function initAudio() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
+    <div id="securityPanel" class="security-panel hidden">
+      <div class="security-title">
+        <i class="fas fa-lock mb-2"></i><br />
+        SECURITY ACCESS REQUIRED
+      </div>
+      <div class="text-green-400 mb-4">Enter authorization code to proceed:</div>
+      <input
+        type="password"
+        class="pin-input"
+        id="pinInput"
+        placeholder="•••••••••"
+        maxlength="9"
+        inputmode="numeric"
+        pattern="[0-9]*"
+      />
+      <br />
+      <button class="submit-btn" onclick="checkPin()">
+        <i class="fas fa-key mr-2"></i>
+        AUTHORIZE
+      </button>
+      <div id="warningMessage" class="warning-text hidden">
+        <i class="fas fa-exclamation-triangle"></i>
+        ACCESS DENIED - SECURITY BREACH DETECTED
+      </div>
+    </div>
+  </div>
+
+  <div id="commandInterface" class="command-interface hidden">
+    <div class="command-header">
+      <i class="fas fa-terminal mr-2"></i>
+      HACKER COMMAND INTERFACE - SYSTEM ACCESS GRANTED
+    </div>
+
+    <div class="terminal" id="terminal">
+      <div class="command-output" id="commandOutput">
+        SYSTEM INITIALIZED...
+        WELCOME TO THE HACKER TERMINAL
+        TYPE 'help' FOR AVAILABLE COMMANDS
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      </div>
+    </div>
+
+    <div class="command-input-container">
+      <span class="command-prompt">QUAF@TERMINAL:~$</span>
+      <input
+        type="text"
+        class="command-input"
+        id="commandInput"
+        placeholder="Enter command..."
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+      />
+      <button class="exit-btn" onclick="exitCommandInterface()">
+        <i class="fas fa-times mr-2"></i>
+        EXIT
+      </button>
+    </div>
+  </div>
+    
+
+  <script>
+    let audioContext;
+    let matrixMode = "green";
+    let alertSound = null;
+    let gameStarted = false;
+    let commandHistory = [];
+
+    // Initialize Audio Context
+    function initAudio() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    // Generate alert sound
+    function playAlertSound(duration = 1000) {
+      if (!audioContext) initAudio();
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(
+        400,
+        audioContext.currentTime + 0.1
+      );
+
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        audioContext.currentTime + duration / 1000
+      );
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + duration / 1000);
+    }
+
+    // Matrix Rain Effect
+    class MatrixRain {
+      constructor() {
+        this.canvas = document.getElementById("matrixCanvas");
+        this.ctx = this.canvas.getContext("2d");
+        this.characters =
+          "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";
+        this.drops = [];
+        this.fontSize = 16;
+        this.mode = "green";
+
+        this.resize();
+        this.init();
+        this.animate();
+
+        window.addEventListener("resize", () => this.resize());
+        // Also listen for orientation changes to handle iOS viewport height changes
+        window.addEventListener("orientationchange", () => {
+          setTimeout(() => this.resize(), 300);
+        });
+      }
+
+      resize() {
+        // Handle high DPI screens for crisp text
+        const dpr = window.devicePixelRatio || 1;
+        this.canvas.width = window.innerWidth * dpr;
+        this.canvas.height = window.innerHeight * dpr;
+        this.canvas.style.width = window.innerWidth + "px";
+        this.canvas.style.height = window.innerHeight + "px";
+        this.ctx.scale(dpr, dpr);
+
+        this.columns = Math.floor(window.innerWidth / this.fontSize);
+        this.drops = Array(this.columns)
+          .fill(0)
+          .map(() => Math.random() * -100);
+      }
+
+      init() {
+        this.ctx.fillStyle = "#000";
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      }
+
+      animate() {
+        this.ctx.fillStyle =
+          this.mode === "green"
+            ? "rgba(0, 0, 0, 0.05)"
+            : "rgba(0, 0, 0, 0.05)";
+        this.ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+        const color = this.mode === "green" ? "#00ff00" : "#ff0000";
+        this.ctx.fillStyle = color;
+        this.ctx.font = `${this.fontSize}px 'Orbitron', monospace`;
+
+        for (let i = 0; i < this.drops.length; i++) {
+          const char = this.characters[Math.floor(Math.random() * this.characters.length)];
+          const x = i * this.fontSize;
+          const y = this.drops[i] * this.fontSize;
+
+          this.ctx.fillText(char, x, y);
+
+          if (y > window.innerHeight && Math.random() > 0.975) {
+            this.drops[i] = 0;
+          }
+          this.drops[i]++;
         }
-        
-        // Generate alert sound
-        function playAlertSound(duration = 1000) {
-            if (!audioContext) initAudio();
-            
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
-            
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration/1000);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + duration/1000);
-        }
-        
-        // Matrix Rain Effect
-        class MatrixRain {
-            constructor() {
-                this.canvas = document.getElementById('matrixCanvas');
-                this.ctx = this.canvas.getContext('2d');
-                this.characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-                this.drops = [];
-                this.fontSize = 16;
-                this.mode = 'green';
-                
-                this.resize();
-                this.init();
-                this.animate();
-                
-                window.addEventListener('resize', () => this.resize());
-            }
-            
-            resize() {
-                this.canvas.width = window.innerWidth;
-                this.canvas.height = window.innerHeight;
-                this.columns = Math.floor(this.canvas.width / this.fontSize);
-                this.drops = Array(this.columns).fill(0).map(() => Math.random() * -100);
-            }
-            
-            init() {
-                this.ctx.fillStyle = '#000';
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-            }
-            
-            animate() {
-                this.ctx.fillStyle = this.mode === 'green' ? 'rgba(0, 0, 0, 0.05)' : 'rgba(0, 0, 0, 0.05)';
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-                
-                const color = this.mode === 'green' ? '#00ff00' : '#ff0000';
-                this.ctx.fillStyle = color;
-                this.ctx.font = `${this.fontSize}px 'Orbitron', monospace`;
-                
-                for (let i = 0; i < this.drops.length; i++) {
-                    const char = this.characters[Math.floor(Math.random() * this.characters.length)];
-                    const x = i * this.fontSize;
-                    const y = this.drops[i] * this.fontSize;
-                    
-                    this.ctx.fillText(char, x, y);
-                    
-                    if (y > this.canvas.height && Math.random() > 0.975) {
-                        this.drops[i] = 0;
-                    }
-                    this.drops[i]++;
-                }
-                
-                requestAnimationFrame(() => this.animate());
-            }
-            
-            setMode(mode) {
-                this.mode = mode;
-            }
-        }
-        
-        // Initialize Matrix Rain
-        const matrix = new MatrixRain();
-        
-        // Hacker Responses
-        const hackerResponses = {
-            greetings: [
-                "Hello, fellow hacker. Welcome to the matrix.",
-                "Greetings, cyber warrior. Ready to hack the system?",
-                "Hey there, digital ghost. What's your mission today?",
-                "Welcome to the underground, hacker. What brings you here?",
-                "Salutations, code breaker. The system awaits your command."
-            ],
-            help: `
+
+        requestAnimationFrame(() => this.animate());
+      }
+
+      setMode(mode) {
+        this.mode = mode;
+      }
+    }
+
+    // Initialize Matrix Rain
+    const matrix = new MatrixRain();
+
+    // Hacker Responses
+    const hackerResponses = {
+      greetings: [
+        "Hello, fellow hacker. Welcome to the matrix.",
+        "Greetings, cyber warrior. Ready to hack the system?",
+        "Hey there, digital ghost. What's your mission today?",
+        "Welcome to the underground, hacker. What brings you here?",
+        "Salutations, code breaker. The system awaits your command.",
+      ],
+      help: `
 AVAILABLE COMMANDS:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 • help / ? - Show this help menu
@@ -471,22 +716,22 @@ AVAILABLE COMMANDS:
 • clear - Clear terminal
 • exit - Exit command interface
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
-            status: [
-                "SYSTEM STATUS: ONLINE\nFIREWALL: BYPASSED\nSECURITY: COMPROMISED\nACCESS LEVEL: ROOT",
-                "NETWORK STATUS: CONNECTED\nENCRYPTION: CRACKED\nSURVEILLANCE: DISABLED\nSTEALTH MODE: ACTIVE",
-                "SYSTEM ANALYSIS: COMPLETE\nVULNERABILITIES: 47 FOUND\nBACKDOORS: 12 INSTALLED\nMISSION: IN PROGRESS"
-            ],
-            scan: [
-                "SCANNING NETWORK...\n192.168.1.1 - ROUTER [VULNERABLE]\n192.168.1.100 - TARGET [SECURED]\n192.168.1.250 - HONEYPOT [DETECTED]\nSCAN COMPLETE: 3 DEVICES FOUND",
-                "PORT SCANNING INITIATED...\nPORT 22: SSH [OPEN]\nPORT 80: HTTP [OPEN]\nPORT 443: HTTPS [FILTERED]\nPORT 3389: RDP [CLOSED]\nSCAN RESULTS: 2 VULNERABLE PORTS",
-                "VULNERABILITY SCAN RUNNING...\nSQL INJECTION: POSSIBLE\nXSS DETECTED: HIGH RISK\nBUFFER OVERFLOW: CRITICAL\nRECOMMENDED ACTION: EXPLOIT IMMEDIATELY"
-            ],
-            hack: [
-                "INITIATING HACK SEQUENCE...\n[██████████] 100%\nACCESS GRANTED: SYSTEM COMPROMISED\nROOT PRIVILEGES: OBTAINED\nHACK SUCCESSFUL!",
-                "LAUNCHING CYBER ATTACK...\n[████████░░] 80%\nBYPASSING SECURITY...\n[██████████] 100%\nTARGET BREACHED: MISSION ACCOMPLISHED",
-                "EXECUTING EXPLOIT...\n[███░░░░░░░] 30%\nCRACKING PASSWORDS...\n[████████░░] 80%\nSYSTEM HACKED: FULL CONTROL ACHIEVED"
-            ],
-            info: `
+      status: [
+        "SYSTEM STATUS: ONLINE\nFIREWALL: BYPASSED\nSECURITY: COMPROMISED\nACCESS LEVEL: ROOT",
+        "NETWORK STATUS: CONNECTED\nENCRYPTION: CRACKED\nSURVEILLANCE: DISABLED\nSTEALTH MODE: ACTIVE",
+        "SYSTEM ANALYSIS: COMPLETE\nVULNERABILITIES: 47 FOUND\nBACKDOORS: 12 INSTALLED\nMISSION: IN PROGRESS",
+      ],
+      scan: [
+        "SCANNING NETWORK...\n192.168.1.1 - ROUTER [VULNERABLE]\n192.168.1.100 - TARGET [SECURED]\n192.168.1.250 - HONEYPOT [DETECTED]\nSCAN COMPLETE: 3 DEVICES FOUND",
+        "PORT SCANNING INITIATED...\nPORT 22: SSH [OPEN]\nPORT 80: HTTP [OPEN]\nPORT 443: HTTPS [FILTERED]\nPORT 3389: RDP [CLOSED]\nSCAN RESULTS: 2 VULNERABLE PORTS",
+        "VULNERABILITY SCAN RUNNING...\nSQL INJECTION: POSSIBLE\nXSS DETECTED: HIGH RISK\nBUFFER OVERFLOW: CRITICAL\nRECOMMENDED ACTION: EXPLOIT IMMEDIATELY",
+      ],
+      hack: [
+        "INITIATING HACK SEQUENCE...\n[██████████] 100%\nACCESS GRANTED: SYSTEM COMPROMISED\nROOT PRIVILEGES: OBTAINED\nHACK SUCCESSFUL!",
+        "LAUNCHING CYBER ATTACK...\n[████████░░] 80%\nBYPASSING SECURITY...\n[██████████] 100%\nTARGET BREACHED: MISSION ACCOMPLISHED",
+        "EXECUTING EXPLOIT...\n[███░░░░░░░] 30%\nCRACKING PASSWORDS...\n[████████░░] 80%\nSYSTEM HACKED: FULL CONTROL ACHIEVED",
+      ],
+      info: `
 SYSTEM INFORMATION:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 OS: LINUX KALI 2024.1 (HACKER EDITION)
@@ -497,277 +742,333 @@ GPU: NVIDIA RTX 4090 (CRYPTO MINING DISABLED)
 TOOLS: METASPLOIT, NMAP, WIRESHARK, BURP SUITE
 STATUS: FULLY OPERATIONAL
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
-            jokes: [
-                "Why do hackers prefer dark mode?\nBecause light attracts bugs!",
-                "How many hackers does it take to change a light bulb?\nNone, they just exploit the darkness.",
-                "What's a hacker's favorite type of music?\nRAP... (Remote Access Protocol)",
-                "Why don't hackers ever get lost?\nBecause they always find the backdoor!",
-                "What do you call a hacker who's also a musician?\nA bandwidth!"
-            ],
-            quotes: [
-                "\"The best way to get information is to not ask for it.\" - Anonymous",
-                "\"Security is not a product, but a process.\" - Bruce Schneier",
-                "\"In the world of hacking, today's security is tomorrow's vulnerability.\" - Unknown",
-                "\"Privacy is not about hiding something. It's about protecting everything.\" - Anonymous",
-                "\"The only truly secure system is one that is powered off.\" - Gene Spafford"
-            ],
-            unknown: [
-                "COMMAND NOT RECOGNIZED. TYPE 'help' FOR AVAILABLE COMMANDS.",
-                "UNKNOWN COMMAND. ACCESS DENIED.",
-                "SYNTAX ERROR: COMMAND NOT FOUND IN DATABASE.",
-                "INVALID INPUT. PLEASE CHECK YOUR COMMAND AND TRY AGAIN.",
-                "ERROR 404: COMMAND NOT FOUND. CONSIDER UPDATING YOUR HACKING SKILLS."
-            ]
-        };
-        
-        // Process Command
-        function processCommand(command) {
-            const cmd = command.toLowerCase().trim();
-            const output = document.getElementById('commandOutput');
-            const timestamp = new Date().toLocaleTimeString();
-            
-            let response = '';
-            
-            // Add command to history
-            commandHistory.push(command);
-            
-            // Add command to output
-            output.innerHTML += `\n[${timestamp}] HACKER@TERMINAL:~$ ${command}\n`;
-            
-            // Process command
-            if (cmd === 'help' || cmd === '?') {
-                response = hackerResponses.help;
-            } else if (cmd === 'hi' || cmd === 'hello') {
-                response = hackerResponses.greetings[Math.floor(Math.random() * hackerResponses.greetings.length)];
-            } else if (cmd === 'status') {
-                response = hackerResponses.status[Math.floor(Math.random() * hackerResponses.status.length)];
-            } else if (cmd === 'scan') {
-                response = hackerResponses.scan[Math.floor(Math.random() * hackerResponses.scan.length)];
-            } else if (cmd === 'hack') {
-                response = hackerResponses.hack[Math.floor(Math.random() * hackerResponses.hack.length)];
-            } else if (cmd === 'info') {
-                response = hackerResponses.info;
-            } else if (cmd === 'time') {
-                response = `CURRENT SYSTEM TIME: ${new Date().toLocaleString()}\nUTC TIME: ${new Date().toUTCString()}\nUNIX TIMESTAMP: ${Math.floor(Date.now() / 1000)}`;
-            } else if (cmd === 'joke') {
-                response = hackerResponses.jokes[Math.floor(Math.random() * hackerResponses.jokes.length)];
-            } else if (cmd === 'quote') {
-                response = hackerResponses.quotes[Math.floor(Math.random() * hackerResponses.quotes.length)];
-            } else if (cmd === 'clear') {
-                output.innerHTML = `SYSTEM INITIALIZED...
+      jokes: [
+        "Why do hackers prefer dark mode?\nBecause light attracts bugs!",
+        "How many hackers does it take to change a light bulb?\nNone, they just exploit the darkness.",
+        "What's a hacker's favorite type of music?\nRAP... (Remote Access Protocol)",
+        "Why don't hackers ever get lost?\nBecause they always find the backdoor!",
+        "What do you call a hacker who's also a musician?\nA bandwidth!",
+      ],
+      quotes: [
+        '"The best way to get information is to not ask for it." - Anonymous',
+        '"Security is not a product, but a process." - Bruce Schneier',
+        "\"In the world of hacking, today's security is tomorrow's vulnerability.\" - Unknown",
+        '"Privacy is not about hiding something. It\'s about protecting everything." - Anonymous',
+        '"The only truly secure system is one that is powered off." - Gene Spafford',
+      ],
+      unknown: [
+        "COMMAND NOT RECOGNIZED. TYPE 'help' FOR AVAILABLE COMMANDS.",
+        "UNKNOWN COMMAND. ACCESS DENIED.",
+        "SYNTAX ERROR: COMMAND NOT FOUND IN DATABASE.",
+        "INVALID INPUT. PLEASE CHECK YOUR COMMAND AND TRY AGAIN.",
+        "ERROR 404: COMMAND NOT FOUND. CONSIDER UPDATING YOUR HACKING SKILLS.",
+      ],
+    };
+
+    // Process Command
+    function processCommand(command) {
+      const cmd = command.toLowerCase().trim();
+      const output = document.getElementById("commandOutput");
+      const timestamp = new Date().toLocaleTimeString();
+
+      let response = "";
+
+      // Add command to history
+      commandHistory.push(command);
+
+      // Add command to output
+      output.innerHTML += `\n[${timestamp}] HACKER@TERMINAL:~$ ${command}\n`;
+
+      // Process command
+      if (cmd === "help" || cmd === "?") {
+        response = hackerResponses.help;
+      } else if (cmd === "hi" || cmd === "hello") {
+        response =
+          hackerResponses.greetings[
+            Math.floor(Math.random() * hackerResponses.greetings.length)
+          ];
+      } else if (cmd === "status") {
+        response =
+          hackerResponses.status[
+            Math.floor(Math.random() * hackerResponses.status.length)
+          ];
+      } else if (cmd === "scan") {
+        response =
+          hackerResponses.scan[
+            Math.floor(Math.random() * hackerResponses.scan.length)
+          ];
+      } else if (cmd === "hack") {
+        response =
+          hackerResponses.hack[
+            Math.floor(Math.random() * hackerResponses.hack.length)
+          ];
+      } else if (cmd === "info") {
+        response = hackerResponses.info;
+      } else if (cmd === "time") {
+        response = `CURRENT SYSTEM TIME: ${new Date().toLocaleString()}
+UTC TIME: ${new Date().toUTCString()}
+UNIX TIMESTAMP: ${Math.floor(Date.now() / 1000)}`;
+      } else if (cmd === "joke") {
+        response =
+          hackerResponses.jokes[
+            Math.floor(Math.random() * hackerResponses.jokes.length)
+          ];
+      } else if (cmd === "quote") {
+        response =
+          hackerResponses.quotes[
+            Math.floor(Math.random() * hackerResponses.quotes.length)
+          ];
+      } else if (cmd === "clear") {
+        output.innerHTML = `SYSTEM INITIALIZED...
 WELCOME TO THE HACKER TERMINAL
 TYPE 'help' FOR AVAILABLE COMMANDS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
-                return;
-            } else if (cmd === 'exit') {
-                exitCommandInterface();
-                return;
-            } else {
-                response = hackerResponses.unknown[Math.floor(Math.random() * hackerResponses.unknown.length)];
-            }
-            
-            // Add response to output
-            output.innerHTML += `${response}\n`;
-            
-            // Scroll to bottom
-            const terminal = document.getElementById('terminal');
-            terminal.scrollTop = terminal.scrollHeight;
-        }
-        
-        // Start Game Function
-        function startGame() {
-            initAudio();
-            gameStarted = true;
-            
-            // Enter fullscreen
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
-            } else if (document.documentElement.webkitRequestFullscreen) {
-                document.documentElement.webkitRequestFullscreen();
-            } else if (document.documentElement.msRequestFullscreen) {
-                document.documentElement.msRequestFullscreen();
-            }
-            
-            // Hide start screen and show security panel
-            document.getElementById('startScreen').classList.add('hidden');
-            document.getElementById('securityPanel').classList.remove('hidden');
-            document.getElementById('pinInput').focus();
-        }
-        
-        // Check PIN Function
-        function checkPin() {
-            const pin = document.getElementById('pinInput').value;
-            const correctPin = '569786000';
-            
-            if (pin === correctPin) {
-                // Correct PIN - Show command interface
-                document.getElementById('securityPanel').classList.add('hidden');
-                document.getElementById('commandInterface').classList.remove('hidden');
-                document.getElementById('commandInput').focus();
-                
-                // Reset PIN input
-                document.getElementById('pinInput').value = '';
-                document.getElementById('warningMessage').classList.add('hidden');
-                matrix.setMode('green');
-            } else {
-                // Wrong PIN - Trigger alert
-                triggerAlert();
-            }
-        }
-        
-        // Exit Command Interface
-        function exitCommandInterface() {
-            document.getElementById('commandInterface').classList.add('hidden');
-            
-            // Exit fullscreen
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
-            }
-            
-            // Reset to start screen
-            document.getElementById('startScreen').classList.remove('hidden');
-            gameStarted = false;
-            
-            // Clear command output
-            document.getElementById('commandOutput').innerHTML = `SYSTEM INITIALIZED...
+        return;
+      } else if (cmd === "exit") {
+        exitCommandInterface();
+        return;
+      } else {
+        response =
+          hackerResponses.unknown[
+            Math.floor(Math.random() * hackerResponses.unknown.length)
+          ];
+      }
+
+      // Add response to output
+      output.innerHTML += `${response}\n`;
+
+      // Scroll to bottom
+      const terminal = document.getElementById("terminal");
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    // Start Game Function
+    function startGame() {
+      initAudio();
+      gameStarted = true;
+
+      // Enter fullscreen
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+      } else if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen();
+      } else if (document.documentElement.msRequestFullscreen) {
+        document.documentElement.msRequestFullscreen();
+      }
+
+      // Hide start screen and show security panel
+      document.getElementById("startScreen").classList.add("hidden");
+      document.getElementById("securityPanel").classList.remove("hidden");
+      document.getElementById("pinInput").focus();
+    }
+
+    // Check PIN Function
+    function checkPin() {
+      const pin = document.getElementById("pinInput").value;
+      const correctPin = "569786000";
+
+      if (pin === correctPin) {
+        // Correct PIN - Show command interface
+        document.getElementById("securityPanel").classList.add("hidden");
+        document.getElementById("commandInterface").classList.remove("hidden");
+        document.getElementById("commandInput").focus();
+
+        // Reset PIN input
+        document.getElementById("pinInput").value = "";
+        document.getElementById("warningMessage").classList.add("hidden");
+        matrix.setMode("green");
+      } else {
+        // Wrong PIN - Trigger alert
+        triggerAlert();
+      }
+    }
+
+    // Exit Command Interface
+    function exitCommandInterface() {
+      document.getElementById("commandInterface").classList.add("hidden");
+
+      // Exit fullscreen
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+
+      // Reset to start screen
+      document.getElementById("startScreen").classList.remove("hidden");
+      gameStarted = false;
+
+      // Clear command output
+      document.getElementById("commandOutput").innerHTML = `SYSTEM INITIALIZED...
 WELCOME TO THE HACKER TERMINAL
 TYPE 'help' FOR AVAILABLE COMMANDS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+    }
+
+    // Trigger Alert System
+    function triggerAlert() {
+      document.getElementById("warningMessage").classList.remove("hidden");
+      matrix.setMode("red");
+
+      // Play alert sounds for 10 seconds
+      let alertCount = 0;
+      const alertInterval = setInterval(() => {
+        playAlertSound(500);
+        alertCount++;
+        if (alertCount >= 20) {
+          // 10 seconds of alerts
+          clearInterval(alertInterval);
+          matrix.setMode("green");
+          document.getElementById("warningMessage").classList.add("hidden");
         }
-        
-        // Trigger Alert System
-        function triggerAlert() {
-            document.getElementById('warningMessage').classList.remove('hidden');
-            matrix.setMode('red');
-            
-            // Play alert sounds for 10 seconds
-            let alertCount = 0;
-            const alertInterval = setInterval(() => {
-                playAlertSound(500);
-                alertCount++;
-                if (alertCount >= 20) { // 10 seconds of alerts
-                    clearInterval(alertInterval);
-                    matrix.setMode('green');
-                    document.getElementById('warningMessage').classList.add('hidden');
-                }
-            }, 500);
-            
-            // Clear input
-            document.getElementById('pinInput').value = '';
+      }, 500);
+
+      // Clear input
+      document.getElementById("pinInput").value = "";
+    }
+
+    // Enhanced keyboard restrictions
+    document.addEventListener("keydown", function (e) {
+      // Block all Ctrl, Alt, Shift, Tab combinations
+      if (
+        e.ctrlKey ||
+        e.altKey ||
+        e.shiftKey ||
+        e.metaKey ||
+        e.keyCode === 9
+      ) {
+        // Allow only basic typing in command input
+        if (
+          document
+            .getElementById("commandInterface")
+            .classList.contains("hidden") ||
+          (document.activeElement !== document.getElementById("commandInput") &&
+            document.activeElement !== document.getElementById("pinInput"))
+        ) {
+          e.preventDefault();
+          if (gameStarted) {
+            triggerAlert();
+          }
+          return false;
         }
-        
-        // Enhanced keyboard restrictions
-        document.addEventListener('keydown', function(e) {
-            // Block all Ctrl, Alt, Shift, Tab combinations
-            if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey || e.keyCode === 9) {
-                // Allow only basic typing in command input
-                if (document.getElementById('commandInterface').classList.contains('hidden') || 
-                    (document.activeElement !== document.getElementById('commandInput') && 
-                     document.activeElement !== document.getElementById('pinInput'))) {
-                    e.preventDefault();
-                    if (gameStarted) {
-                        triggerAlert();
-                    }
-                    return false;
-                }
-                
-                // Allow only basic text input combinations
-                if (!(e.ctrlKey && (e.keyCode === 86 || e.keyCode === 67 || e.keyCode === 88))) {
-                    e.preventDefault();
-                    if (gameStarted) {
-                        triggerAlert();
-                    }
-                    return false;
-                }
-            }
-            
-            // Block F-keys and other special keys
-            if (e.keyCode >= 112 && e.keyCode <= 123) { // F1-F12
-                e.preventDefault();
-                if (gameStarted) {
-                    triggerAlert();
-                }
-                return false;
-            }
-            
-            // Block other dangerous keys
-            if (e.keyCode === 27 || // Escape
-                e.keyCode === 91 || // Windows key
-                e.keyCode === 93 || // Context menu
-                e.keyCode === 44 || // Print Screen
-                e.keyCode === 145) { // Scroll Lock
-                e.preventDefault();
-                if (gameStarted) {
-                    triggerAlert();
-                }
-                return false;
-            }
-            
-            // Enter key to submit PIN or command
-            if (e.keyCode === 13) {
-                if (!document.getElementById('securityPanel').classList.contains('hidden')) {
-                    checkPin();
-                } else if (!document.getElementById('commandInterface').classList.contains('hidden')) {
-                    const command = document.getElementById('commandInput').value.trim();
-                    if (command) {
-                        processCommand(command);
-                        document.getElementById('commandInput').value = '';
-                    }
-                }
-            }
-        });
-        
-        // Disable right-click
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            if (gameStarted) {
-                triggerAlert();
-            }
-        });
-        
-        // Handle fullscreen changes
-        document.addEventListener('fullscreenchange', function() {
-            if (!document.fullscreenElement && gameStarted && 
-                document.getElementById('commandInterface').classList.contains('hidden')) {
-                // If user exits fullscreen without completing PIN, show security panel
-                document.getElementById('securityPanel').classList.remove('hidden');
-            }
-        }); 
-        
-        // Prevent text selection
-        document.onselectstart = function() {
-            return false;
-        };
-        
-        // Prevent drag and drop
-        document.ondragstart = function() {
-            return false;
-        };
-        
-        // Prevent copy/paste in most contexts
-        document.addEventListener('copy', function(e) {
-            if (document.activeElement !== document.getElementById('commandInput') && 
-                document.activeElement !== document.getElementById('pinInput')) {
-                e.preventDefault();
-                if (gameStarted) {
-                    triggerAlert();
-                }
-            }
-        });
-        
-        document.addEventListener('paste', function(e) {
-            if (document.activeElement !== document.getElementById('commandInput') && 
-                document.activeElement !== document.getElementById('pinInput')) {
-                e.preventDefault();
-                if (gameStarted) {
-                    triggerAlert();
-                }
-            }
-        });
-    </script>
+
+        // Allow only basic text input combinations
+        if (
+          !(
+            e.ctrlKey &&
+            (e.keyCode === 86 || e.keyCode === 67 || e.keyCode === 88)
+          )
+        ) {
+          e.preventDefault();
+          if (gameStarted) {
+            triggerAlert();
+          }
+          return false;
+        }
+      }
+
+      // Block F-keys and other special keys
+      if (e.keyCode >= 112 && e.keyCode <= 123) {
+        // F1-F12
+        e.preventDefault();
+        if (gameStarted) {
+          triggerAlert();
+        }
+        return false;
+      }
+
+      // Block other dangerous keys
+      if (
+        e.keyCode === 27 || // Escape
+        e.keyCode === 91 || // Windows key
+        e.keyCode === 93 || // Context menu
+        e.keyCode === 44 || // Print Screen
+        e.keyCode === 145
+      ) {
+        // Scroll Lock
+        e.preventDefault();
+        if (gameStarted) {
+          triggerAlert();
+        }
+        return false;
+      }
+
+      // Enter key to submit PIN or command
+      if (e.keyCode === 13) {
+        if (
+          !document.getElementById("securityPanel").classList.contains("hidden")
+        ) {
+          checkPin();
+        } else if (
+          !document.getElementById("commandInterface").classList.contains("hidden")
+        ) {
+          const command = document.getElementById("commandInput").value.trim();
+          if (command) {
+            processCommand(command);
+            document.getElementById("commandInput").value = "";
+          }
+        }
+      }
+    });
+
+    // Disable right-click
+    document.addEventListener("contextmenu", function (e) {
+      e.preventDefault();
+      if (gameStarted) {
+        triggerAlert();
+      }
+    });
+
+    // Handle fullscreen changes
+    document.addEventListener("fullscreenchange", function () {
+      if (
+        !document.fullscreenElement &&
+        gameStarted &&
+        document
+          .getElementById("commandInterface")
+          .classList.contains("hidden")
+      ) {
+        // If user exits fullscreen without completing PIN, show security panel
+        document.getElementById("securityPanel").classList.remove("hidden");
+      }
+    });
+
+    // Prevent text selection
+    document.onselectstart = function () {
+      return false;
+    };
+
+    // Prevent drag and drop
+    document.ondragstart = function () {
+      return false;
+    };
+
+    // Prevent copy/paste in most contexts
+    document.addEventListener("copy", function (e) {
+      if (
+        document.activeElement !== document.getElementById("commandInput") &&
+        document.activeElement !== document.getElementById("pinInput")
+      ) {
+        e.preventDefault();
+        if (gameStarted) {
+          triggerAlert();
+        }
+      }
+    });
+
+    document.addEventListener("paste", function (e) {
+      if (
+        document.activeElement !== document.getElementById("commandInput") &&
+        document.activeElement !== document.getElementById("pinInput")
+      ) {
+        e.preventDefault();
+        if (gameStarted) {
+          triggerAlert();
+        }
+      }
+    });
+  </script>
 </body>
 </html>
