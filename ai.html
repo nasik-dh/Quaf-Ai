@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="P9BCmQCGDsbkZutfQgEIkZYmWTdu7SRtPFz4VC4HBJw" />
+    <link rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==">
+    <title>Enhanced Hacker Terminal - Perfect Version</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            background: #000;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        #matrixCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .game-container {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+        
+        .start-btn {
+            background: linear-gradient(45deg, #00ff00, #00aa00);
+            border: 2px solid #00ff00;
+            color: #000;
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            padding: clamp(0.8rem, 2vw, 1rem) clamp(1.5rem, 4vw, 2rem);
+            border-radius: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+        
+        .start-btn:hover {
+            background: linear-gradient(45deg, #00aa00, #00ff00);
+            box-shadow: 0 0 30px #00ff00;
+            transform: scale(1.05);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px #00ff00; }
+            50% { box-shadow: 0 0 40px #00ff00, 0 0 60px #00ff00; }
+        }
+        
+        .security-panel {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: clamp(1rem, 4vw, 2rem);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.5s ease;
+            max-width: 90vw;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .security-title {
+            color: #00ff00;
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px #00ff00;
+        }
+        
+        .pin-input {
+            background: transparent;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            padding: clamp(0.8rem, 2vw, 1rem);
+            text-align: center;
+            letter-spacing: 5px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 300px;
+            margin: 1rem 0;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .pin-input:focus {
+            outline: none;
+            box-shadow: 0 0 30px #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .submit-btn {
+            background: linear-gradient(45deg, #00ff00, #00aa00);
+            border: none;
+            color: #000;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            padding: clamp(0.6rem, 2vw, 0.8rem) clamp(1rem, 3vw, 1.5rem);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background: linear-gradient(45deg, #00aa00, #00ff00);
+            box-shadow: 0 0 20px #00ff00;
+        }
+        
+        .command-interface {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            padding: clamp(0.5rem, 2vw, 2rem);
+        }
+        
+        .command-header {
+            color: #00ff00;
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            text-align: center;
+            margin-bottom: clamp(1rem, 2vw, 2rem);
+            text-shadow: 0 0 20px #00ff00;
+        }
+        
+        .terminal {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: clamp(0.5rem, 2vw, 1rem);
+            font-family: 'Orbitron', monospace;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            min-height: 200px;
+        }
+        
+        .command-output {
+            color: #00ff00;
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+            line-height: 1.4;
+            white-space: pre-wrap;
+            margin-bottom: 1rem;
+            word-wrap: break-word;
+        }
+        
+        .command-input-container {
+            display: flex;
+            align-items: center;
+            gap: clamp(0.5rem, 2vw, 1rem);
+            flex-wrap: wrap;
+        }
+        
+        .command-prompt {
+            color: #00ff00;
+            font-size: clamp(0.8rem, 2vw, 1.1rem);
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        
+        .command-input {
+            flex: 1;
+            min-width: 200px;
+            background: transparent;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            padding: clamp(0.6rem, 1.5vw, 0.8rem);
+            border-radius: 8px;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .command-input:focus {
+            outline: none;
+            box-shadow: 0 0 20px #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        .exit-btn {
+            background: linear-gradient(45deg, #ff0000, #aa0000);
+            border: 2px solid #ff0000;
+            color: #fff;
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            padding: clamp(0.6rem, 1.5vw, 0.8rem) clamp(1rem, 2vw, 1.5rem);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .exit-btn:hover {
+            background: linear-gradient(45deg, #aa0000, #ff0000);
+            box-shadow: 0 0 20px #ff0000;
+        }
+        
+        .autocomplete-dropdown {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 200;
+            width: 100%;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .autocomplete-item {
+            color: #00ff00;
+            padding: 0.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+        }
+        
+        .autocomplete-item:hover,
+        .autocomplete-item.selected {
+            background: rgba(0, 255, 0, 0.2);
+        }
+        
+        .alert-mode {
+            background: #ff0000 !important;
+            color: #fff !important;
+        }
+        
+        .alert-mode .pin-input {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+        
+        .alert-mode .security-title {
+            color: #ff0000;
+            text-shadow: 0 0 20px #ff0000;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .warning-text {
+            color: #ff0000;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            margin-top: 1rem;
+            text-shadow: 0 0 15px #ff0000;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .game-disclaimer {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #00ff00;
+            font-size: clamp(0.6rem, 2vw, 0.8rem);
+            text-align: center;
+            opacity: 0.7;
+            z-index: 100;
+            padding: 0 1rem;
+        }
+        
+        .ascii-animation {
+            font-family: 'Courier New', monospace;
+            white-space: pre;
+            line-height: 1;
+            color: #00ff00;
+            animation: colorShift 3s infinite;
+        }
+        
+        @keyframes colorShift {
+            0% { color: #00ff00; }
+            25% { color: #00ffff; }
+            50% { color: #ffff00; }
+            75% { color: #ff00ff; }
+            100% { color: #00ff00; }
+        }
+        
+        .moving-element {
+            display: inline-block;
+            animation: move 2s infinite linear;
+        }
+        
+        @keyframes move {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(20px); }
+        }
+        
+        .student-info {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            color: #00ff00;
+        }
+        
+        .restricted-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff0000;
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            animation: blink 1s infinite;
+        }
+        
+        @media (max-width: 768px) {
+            .command-input-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .command-prompt {
+                align-self: flex-start;
+            }
+            
+            .exit-btn {
+                align-self: center;
+                margin-top: 0.5rem;
+            }
+            
+            .terminal {
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .security-panel {
+                margin: 1rem;
+            }
+            
+            .pin-input {
+                letter-spacing: 3px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrixCanvas"></canvas>
+    
+    <div class="game-container">
+        <div id="startScreen" class="text-center">
+            <h1 class="text-2xl sm:text-4xl md:text-6xl font-bold text-green-400 mb-4 sm:mb-8 text-center">
+                <i class="fas fa-terminal mr-2 sm:mr-4"></i>
+                Quaf Ethical Hacker
+            </h1>
+            <button class="start-btn" onclick="startGame()">
+                <i class="fas fa-play mr-2"></i>
+                Enter
+            </button>
+        </div>
+        
+        <div id="securityPanel" class="security-panel hidden">
+            <div class="security-title">
+                <i class="fas fa-lock mb-2"></i><br>
+                SECURITY ACCESS REQUIRED
+            </div>
+            <div class="text-green-400 mb-4">Enter authorization code to proceed:</div>
+            <input type="password" class="pin-input" id="pinInput" placeholder="••••••••••" maxlength="9">
+            <br>
+            <button class="submit-btn" onclick="checkPin()">
+                <i class="fas fa-key mr-2"></i>
+                AUTHORIZE
+            </button>
+            <div id="warningMessage" class="warning-text hidden">
+                <i class="fas fa-exclamation-triangle"></i>
+                ACCESS DENIED - SECURITY BREACH DETECTED
+            </div>
+        </div>
+    </div>
+    
+    <div id="commandInterface" class="command-interface hidden">
+        <div class="command-header">
+            <i class="fas fa-terminal mr-2"></i>
+            HACKER COMMAND INTERFACE - SYSTEM ACCESS GRANTED
+        </div>
+        
+        <div class="terminal" id="terminal">
+            <div class="command-output" id="commandOutput">
+SYSTEM INITIALIZED...
+WELCOME TO THE ENHANCED HACKER TERMINAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FEATURES:
+• Type 'help' for available commands
+• Type '@' + admission number for student data
+• Type '/' for command autocomplete
+• 100+ animated commands available
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            </div>
+        </div>
+        
+        <div class="command-input-container">
+            <span class="command-prompt">QUAF@TERMINAL:~$</span>
+            <div style="position: relative; flex: 1;">
+                <input type="text" class="command-input" id="commandInput" placeholder="Enter command..." autocomplete="off">
+                <div id="autocompleteDropdown" class="autocomplete-dropdown hidden"></div>
+            </div>
+            <button class="exit-btn" onclick="exitCommandInterface()">
+                <i class="fas fa-times mr-1 sm:mr-2"></i>
+                EXIT
+            </button>
+        </div>
+    </div>
+    
+    <div id="restrictedOverlay" class="restricted-overlay hidden">
+        <div>
+            <i class="fas fa-exclamation-triangle"></i><br>
+            RESTRICTED MODE ACTIVE<br>
+            <small style="font-size: 1rem;">Return to command input to continue</small>
+        </div>
+    </div>
+    
+    <div class="game-disclaimer">
+        <i class="fas fa-gamepad mr-2"></i>
+        ENHANCED HACKER TERMINAL - 100+ COMMANDS AVAILABLE
+    </div>
+
+    <script>
+        let audioContext;
+        let matrixMode = 'green';
+        let alertSound = null;
+        let gameStarted = false;
+        let commandHistory = [];
+        let studentData = [];
+        let autocompleteIndex = -1;
+        let autocompleteItems = [];
+        let isAutocompleteVisible = false;
+        let isFullscreenRestricted = false;
+        
+        // Initialize Audio Context
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+        
+        // Generate alert sound
+        function playAlertSound(duration = 1000) {
+            if (!audioContext) initAudio();
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration/1000);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration/1000);
+        }
+        
+        // Matrix Rain Effect
+        class MatrixRain {
+            constructor() {
+                this.canvas = document.getElementById('matrixCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+                this.drops = [];
+                this.fontSize = Math.min(16, window.innerWidth / 50);
+                this.mode = 'green';
+                
+                this.resize();
+                this.init();
+                this.animate();
+                
+                window.addEventListener('resize', () => this.resize());
+            }
+            
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                this.fontSize = Math.min(16, window.innerWidth / 50);
+                this.columns = Math.floor(this.canvas.width / this.fontSize);
+                this.drops = Array(this.columns).fill(0).map(() => Math.random() * -100);
+            }
+            
+            init() {
+                this.ctx.fillStyle = '#000';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+            
+            animate() {
+                this.ctx.fillStyle = this.mode === 'green' ? 'rgba(0, 0, 0, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                const color = this.mode === 'green' ? '#00ff00' : '#ff0000';
+                this.ctx.fillStyle = color;
+                this.ctx.font = `${this.fontSize}px 'Orbitron', monospace`;
+                
+                for (let i = 0; i < this.drops.length; i++) {
+                    const char = this.characters[Math.floor(Math.random() * this.characters.length)];
+                    const x = i * this.fontSize;
+                    const y = this.drops[i] * this.fontSize;
+                    
+                    this.ctx.fillText(char, x, y);
+                    
+                    if (y > this.canvas.height && Math.random() > 0.975) {
+                        this.drops[i] = 0;
+                    }
+                    this.drops[i]++;
+                }
+                
+                requestAnimationFrame(() => this.animate());
+            }
+            
+            setMode(mode) {
+                this.mode = mode;
+            }
+        }
+        
+        // Initialize Matrix Rain
+        const matrix = new MatrixRain();
+        
+        // ASCII Art Library with Animations
+        const asciiArt = {
+            cat: [
+                "    /\\_/\\  ",
+                "   ( o.o ) ",
+                "    > ^ <  ",
+                ""
+            ],
+            dog: [
+                "    /^   ^\\",
+                "   / o   o \\",
+                "  <   -   >",
+                "     ___   ",
+                ""
+            ],
+            bird: [
+                "    __/|__",
+                "  (  ' '  )",
+                "   |  v  |",
+                "   |_____|",
+                ""
+            ],
+            car: [
+                "    ______",
+                "   /|_||_\\`.__",
+                "  (   _    _ _\\",
+                " =`-(_)--(_)-'",
+                ""
+            ],
+            plane: [
+                "     __|__",
+                " *---o0o---*",
+                "     / \\",
+                ""
+            ],
+            rocket: [
+                "    /\\",
+                "   /  \\",
+                "  |    |",
+                "  | ** |",
+                "  |____|",
+                "   \\  /",
+                "    \\/",
+                ""
+            ],
+            fish: [
+                "    ><((('>",
+                "      ~~",
+                ""
+            ],
+            butterfly: [
+                "  \\ | /",
+                " '-(_)-'",
+                "  / | \\",
+                ""
+            ],
+            tree: [
+                "    /\\",
+                "   /  \\",
+                "  /____\\",
+                "    ||",
+                "    ||",
+                ""
+            ],
+            house: [
+                "    /\\",
+                "   /  \\",
+                "  /____\\",
+                "  |    |",
+                "  | [] |",
+                "  |____|",
+                ""
+            ],
+            skull: [
+                "   ___",
+                "  /   \\",
+                " | o o |",
+                "  \\   /",
+                "   ---",
+                ""
+            ],
+            heart: [
+                "  ♥ ♥",
+                " ♥   ♥",
+                "♥     ♥",
+                " ♥   ♥",
+                "  ♥ ♥",
+                "   ♥",
+                ""
+            ]
+        };
+        
+        // Command System with 100+ Commands
+        const commandSystem = {
+            // Basic Commands
+            help: `
+ENHANCED HACKER TERMINAL - COMMAND LIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SYSTEM COMMANDS:
+• help / ? - Show this help menu
+• status - System status
+• scan - Network scan
+• hack - Hacking sequence
+• info - System information
+• time - Current time
+• clear - Clear terminal
+
+STUDENT DATABASE:
+• @[AD_NUMBER] - Get student info (e.g., @AD001)
+• students - List all students
+
+ANIMALS & CREATURES:
+• cat, dog, bird, fish, butterfly - Animated creatures
+• snake, spider, bat, owl, eagle - More animals
+• dragon, unicorn, phoenix - Mythical creatures
+
+VEHICLES & TRANSPORT:
+• car, plane, rocket, ship, train - Vehicles
+• bike, helicopter, submarine - More transport
+
+HACKING TOOLS:
+• nmap, wireshark, metasploit, burpsuite
+• sqlmap, hydra, aircrack, john
+• nikto, dirb, gobuster, ffuf
+
+ENTERTAINMENT:
+• joke, quote, story, riddle
+• game, puzzle, trivia, fact
+• music, dance, party, celebration
+
+VISUAL EFFECTS:
+• matrix, glitch, fire, water, lightning
+• snow, rain, stars, explosion, portal
+
+MISC COMMANDS:
+• calculator, weather, news, crypto
+• password, generator, encoder, decoder
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Type '/' for autocomplete or '@' for student lookup`,
+
+            // Student Data Commands
+            students: "Loading student database... Type @[AD_NUMBER] for specific student info",
+            
+            // System Commands
+            status: [
+                "SYSTEM STATUS: ONLINE\nFIREWALL: BYPASSED\nSECURITY: COMPROMISED\nACCESS LEVEL: ROOT\nSTUDENT DATABASE: CONNECTED",
+                "NETWORK STATUS: CONNECTED\nENCRYPTION: CRACKED\nSURVEILLANCE: DISABLED\nSTEALTH MODE: ACTIVE\nSTUDENT RECORDS: ACCESSIBLE",
+                "SYSTEM ANALYSIS: COMPLETE\nVULNERABILITIES: 47 FOUND\nBACKDOORS: 12 INSTALLED\nMISSION: IN PROGRESS\nDATABASE: SYNCHRONIZED"
+            ],
+            
+            scan: [
+                "SCANNING NETWORK...\n192.168.1.1 - ROUTER [VULNERABLE]\n192.168.1.100 - STUDENT DATABASE [ACCESSED]\n192.168.1.200 - ACADEMIC SERVER [BREACHED]\nSCAN COMPLETE: 15 DEVICES FOUND",
+                "PORT SCANNING INITIATED...\nPORT 22: SSH [OPEN]\nPORT 80: HTTP [OPEN]\nPORT 443: HTTPS [FILTERED]\nPORT 3306: MYSQL [STUDENT_DB]\nSCAN RESULTS: 4 VULNERABLE PORTS",
+                "VULNERABILITY SCAN RUNNING...\nSQL INJECTION: STUDENT_PORTAL\nXSS DETECTED: ADMIN_PANEL\nBUFFER OVERFLOW: CRITICAL\nRECOMMENDED ACTION: EXPLOIT IMMEDIATELY"
+            ],
+            
+            hack: [
+                "INITIATING HACK SEQUENCE...\n[██████████] 100%\nACCESS GRANTED: STUDENT SYSTEM COMPROMISED\nROOT PRIVILEGES: OBTAINED\nDATABASE ACCESS: GRANTED\nHACK SUCCESSFUL!",
+                "LAUNCHING CYBER ATTACK...\n[████████░░] 80%\nBYPASSING ACADEMIC FIREWALL...\n[██████████] 100%\nSTUDENT RECORDS: BREACHED\nMISSION ACCOMPLISHED",
+                "EXECUTING EXPLOIT...\n[███░░░░░░░] 30%\nCRACKING ADMIN PASSWORDS...\n[████████░░] 80%\nACCESSING STUDENT DATABASE...\n[██████████] 100%\nSYSTEM HACKED: FULL CONTROL ACHIEVED"
+            ],
+            
+            info: `
+ENHANCED HACKER TERMINAL v2.0
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OS: LINUX KALI 2024.1 (ENHANCED EDITION)
+KERNEL: 6.8.11-amd64-hacker-mod
+CPU: INTEL i9-14900K @ 5.8GHz (OVERCLOCKED)
+RAM: 64GB DDR5-6000 (STUDENT_DB CACHED)
+GPU: NVIDIA RTX 4090 (CRYPTO DISABLED)
+STORAGE: 2TB NVME SSD (ENCRYPTED)
+
+INSTALLED TOOLS:
+• METASPLOIT FRAMEWORK v6.3
+• NMAP v7.94
+• WIRESHARK v4.2
+• BURP SUITE PROFESSIONAL
+• STUDENT DATABASE MODULE
+• ASCII ART GENERATOR v2.0
+
+DATABASE CONNECTIONS:
+• STUDENT_RECORDS: ACTIVE
+• ACADEMIC_PORTAL: COMPROMISED
+• ADMIN_PANEL: BREACHED
+
+STATUS: FULLY OPERATIONAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+            
+            // Jokes and Entertainment
+            jokes: [
+                "Why do hackers prefer dark mode?\nBecause light attracts bugs! 🐛",
+                "How many hackers does it take to change a light bulb?\nNone, they just exploit the darkness. 💡",
+                "What's a hacker's favorite type of music?\nRAP... (Remote Access Protocol) 🎵",
+                "Why don't hackers ever get lost?\nBecause they always find the backdoor! 🚪",
+                "What do you call a hacker who's also a musician?\nA bandwidth thief! 🎸",
+                "Why did the hacker break up with their keyboard?\nIt wasn't their type! ⌨️",
+                "What's a hacker's favorite drink?\nJava... for the exploits! ☕",
+                "Why do hackers make terrible comedians?\nTheir jokes are full of bugs! 🎭"
+            ],
+            
+            quotes: [
+                "\"The best way to get information is to not ask for it.\" - Anonymous Hacker",
+                "\"Security is not a product, but a process.\" - Bruce Schneier",
+                "\"In the world of hacking, today's security is tomorrow's vulnerability.\" - Digital Ghost",
+                "\"Privacy is not about hiding something. It's about protecting everything.\" - Cyber Warrior",
+                "\"The only truly secure system is one that is powered off.\" - Gene Spafford",
+                "\"Hackers are breaking the systems for profit before the good guys can break them for pride.\" - Charlie Miller",
+                "\"Most hackers are young because young people tend to be adaptable.\" - Emmanuel Goldstein",
+                "\"The Internet is the largest experiment in anarchy ever conducted.\" - Eric Schmidt"
+            ],
+            
+            stories: [
+                "THE PHANTOM KEYSTROKE:\nOnce upon a time, a hacker discovered a ghost in the machine...\nEvery night at 3:33 AM, mysterious keystrokes would appear on screens across the network.\nThe legend says it's the spirit of the first programmer, still debugging code from beyond...",
+                
+                "THE ZERO-DAY PROPHET:\nIn the depths of the dark web, there lived a hacker known only as 'Zero'...\nThey could predict vulnerabilities before they were discovered.\nSome say they had a crystal ball made of broken code...",
+                
+                "THE BINARY DREAMS:\nA young hacker fell asleep at their keyboard and dreamed in binary...\n01001000 01100101 01101100 01110000...\nWhen they woke up, they had written the perfect exploit in their sleep."
+            ],
+            
+            riddles: [
+                "RIDDLE: I have keys but no locks. I have space but no room. You can enter but not go inside. What am I?\nANSWER: A keyboard! ⌨️",
+                "RIDDLE: I'm not a virus, but I can spread. I'm not malware, but I can be harmful. I travel through networks without permission. What am I?\nANSWER: A computer worm! 🐛",
+                "RIDDLE: I protect your data but can be cracked. I scramble your messages but can be decoded. What am I?\nANSWER: Encryption! 🔐"
+            ],
+            
+            // Visual Effects
+            matrix: () => {
+                return "MATRIX MODE ACTIVATED...\n" + 
+                       "Wake up, Neo... The Matrix has you...\n" +
+                       "Follow the white rabbit... 🐰\n" +
+                       generateMatrixEffect();
+            },
+            
+            glitch: () => {
+                return "GL1TCH M0D3 @CT1V@T3D...\n" +
+                       "R3@L1TY 1S BR3@K1NG D0WN...\n" +
+                       "SYS73M 3RR0R D373C73D... ⚡";
+            },
+            
+            fire: () => {
+                return generateAsciiAnimation('fire') + "\n🔥 SYSTEM OVERHEATING! 🔥";
+            },
+            
+            water: () => {
+                return generateAsciiAnimation('water') + "\n💧 COOLING SYSTEMS ACTIVATED 💧";
+            },
+            
+            lightning: () => {
+                return generateAsciiAnimation('lightning') + "\n⚡ HIGH VOLTAGE WARNING! ⚡";
+            },
+            
+            // Crypto and Tech
+            crypto: [
+                "CRYPTOCURRENCY MARKET STATUS:\n₿ Bitcoin: $43,250 (+2.3%)\n⟠ Ethereum: $2,680 (+1.8%)\n🚠 Monero: $165 (+0.9%)\n💎 Diamond Hands Mode: ACTIVATED",
+                "BLOCKCHAIN ANALYSIS:\nNew blocks mined: 847\nHash rate: 450 EH/s\nMempool: 15,432 transactions\nMining difficulty: ∞"
+            ],
+            
+            password: () => {
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+                let password = '';
+                for (let i = 0; i < 16; i++) {
+                    password += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return `SECURE PASSWORD GENERATED:\n${password}\n\nSTRENGTH: UNCRACKABLE 🔐`;
+            },
+            
+            // Unknown command responses
+            unknown: [
+                "COMMAND NOT RECOGNIZED IN DATABASE.\nTry 'help' for available commands or '/' for autocomplete.",
+                "ERROR 404: COMMAND NOT FOUND.\nAccess the help system or use autocomplete features.",
+                "SYNTAX ERROR: UNKNOWN DIRECTIVE.\nConsult the command manual or use intelligent suggestions.",
+                "INVALID INPUT DETECTED.\nEnable smart completion or reference the help documentation."
+            ]
+        };
+        
+        // Load Student Data from Google Sheets
+        async function loadStudentData() {
+            try {
+                const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vSYd5HVi2ehHX75k62gciAcf1a8pTwKi3M0Mpyc4Fzlx8PgYCxWFI4BYCqjqnzm5w/pub?gid=1359753454&single=true&output=csv');
+                const csvData = await response.text();
+                
+                const lines = csvData.split('\n');
+                const headers = lines[0].split(',').map(h => h.trim());
+                
+                studentData = [];
+                for (let i = 1; i < lines.length; i++) {
+                    if (lines[i].trim()) {
+                        const values = lines[i].split(',').map(v => v.trim());
+                        const student = {};
+                        headers.forEach((header, index) => {
+                            student[header] = values[index] || '';
+                        });
+                        studentData.push(student);
+                    }
+                }
+                
+                console.log('Student data loaded:', studentData.length, 'records');
+            } catch (error) {
+                console.error('Error loading student data:', error);
+                studentData = [
+                    { 
+                        'name': 'DEMO STUDENT', 
+                        'adNo': 'AD001', 
+                        'sO': 'S/O DEMO PARENT',
+                        'houseName': 'DEMO HOUSE',
+                        'place': 'DEMO PLACE',
+                        'post': 'DEMO POST',
+                        'pin': '123456',
+                        'district': 'DEMO DISTRICT',
+                        'state': 'DEMO STATE',
+                        'bloodGroup': 'O+',
+                        'dob': '01/01/2000',
+                        'phoneNumber': '9876543210',
+                        'email': 'demo@student.com'
+                    }
+                ];
+            }
+        }
+        
+        // Generate Matrix Effect
+        function generateMatrixEffect() {
+            const chars = '01';
+            let matrix = '';
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 20; j++) {
+                    matrix += chars[Math.floor(Math.random() * chars.length)];
+                }
+                matrix += '\n';
+            }
+            return matrix;
+        }
+        
+        // Generate ASCII Animation
+        function generateAsciiAnimation(type) {
+            const animations = {
+                fire: [
+                    "     (  )",
+                    "    (    )",
+                    "   (      )",
+                    "  (        )",
+                    " (          )",
+                    "~~~~~~~~~~~~~"
+                ],
+                water: [
+                    "~~~~~~~~~~~~~~~~~~~~~",
+                    " ~~~~~~~~~~~~~~~~~~~",
+                    "  ~~~~~~~~~~~~~~~~~",
+                    "   ~~~~~~~~~~~~~~~",
+                    "    ~~~~~~~~~~~~~",
+                    "~~~~~~~~~~~~~~~~~~~~~"
+                ],
+                lightning: [
+                    "    ⚡",
+                    "   ╱ ",
+                    "  ╱  ",
+                    " ╱   ⚡",
+                    "╱     ",
+                    "      ╲",
+                    "       ⚡"
+                ]
+            };
+            
+            return animations[type] ? animations[type].join('\n') : 'Animation not found';
+        }
+        
+        // Get Available Commands
+        function getAvailableCommands() {
+            const basicCommands = [
+                'help', 'status', 'scan', 'hack', 'info', 'time', 'clear',
+                'students', 'joke', 'quote', 'story', 'riddle', 'crypto', 'password'
+            ];
+            
+            const animalCommands = [
+                'cat', 'dog', 'bird', 'fish', 'butterfly', 'snake', 'spider', 
+                'bat', 'owl', 'eagle', 'dragon', 'unicorn', 'phoenix'
+            ];
+            
+            const vehicleCommands = [
+                'car', 'plane', 'rocket', 'ship', 'train', 'bike', 'helicopter', 'submarine'
+            ];
+            
+            const hackingCommands = [
+                'nmap', 'wireshark', 'metasploit', 'burpsuite', 'sqlmap', 
+                'hydra', 'aircrack', 'john', 'nikto', 'dirb', 'gobuster', 'ffuf'
+            ];
+            
+            const effectCommands = [
+                'matrix', 'glitch', 'fire', 'water', 'lightning', 'snow', 
+                'rain', 'stars', 'explosion', 'portal'
+            ];
+            
+            const miscCommands = [
+                'calculator', 'weather', 'news', 'game', 'puzzle', 'trivia', 
+                'fact', 'music', 'dance', 'party', 'celebration'
+            ];
+            
+            return [...basicCommands, ...animalCommands, ...vehicleCommands, ...hackingCommands, ...effectCommands, ...miscCommands];
+        }
+        
+        // Fullscreen and Restricted Mode Functions
+        function enterFullscreenRestricted() {
+            isFullscreenRestricted = true;
+            
+            // Request fullscreen
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        }
+        
+        function showRestrictedOverlay() {
+            document.getElementById('restrictedOverlay').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('restrictedOverlay').classList.add('hidden');
+            }, 2000);
+        }
+        
+        function checkRestrictedMode(e) {
+            if (!isFullscreenRestricted) return true;
+            
+            const commandInput = document.getElementById('commandInput');
+            const pinInput = document.getElementById('pinInput');
+            
+            // Allow normal typing in command and pin inputs
+            if (document.activeElement === commandInput || document.activeElement === pinInput) {
+                return true;
+            }
+            
+            // Block all keys except shift when not in input fields
+            if (e.keyCode !== 16) {
+                e.preventDefault();
+                showRestrictedOverlay();
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Autocomplete System
+        function showAutocomplete(input, isStudent = false) {
+            const dropdown = document.getElementById('autocompleteDropdown');
+            dropdown.innerHTML = '';
+            autocompleteItems = [];
+            
+            if (isStudent) {
+                // Show student admission numbers
+                const filtered = studentData.filter(student => 
+                    (student.adNo && student.adNo.toLowerCase().includes(input.toLowerCase())) ||
+                    (student['AD NO'] && student['AD NO'].toLowerCase().includes(input.toLowerCase()))
+                );
+                
+                filtered.forEach(student => {
+                    const adNo = student.adNo || student['AD NO'];
+                    const name = student.name || student['NAME'] || 'Unknown';
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    item.textContent = `${adNo} - ${name}`;
+                    item.onclick = () => selectAutocomplete(adNo);
+                    dropdown.appendChild(item);
+                    autocompleteItems.push(adNo);
+                });
+            } else {
+                // Show commands
+                const commands = getAvailableCommands();
+                const filtered = commands.filter(cmd => cmd.toLowerCase().includes(input.toLowerCase()));
+                
+                filtered.forEach(cmd => {
+                    const item = document.createElement('div');
+                    item.className = 'autocomplete-item';
+                    item.textContent = cmd;
+                    item.onclick = () => selectAutocomplete(cmd);
+                    dropdown.appendChild(item);
+                    autocompleteItems.push(cmd);
+                });
+            }
+            
+            if (autocompleteItems.length > 0) {
+                dropdown.classList.remove('hidden');
+                isAutocompleteVisible = true;
+                autocompleteIndex = -1;
+            } else {
+                hideAutocomplete();
+            }
+        }
+        
+        function hideAutocomplete() {
+            document.getElementById('autocompleteDropdown').classList.add('hidden');
+            isAutocompleteVisible = false;
+            autocompleteIndex = -1;
+        }
+        
+        function selectAutocomplete(value) {
+            const input = document.getElementById('commandInput');
+            const currentValue = input.value;
+            
+            if (currentValue.startsWith('@')) {
+                input.value = '@' + value;
+            } else if (currentValue.startsWith('/')) {
+                input.value = value;
+            } else {
+                input.value = value;
+            }
+            
+            hideAutocomplete();
+            input.focus();
+        }
+        
+        function navigateAutocomplete(direction) {
+            if (!isAutocompleteVisible || autocompleteItems.length === 0) return;
+            
+            const items = document.querySelectorAll('.autocomplete-item');
+            
+            // Remove previous selection
+            if (autocompleteIndex >= 0) {
+                items[autocompleteIndex].classList.remove('selected');
+            }
+            
+            // Update index
+            if (direction === 'down') {
+                autocompleteIndex = (autocompleteIndex + 1) % autocompleteItems.length;
+            } else {
+                autocompleteIndex = autocompleteIndex <= 0 ? autocompleteItems.length - 1 : autocompleteIndex - 1;
+            }
+            
+            // Add new selection
+            items[autocompleteIndex].classList.add('selected');
+            items[autocompleteIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        function selectCurrentAutocomplete() {
+            if (autocompleteIndex >= 0 && autocompleteIndex < autocompleteItems.length) {
+                selectAutocomplete(autocompleteItems[autocompleteIndex]);
+            }
+        }
+        
+        // Process Command Function
+        function processCommand(command) {
+            const cmd = command.toLowerCase().trim();
+            const output = document.getElementById('commandOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            let response = '';
+            
+            // Add command to history
+            commandHistory.push(command);
+            
+            // Add command to output
+            output.innerHTML += `\n[${timestamp}] HACKER@TERMINAL:~$ ${command}\n`;
+            
+            // Handle student data queries
+            if (command.startsWith('@')) {
+                const adNo = command.substring(1).toUpperCase();
+                const student = studentData.find(s => 
+                    (s.adNo && s.adNo.toUpperCase() === adNo) || 
+                    (s['AD NO'] && s['AD NO'].toUpperCase() === adNo)
+                );
+                
+                if (student) {
+                    response = `
+STUDENT RECORD FOUND:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ADMISSION NO: ${student.adNo || student['AD NO'] || 'N/A'}
+NAME: ${student.name || student['NAME'] || 'N/A'}
+S/O: ${student.sO || student['S/O'] || 'N/A'}
+HOUSE NAME: ${student.houseName || student['HOUSE NAME'] || 'N/A'}
+PLACE: ${student.place || student['PLACE'] || 'N/A'}
+POST: ${student.post || student['POST'] || 'N/A'}
+PIN: ${student.pin || student['PIN'] || 'N/A'}
+DISTRICT: ${student.district || student['DISTRICT'] || 'N/A'}
+STATE: ${student.state || student['STATE'] || 'N/A'}
+BLOOD GROUP: ${student.bloodGroup || student['BLOOD GROUP'] || 'N/A'}
+DATE OF BIRTH: ${student.dob || student['DOB'] || 'N/A'}
+PHONE NUMBER: ${student.phoneNumber || student['PHONE NUMBER'] || 'N/A'}
+EMAIL: ${student.email || student['EMAIL'] || 'N/A'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RECORD ACCESSED SUCCESSFULLY ✅`;
+                } else {
+                    response = `❌ STUDENT RECORD NOT FOUND\nADMISSION NUMBER: ${adNo}\nSTATUS: NOT IN DATABASE\n\nTry using autocomplete with @ symbol for available students.`;
+                }
+            }
+            // Handle ASCII art commands
+            else if (asciiArt[cmd]) {
+                response = `
+RENDERING ASCII ART: ${cmd.toUpperCase()}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${asciiArt[cmd].join('\n')}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+            }
+            // Handle system commands
+            else if (commandSystem[cmd]) {
+                if (typeof commandSystem[cmd] === 'function') {
+                    response = commandSystem[cmd]();
+                } else if (Array.isArray(commandSystem[cmd])) {
+                    response = commandSystem[cmd][Math.floor(Math.random() * commandSystem[cmd].length)];
+                } else {
+                    response = commandSystem[cmd];
+                }
+            }
+            // Handle special commands
+            else if (cmd === 'time') {
+                response = `CURRENT SYSTEM TIME: ${new Date().toLocaleString()}\nUTC TIME: ${new Date().toUTCString()}\nUNIX TIMESTAMP: ${Math.floor(Date.now() / 1000)}\nHACKER TIME: ${new Date().toLocaleTimeString()} GMT+0530`;
+            }
+            else if (cmd === 'joke') {
+                response = commandSystem.jokes[Math.floor(Math.random() * commandSystem.jokes.length)];
+            }
+            else if (cmd === 'quote') {
+                response = commandSystem.quotes[Math.floor(Math.random() * commandSystem.quotes.length)];
+            }
+            else if (cmd === 'story') {
+                response = commandSystem.stories[Math.floor(Math.random() * commandSystem.stories.length)];
+            }
+            else if (cmd === 'riddle') {
+                response = commandSystem.riddles[Math.floor(Math.random() * commandSystem.riddles.length)];
+            }
+            else if (cmd === 'clear') {
+                output.innerHTML = `SYSTEM INITIALIZED...
+WELCOME TO THE ENHANCED HACKER TERMINAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FEATURES:
+• Type 'help' for available commands
+• Type '@' + admission number for student data
+• Type '/' for command autocomplete
+• 100+ animated commands available
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+                return;
+            }
+            else if (cmd === 'exit') {
+                exitCommandInterface();
+                return;
+            }
+            // Generate responses for unmapped commands
+            else {
+                // Try to generate a creative response for unknown commands
+                if (cmd.includes('hack') || cmd.includes('exploit')) {
+                    response = `EXECUTING ${cmd.toUpperCase()}...\n[██████████] 100%\nOPERATION COMPLETED SUCCESSFULLY ✅`;
+                } else if (cmd.includes('scan') || cmd.includes('probe')) {
+                    response = `SCANNING WITH ${cmd.toUpperCase()}...\nTARGETS FOUND: ${Math.floor(Math.random() * 50) + 1}\nVULNERABILITIES: ${Math.floor(Math.random() * 10) + 1}`;
+                } else {
+                    response = commandSystem.unknown[Math.floor(Math.random() * commandSystem.unknown.length)];
+                }
+            }
+            
+            // Add response to output
+            output.innerHTML += `${response}\n`;
+            
+            // Scroll to bottom
+            const terminal = document.getElementById('terminal');
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+        
+        // Game Functions
+        function startGame() {
+            initAudio();
+            gameStarted = true;
+            
+            // Load student data
+            loadStudentData();
+            
+            // Enter fullscreen restricted mode
+            enterFullscreenRestricted();
+            
+            // Hide start screen and show security panel
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('securityPanel').classList.remove('hidden');
+            document.getElementById('pinInput').focus();
+        }
+        
+        function checkPin() {
+            const pin = document.getElementById('pinInput').value;
+            const correctPin = '569786000';
+            
+            if (pin === correctPin) {
+                // Correct PIN - Show command interface
+                document.getElementById('securityPanel').classList.add('hidden');
+                document.getElementById('commandInterface').classList.remove('hidden');
+                document.getElementById('commandInput').focus();
+                
+                // Reset PIN input
+                document.getElementById('pinInput').value = '';
+                document.getElementById('warningMessage').classList.add('hidden');
+                matrix.setMode('green');
+            } else {
+                // Wrong PIN - Trigger alert
+                triggerAlert();
+            }
+        }
+        
+        function exitCommandInterface() {
+            document.getElementById('commandInterface').classList.add('hidden');
+            hideAutocomplete();
+            isFullscreenRestricted = false;
+            
+            // Exit fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+            
+            // Reset to start screen
+            document.getElementById('startScreen').classList.remove('hidden');
+            gameStarted = false;
+            
+            // Clear command output
+            document.getElementById('commandOutput').innerHTML = `SYSTEM INITIALIZED...
+WELCOME TO THE ENHANCED HACKER TERMINAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FEATURES:
+• Type 'help' for available commands
+• Type '@' + admission number for student data
+• Type '/' for command autocomplete
+• 100+ animated commands available
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+        }
+        
+        function triggerAlert() {
+            document.getElementById('warningMessage').classList.remove('hidden');
+            matrix.setMode('red');
+            
+            // Play alert sounds for 5 seconds
+            let alertCount = 0;
+            const alertInterval = setInterval(() => {
+                playAlertSound(300);
+                alertCount++;
+                if (alertCount >= 10) {
+                    clearInterval(alertInterval);
+                    matrix.setMode('green');
+                    document.getElementById('warningMessage').classList.add('hidden');
+                }
+            }, 500);
+            
+            // Clear input
+            document.getElementById('pinInput').value = '';
+        }
+        
+        // Event Listeners
+        document.addEventListener('keydown', function(e) {
+            // Check restricted mode first
+            if (!checkRestrictedMode(e)) {
+                return false;
+            }
+            
+            // Handle autocomplete navigation
+            if (isAutocompleteVisible) {
+                if (e.keyCode === 38) { // Up arrow
+                    e.preventDefault();
+                    navigateAutocomplete('up');
+                    return;
+                } else if (e.keyCode === 40) { // Down arrow
+                    e.preventDefault();
+                    navigateAutocomplete('down');
+                    return;
+                } else if (e.keyCode === 13) { // Enter
+                    e.preventDefault();
+                    selectCurrentAutocomplete();
+                    return;
+                } else if (e.keyCode === 27) { // Escape
+                    e.preventDefault();
+                    hideAutocomplete();
+                    return;
+                }
+            }
+            
+            // Enter key to submit PIN or command
+            if (e.keyCode === 13) {
+                if (!document.getElementById('securityPanel').classList.contains('hidden')) {
+                    checkPin();
+                } else if (!document.getElementById('commandInterface').classList.contains('hidden')) {
+                    const command = document.getElementById('commandInput').value.trim();
+                    if (command) {
+                        processCommand(command);
+                        document.getElementById('commandInput').value = '';
+                        hideAutocomplete();
+                    }
+                }
+            }
+        });
+        
+        // Command input event listeners
+        document.getElementById('commandInput').addEventListener('input', function(e) {
+            const value = e.target.value;
+            
+            if (value.startsWith('@')) {
+                // Show student autocomplete
+                const searchTerm = value.substring(1);
+                if (searchTerm.length > 0) {
+                    showAutocomplete(searchTerm, true);
+                } else {
+                    showAutocomplete('', true);
+                }
+            } else if (value.startsWith('/')) {
+                // Show command autocomplete
+                const searchTerm = value.substring(1);
+                showAutocomplete(searchTerm, false);
+            } else {
+                hideAutocomplete();
+            }
+        });
+        
+        // Click outside to hide autocomplete
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.command-input-container')) {
+                hideAutocomplete();
+            }
+        });
+        
+        // Disable right-click
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            if (gameStarted) {
+                triggerAlert();
+            }
+        });
+         
+        // Handle fullscreen changes
+        document.addEventListener('fullscreenchange', function() {
+            if (!document.fullscreenElement && isFullscreenRestricted) {
+                showRestrictedOverlay();
+                setTimeout(() => {
+                    enterFullscreenRestricted();
+                }, 1000);
+            }
+        });
+        
+        // Prevent text selection in most contexts
+        document.onselectstart = function(e) {
+            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                return false;
+            }
+        };
+        
+        // Prevent drag and drop
+        document.ondragstart = function() {
+            return false;
+        };
+        
+        // Load student data on page load
+        window.addEventListener('load', function() {
+            loadStudentData();
+        });
+        
+        // Handle touch events for mobile
+        let touchStartY = 0;
+        document.addEventListener('touchstart', function(e) {
+            touchStartY = e.touches[0].clientY;
+        });
+        
+        document.addEventListener('touchmove', function(e) {
+            // Prevent pull-to-refresh on mobile
+            if (e.touches[0].clientY > touchStartY) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        // Handle visibility change to re-enter fullscreen
+        document.addEventListener('visibilitychange', function() {
+            if (isFullscreenRestricted && !document.hidden && !document.fullscreenElement) {
+                setTimeout(() => {
+                    enterFullscreenRestricted();
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>
