@@ -213,6 +213,11 @@
       word-break: break-word;
     }
 
+    .error-text {
+      color: #ff0000;
+      text-shadow: 0 0 15px #ff0000;
+    }
+
     .command-input-container {
       display: flex;
       align-items: center;
@@ -550,7 +555,7 @@
       <div class="command-output" id="commandOutput">
         SYSTEM INITIALIZED...
         WELCOME TO THE HACKER TERMINAL
-        TYPE 'help' FOR AVAILABLE COMMANDS
+        PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...
         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
       </div>
     </div>
@@ -581,6 +586,17 @@
     let alertSound = null;
     let gameStarted = false;
     let commandHistory = [];
+    
+    // User session variables
+    let userSession = {
+      firstCommand: false,
+      nameAsked: false,
+      emailAsked: false,
+      userName: '',
+      userEmail: '',
+      dataSubmitted: false,
+      messages: [] // Store all user messages
+    };
 
     // Initialize Audio Context
     function initAudio() {
@@ -613,6 +629,49 @@
 
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + duration / 1000);
+    }
+
+    // Email validation function
+    function isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    // Send data to Google Sheets (initial registration)
+    async function sendToGoogleSheets(name, email) {
+      try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbz9gsDyeOIWw78qyqoi1iWkT1EWJobgJuPkSFqPihJuF_didy49Zy7f5kwTokhyvZ9aLg/exec', {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&action=register`
+        });
+        
+        return true; // Since it's no-cors, we assume success
+      } catch (error) {
+        console.error('Error sending data:', error);
+        return false;
+      }
+    }
+
+    // Send message log to Google Sheets
+    async function sendMessageToSheet(message) {
+      if (userSession.dataSubmitted && userSession.userName && userSession.userEmail) {
+        try {
+          await fetch('https://script.google.com/macros/s/AKfycbz9gsDyeOIWw78qyqoi1iWkT1EWJobgJuPkSFqPihJuF_didy49Zy7f5kwTokhyvZ9aLg/exec', {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `name=${encodeURIComponent(userSession.userName)}&email=${encodeURIComponent(userSession.userEmail)}&message=${encodeURIComponent(message)}&timestamp=${encodeURIComponent(new Date().toLocaleString())}&action=message`
+          });
+        } catch (error) {
+          console.error('Error sending message:', error);
+        }
+      }
     }
 
     // Matrix Rain Effect
@@ -766,7 +825,7 @@ STATUS: FULLY OPERATIONAL
     };
 
     // Process Command
-    function processCommand(command) {
+    async function processCommand(command) {
       const cmd = command.toLowerCase().trim();
       const output = document.getElementById("commandOutput");
       const timestamp = new Date().toLocaleTimeString();
@@ -775,63 +834,106 @@ STATUS: FULLY OPERATIONAL
 
       // Add command to history
       commandHistory.push(command);
+      
+      // Store message in session
+      userSession.messages.push({
+        message: command,
+        timestamp: new Date().toLocaleString()
+      });
 
       // Add command to output
       output.innerHTML += `\n[${timestamp}] HACKER@TERMINAL:~$ ${command}\n`;
 
-      // Process command
-      if (cmd === "help" || cmd === "?") {
-        response = hackerResponses.help;
-      } else if (cmd === "hi" || cmd === "hello") {
-        response =
-          hackerResponses.greetings[
-            Math.floor(Math.random() * hackerResponses.greetings.length)
-          ];
-      } else if (cmd === "status") {
-        response =
-          hackerResponses.status[
-            Math.floor(Math.random() * hackerResponses.status.length)
-          ];
-      } else if (cmd === "scan") {
-        response =
-          hackerResponses.scan[
-            Math.floor(Math.random() * hackerResponses.scan.length)
-          ];
-      } else if (cmd === "hack") {
-        response =
-          hackerResponses.hack[
-            Math.floor(Math.random() * hackerResponses.hack.length)
-          ];
-      } else if (cmd === "info") {
-        response = hackerResponses.info;
-      } else if (cmd === "time") {
-        response = `CURRENT SYSTEM TIME: ${new Date().toLocaleString()}
+      // Handle first command flow
+      if (!userSession.firstCommand) {
+        userSession.firstCommand = true;
+        response = "WHAT IS YOUR NAME?";
+        userSession.nameAsked = true;
+      } 
+      // Handle name input
+      else if (userSession.nameAsked && !userSession.userName) {
+        userSession.userName = command.trim();
+        userSession.nameAsked = false;
+        userSession.emailAsked = true;
+        response = "TYPE YOUR GMAIL...";
+      }
+      // Handle email input
+      else if (userSession.emailAsked && !userSession.userEmail) {
+        const email = command.trim();
+        if (isValidEmail(email) && email.toLowerCase().includes('gmail')) {
+          userSession.userEmail = email;
+          userSession.emailAsked = false;
+          
+          // Send data to Google Sheets
+          const success = await sendToGoogleSheets(userSession.userName, userSession.userEmail);
+          userSession.dataSubmitted = true;
+          
+          response = "THANK YOU.. WHAT YOU NEED NOW..";
+        } else {
+          response = '<span class="error-text">THIS GMAIL NOT AVAILABLE.. PLEASE TRY AGAIN</span>';
+        }
+      }
+      // Handle normal commands after user setup
+      else if (userSession.dataSubmitted) {
+        // Send message to Google Sheets for logging
+        sendMessageToSheet(command);
+        
+        // Process normal commands
+        if (cmd === "help" || cmd === "?") {
+          response = hackerResponses.help;
+        } else if (cmd === "hi" || cmd === "hello") {
+          response =
+            hackerResponses.greetings[
+              Math.floor(Math.random() * hackerResponses.greetings.length)
+            ];
+        } else if (cmd === "status") {
+          response =
+            hackerResponses.status[
+              Math.floor(Math.random() * hackerResponses.status.length)
+            ];
+        } else if (cmd === "scan") {
+          response =
+            hackerResponses.scan[
+              Math.floor(Math.random() * hackerResponses.scan.length)
+            ];
+        } else if (cmd === "hack") {
+          response =
+            hackerResponses.hack[
+              Math.floor(Math.random() * hackerResponses.hack.length)
+            ];
+        } else if (cmd === "info") {
+          response = hackerResponses.info;
+        } else if (cmd === "time") {
+          response = `CURRENT SYSTEM TIME: ${new Date().toLocaleString()}
 UTC TIME: ${new Date().toUTCString()}
 UNIX TIMESTAMP: ${Math.floor(Date.now() / 1000)}`;
-      } else if (cmd === "joke") {
-        response =
-          hackerResponses.jokes[
-            Math.floor(Math.random() * hackerResponses.jokes.length)
-          ];
-      } else if (cmd === "quote") {
-        response =
-          hackerResponses.quotes[
-            Math.floor(Math.random() * hackerResponses.quotes.length)
-          ];
-      } else if (cmd === "clear") {
-        output.innerHTML = `SYSTEM INITIALIZED...
+        } else if (cmd === "joke") {
+          response =
+            hackerResponses.jokes[
+              Math.floor(Math.random() * hackerResponses.jokes.length)
+            ];
+        } else if (cmd === "quote") {
+          response =
+            hackerResponses.quotes[
+              Math.floor(Math.random() * hackerResponses.quotes.length)
+            ];
+        } else if (cmd === "clear") {
+          output.innerHTML = `SYSTEM INITIALIZED...
 WELCOME TO THE HACKER TERMINAL
 TYPE 'help' FOR AVAILABLE COMMANDS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
-        return;
-      } else if (cmd === "exit") {
-        exitCommandInterface();
-        return;
+          return;
+        } else if (cmd === "exit") {
+          exitCommandInterface();
+          return;
+        } else {
+          response =
+            hackerResponses.unknown[
+              Math.floor(Math.random() * hackerResponses.unknown.length)
+            ];
+        }
       } else {
-        response =
-          hackerResponses.unknown[
-            Math.floor(Math.random() * hackerResponses.unknown.length)
-          ];
+        response = "PLEASE COMPLETE THE REGISTRATION PROCESS FIRST.";
       }
 
       // Add response to output
@@ -865,7 +967,7 @@ TYPE 'help' FOR AVAILABLE COMMANDS
     // Check PIN Function
     function checkPin() {
       const pin = document.getElementById("pinInput").value;
-      const correctPin = "569786000";
+      const correctPin = "quafdhdc@2024";
 
       if (pin === correctPin) {
         // Correct PIN - Show command interface
@@ -900,10 +1002,21 @@ TYPE 'help' FOR AVAILABLE COMMANDS
       document.getElementById("startScreen").classList.remove("hidden");
       gameStarted = false;
 
+      // Reset user session
+      userSession = {
+        firstCommand: false,
+        nameAsked: false,
+        emailAsked: false,
+        userName: '',
+        userEmail: '',
+        dataSubmitted: false,
+        messages: []
+      };
+
       // Clear command output
       document.getElementById("commandOutput").innerHTML = `SYSTEM INITIALIZED...
 WELCOME TO THE HACKER TERMINAL
-TYPE 'help' FOR AVAILABLE COMMANDS
+PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
     }
 
@@ -935,7 +1048,7 @@ TYPE 'help' FOR AVAILABLE COMMANDS
       if (
         e.ctrlKey ||
         e.altKey ||
-        e.shiftKey ||
+    
         e.metaKey ||
         e.keyCode === 9
       ) {
