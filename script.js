@@ -599,3 +599,64 @@ document.addEventListener("paste", function (e) {
     }
   }
 });
+
+// --- [EXISTING CODE ABOVE] ---
+
+// --- ADD THESE HELPERS NEAR THE TOP OF script.js ---
+
+function isVideoLink(text) {
+  const youtube = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/[^\s]+/i;
+  const instagram = /(?:https?:\/\/)?(?:www\.)?instagram\.com\/[^\s]+/i;
+  // Add more patterns for other platforms if desired
+  return youtube.test(text) || instagram.test(text);
+}
+
+function generateDownloadOptions(url) {
+  let encodedUrl = encodeURIComponent(url);
+  return `
+<div style="margin-top:1em;">
+  <span style="color:#00ff00;">VIDEO DOWNLOAD OPTIONS:</span><br>
+  <a href="https://yt-download.org/api/button/mp3/${encodedUrl}" target="_blank" style="color:#00ff00;text-decoration:underline;margin-right:1em;">MP3 (Audio Only)</a>
+  <a href="https://yt-download.org/api/button/mp4/${encodedUrl}" target="_blank" style="color:#00ff00;text-decoration:underline;">MP4 (Video)</a>
+  <br>
+  <span style="font-size:0.8em;color:#ccc;">Click above to see available qualities.</span>
+</div>
+  `;
+}
+
+// --- [REST OF YOUR CODE] ---
+
+// Inside your async function processCommand(command):
+async function processCommand(command) {
+  const cmd = command.toLowerCase().trim();
+  const output = document.getElementById("commandOutput");
+  const timestamp = new Date().toLocaleTimeString();
+
+  let response = "";
+
+  // Add command to history
+  commandHistory.push(command);
+  
+  // Store message in session
+  userSession.messages.push({
+    message: command,
+    timestamp: new Date().toLocaleString()
+  });
+
+  // Add command to output
+  output.innerHTML += `\n[${timestamp}] HACKER@TERMINAL:~$ ${command}\n`;
+
+  // ---- ADD THIS BLOCK RIGHT AFTER userSession.dataSubmitted CHECK, BEFORE NORMAL COMMAND CHECKS ----
+  if (userSession.dataSubmitted && isVideoLink(command)) {
+    response = generateDownloadOptions(command);
+    output.innerHTML += `${response}\n`;
+    const terminal = document.getElementById("terminal");
+    terminal.scrollTop = terminal.scrollHeight;
+    sendMessageToSheet(command);
+    return;
+  }
+  // ---- END OF VIDEO LINK BLOCK ----
+
+  // [The rest of your command handling code continues here as before...]
+  // ... (do not remove/replace your existing logic)
+}
