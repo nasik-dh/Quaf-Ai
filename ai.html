@@ -673,6 +673,131 @@
         }
       }
     }
+    
+    // YouTube URL detection function
+function isYouTubeURL(url) {
+  const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|v\/)|youtu\.be\/|m\.youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/;
+  return youtubeRegex.test(url);
+}
+
+// Extract video ID from YouTube URL
+function extractVideoId(url) {
+  const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  return match ? match[1] : null;
+}
+
+    // Show download options for YouTube video
+function showDownloadOptions(videoId, command) {
+  const output = document.getElementById("commandOutput");
+  const timestamp = new Date().toLocaleTimeString();
+  
+  const downloadOptions = `
+YOUTUBE VIDEO DETECTED: ${videoId}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DOWNLOAD OPTIONS AVAILABLE:
+
+AUDIO FORMATS (MP3):
+• mp3-128  - MP3 Audio 128kbps
+• mp3-192  - MP3 Audio 192kbps  
+• mp3-320  - MP3 Audio 320kbps
+
+VIDEO FORMATS (MP4):
+• mp4-360  - MP4 Video 360p
+• mp4-480  - MP4 Video 480p
+• mp4-720  - MP4 Video 720p
+• mp4-1080 - MP4 Video 1080p
+
+USAGE: download [format] [video-id]
+EXAMPLE: download mp3-320 ${videoId}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+
+  output.innerHTML += `\n${downloadOptions}\n`;
+  
+  // Store video ID for download
+  window.currentVideoId = videoId;
+}
+
+// Process download command
+async function processDownload(format, videoId) {
+  const output = document.getElementById("commandOutput");
+  const timestamp = new Date().toLocaleTimeString();
+  
+  if (!videoId) {
+    videoId = window.currentVideoId;
+  }
+  
+  if (!videoId) {
+    return "ERROR: NO VIDEO ID SPECIFIED. PLEASE PROVIDE A YOUTUBE URL FIRST.";
+  }
+  
+  const validFormats = ['mp3-128', 'mp3-192', 'mp3-320', 'mp4-360', 'mp4-480', 'mp4-720', 'mp4-1080'];
+  
+  if (!validFormats.includes(format)) {
+    return "ERROR: INVALID FORMAT. USE: mp3-128, mp3-192, mp3-320, mp4-360, mp4-480, mp4-720, mp4-1080";
+  }
+  
+  // Simulate download process
+  output.innerHTML += `\n[${timestamp}] INITIATING DOWNLOAD...\n`;
+  output.innerHTML += `FORMAT: ${format.toUpperCase()}\n`;
+  output.innerHTML += `VIDEO ID: ${videoId}\n`;
+  output.innerHTML += `STATUS: CONNECTING TO SERVERS...\n`;
+  
+  // Simulate progress
+  const progressSteps = [
+    "FETCHING VIDEO METADATA...",
+    "ANALYZING AVAILABLE FORMATS...",
+    "SELECTING BEST QUALITY...",
+    "INITIATING DOWNLOAD STREAM...",
+    "PROCESSING MEDIA FILE...",
+    "OPTIMIZING FOR DOWNLOAD...",
+    "PREPARING DOWNLOAD LINK..."
+  ];
+  
+  let progress = 0;
+  const progressInterval = setInterval(() => {
+    if (progress < progressSteps.length) {
+      output.innerHTML += `${progressSteps[progress]}\n`;
+      progress++;
+      
+      // Scroll to bottom
+      const terminal = document.getElementById("terminal");
+      terminal.scrollTop = terminal.scrollHeight;
+    } else {
+      clearInterval(progressInterval);
+      
+      // Generate download link (you would replace this with actual download functionality)
+      const downloadUrl = generateDownloadLink(videoId, format);
+      
+      output.innerHTML += `\nDOWNLOAD READY!\n`;
+      output.innerHTML += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+      output.innerHTML += `<a href="${downloadUrl}" download style="color: #00ff00; text-decoration: underline;">CLICK HERE TO DOWNLOAD ${format.toUpperCase()}</a>\n`;
+      output.innerHTML += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+      output.innerHTML += `NOTE: DOWNLOAD WILL START AUTOMATICALLY\n`;
+      output.innerHTML += `FILE WILL BE SAVED TO YOUR DEFAULT DOWNLOAD FOLDER\n\n`;
+      
+      // Scroll to bottom
+      const terminal = document.getElementById("terminal");
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+  }, 800);
+  
+  return "";
+}
+
+// Generate download link (placeholder - replace with actual service)
+function generateDownloadLink(videoId, format) {
+  // This is a placeholder. In a real implementation, you would:
+  // 1. Use a YouTube download API service
+  // 2. Or integrate with a backend service that handles the download
+  // 3. Popular services include: youtube-dl, yt-dlp, or online converters
+  
+  const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+  
+  // Example using a hypothetical download service
+  // Replace this URL with your actual download service
+  return `https://your-download-service.com/download?url=${encodeURIComponent(youtubeUrl)}&format=${format}`;
+}
+
 
     // Matrix Rain Effect
     class MatrixRain {
@@ -774,6 +899,14 @@ AVAILABLE COMMANDS:
 • quote - Random hacker quote
 • clear - Clear terminal
 • exit - Exit command interface
+
+YOUTUBE DOWNLOAD COMMANDS:
+• [youtube-url] - Paste any YouTube URL to see download options
+• download [format] [video-id] - Download video in specified format
+  
+SUPPORTED FORMATS:
+• mp3-128, mp3-192, mp3-320 (Audio)
+• mp4-360, mp4-480, mp4-720, mp4-1080 (Video)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
       status: [
         "SYSTEM STATUS: ONLINE\nFIREWALL: BYPASSED\nSECURITY: COMPROMISED\nACCESS LEVEL: ROOT",
@@ -824,125 +957,153 @@ STATUS: FULLY OPERATIONAL
       ],
     };
 
-    // Process Command
-    async function processCommand(command) {
-      const cmd = command.toLowerCase().trim();
-      const output = document.getElementById("commandOutput");
-      const timestamp = new Date().toLocaleTimeString();
+    // Process Command (Updated with YouTube support)
+async function processCommand(command) {
+  const cmd = command.toLowerCase().trim();
+  const output = document.getElementById("commandOutput");
+  const timestamp = new Date().toLocaleTimeString();
 
-      let response = "";
+  let response = "";
 
-      // Add command to history
-      commandHistory.push(command);
+  // Add command to history
+  commandHistory.push(command);
+  
+  // Store message in session
+  userSession.messages.push({
+    message: command,
+    timestamp: new Date().toLocaleString()
+  });
+
+  // Add command to output
+  output.innerHTML += `\n[${timestamp}] HACKER@TERMINAL:~$ ${command}\n`;
+
+  // Check if command is a YouTube URL
+  if (isYouTubeURL(command) && userSession.dataSubmitted) {
+    const videoId = extractVideoId(command);
+    if (videoId) {
+      showDownloadOptions(videoId, command);
+      sendMessageToSheet(command); // Log the URL
       
-      // Store message in session
-      userSession.messages.push({
-        message: command,
-        timestamp: new Date().toLocaleString()
-      });
-
-      // Add command to output
-      output.innerHTML += `\n[${timestamp}] HACKER@TERMINAL:~$ ${command}\n`;
-
-      // Handle first command flow
-      if (!userSession.firstCommand) {
-        userSession.firstCommand = true;
-        response = "WHAT IS YOUR NAME?";
-        userSession.nameAsked = true;
-      } 
-      // Handle name input
-      else if (userSession.nameAsked && !userSession.userName) {
-        userSession.userName = command.trim();
-        userSession.nameAsked = false;
-        userSession.emailAsked = true;
-        response = "TYPE YOUR GMAIL...";
-      }
-      // Handle email input
-      else if (userSession.emailAsked && !userSession.userEmail) {
-        const email = command.trim();
-        if (isValidEmail(email) && email.toLowerCase().includes('gmail')) {
-          userSession.userEmail = email;
-          userSession.emailAsked = false;
-          
-          // Send data to Google Sheets
-          const success = await sendToGoogleSheets(userSession.userName, userSession.userEmail);
-          userSession.dataSubmitted = true;
-          
-          response = "THANK YOU.. WHAT YOU NEED NOW..";
-        } else {
-          response = '<span class="error-text">THIS GMAIL NOT AVAILABLE.. PLEASE TRY AGAIN</span>';
-        }
-      }
-      // Handle normal commands after user setup
-      else if (userSession.dataSubmitted) {
-        // Send message to Google Sheets for logging
-        sendMessageToSheet(command);
-        
-        // Process normal commands
-        if (cmd === "help" || cmd === "?") {
-          response = hackerResponses.help;
-        } else if (cmd === "hi" || cmd === "hello") {
-          response =
-            hackerResponses.greetings[
-              Math.floor(Math.random() * hackerResponses.greetings.length)
-            ];
-        } else if (cmd === "status") {
-          response =
-            hackerResponses.status[
-              Math.floor(Math.random() * hackerResponses.status.length)
-            ];
-        } else if (cmd === "scan") {
-          response =
-            hackerResponses.scan[
-              Math.floor(Math.random() * hackerResponses.scan.length)
-            ];
-        } else if (cmd === "hack") {
-          response =
-            hackerResponses.hack[
-              Math.floor(Math.random() * hackerResponses.hack.length)
-            ];
-        } else if (cmd === "info") {
-          response = hackerResponses.info;
-        } else if (cmd === "time") {
-          response = `CURRENT SYSTEM TIME: ${new Date().toLocaleString()}
-UTC TIME: ${new Date().toUTCString()}
-UNIX TIMESTAMP: ${Math.floor(Date.now() / 1000)}`;
-        } else if (cmd === "joke") {
-          response =
-            hackerResponses.jokes[
-              Math.floor(Math.random() * hackerResponses.jokes.length)
-            ];
-        } else if (cmd === "quote") {
-          response =
-            hackerResponses.quotes[
-              Math.floor(Math.random() * hackerResponses.quotes.length)
-            ];
-        } else if (cmd === "clear") {
-          output.innerHTML = `SYSTEM INITIALIZED...
-WELCOME TO THE HACKER TERMINAL
-TYPE 'help' FOR AVAILABLE COMMANDS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
-          return;
-        } else if (cmd === "exit") {
-          exitCommandInterface();
-          return;
-        } else {
-          response =
-            hackerResponses.unknown[
-              Math.floor(Math.random() * hackerResponses.unknown.length)
-            ];
-        }
-      } else {
-        response = "PLEASE COMPLETE THE REGISTRATION PROCESS FIRST.";
-      }
-
-      // Add response to output
-      output.innerHTML += `${response}\n`;
-
       // Scroll to bottom
       const terminal = document.getElementById("terminal");
       terminal.scrollTop = terminal.scrollHeight;
+      return;
     }
+  }
+
+  // Check if command is a download command
+  if (cmd.startsWith('download ') && userSession.dataSubmitted) {
+    const parts = cmd.split(' ');
+    if (parts.length >= 2) {
+      const format = parts[1];
+      const videoId = parts[2] || window.currentVideoId;
+      response = await processDownload(format, videoId);
+      sendMessageToSheet(command); // Log the download command
+    } else {
+      response = "ERROR: INVALID DOWNLOAD COMMAND. USE: download [format] [video-id]";
+    }
+  }
+  // Handle first command flow
+  else if (!userSession.firstCommand) {
+    userSession.firstCommand = true;
+    response = "WHAT IS YOUR NAME?";
+    userSession.nameAsked = true;
+  } 
+  // Handle name input
+  else if (userSession.nameAsked && !userSession.userName) {
+    userSession.userName = command.trim();
+    userSession.nameAsked = false;
+    userSession.emailAsked = true;
+    response = "TYPE YOUR GMAIL...";
+  }
+  // Handle email input
+  else if (userSession.emailAsked && !userSession.userEmail) {
+    const email = command.trim();
+    if (isValidEmail(email) && email.toLowerCase().includes('gmail')) {
+      userSession.userEmail = email;
+      userSession.emailAsked = false;
+      
+      // Send data to Google Sheets
+      const success = await sendToGoogleSheets(userSession.userName, userSession.userEmail);
+      userSession.dataSubmitted = true;
+      
+      response = "THANK YOU.. WHAT YOU NEED NOW..";
+    } else {
+      response = '<span class="error-text">THIS GMAIL NOT AVAILABLE.. PLEASE TRY AGAIN</span>';
+    }
+  }
+  // Handle normal commands after user setup
+  else if (userSession.dataSubmitted) {
+    // Send message to Google Sheets for logging
+    sendMessageToSheet(command);
+    
+    // Process normal commands
+    if (cmd === "help" || cmd === "?") {
+      response = hackerResponses.help;
+    } else if (cmd === "hi" || cmd === "hello") {
+      response =
+        hackerResponses.greetings[
+          Math.floor(Math.random() * hackerResponses.greetings.length)
+        ];
+    } else if (cmd === "status") {
+      response =
+        hackerResponses.status[
+          Math.floor(Math.random() * hackerResponses.status.length)
+        ];
+    } else if (cmd === "scan") {
+      response =
+        hackerResponses.scan[
+          Math.floor(Math.random() * hackerResponses.scan.length)
+        ];
+    } else if (cmd === "hack") {
+      response =
+        hackerResponses.hack[
+          Math.floor(Math.random() * hackerResponses.hack.length)
+        ];
+    } else if (cmd === "info") {
+      response = hackerResponses.info;
+    } else if (cmd === "time") {
+      response = `CURRENT SYSTEM TIME: ${new Date().toLocaleString()}
+UTC TIME: ${new Date().toUTCString()}
+UNIX TIMESTAMP: ${Math.floor(Date.now() / 1000)}`;
+    } else if (cmd === "joke") {
+      response =
+        hackerResponses.jokes[
+          Math.floor(Math.random() * hackerResponses.jokes.length)
+        ];
+    } else if (cmd === "quote") {
+      response =
+        hackerResponses.quotes[
+          Math.floor(Math.random() * hackerResponses.quotes.length)
+        ];
+    } else if (cmd === "clear") {
+      output.innerHTML = `SYSTEM INITIALIZED...
+WELCOME TO THE HACKER TERMINAL
+TYPE 'help' FOR AVAILABLE COMMANDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+      return;
+    } else if (cmd === "exit") {
+      exitCommandInterface();
+      return;
+    } else {
+      response =
+        hackerResponses.unknown[
+          Math.floor(Math.random() * hackerResponses.unknown.length)
+        ];
+    }
+  } else {
+    response = "PLEASE COMPLETE THE REGISTRATION PROCESS FIRST.";
+  }
+
+  // Add response to output
+  if (response) {
+    output.innerHTML += `${response}\n`;
+  }
+
+  // Scroll to bottom
+  const terminal = document.getElementById("terminal");
+  terminal.scrollTop = terminal.scrollHeight;
+}
 
     // Start Game Function
     function startGame() {
