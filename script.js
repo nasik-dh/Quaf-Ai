@@ -599,3 +599,77 @@ document.addEventListener("paste", function (e) {
     }
   }
 });
+
+// Helper: Detect if input is a YouTube, Instagram, or other video link
+function isVideoLink(text) {
+  // Extend this regex for more platforms
+  const youtube = /(?:https?:\/\/)?(?:www\.)?(youtube\.com|youtu\.be)\/[^\s]+/i;
+  const instagram = /(?:https?:\/\/)?(?:www\.)?instagram\.com\/[^\s]+/i;
+  // Add more regexes as needed
+  return youtube.test(text) || instagram.test(text);
+}
+
+// Helper: Generate download options HTML
+function generateDownloadOptions(url) {
+  // You can use your own API or a public one; here are some demo links
+  // Replace "YOUR_API_ENDPOINT" with your backend if you have one.
+  // Example APIs: yt-download.org, loader.to, y2mate, etc.
+  // WARNING: Many public converters are not always reliable or may show ads.
+  // For production, use your own backend with yt-dlp.
+  let encodedUrl = encodeURIComponent(url);
+
+  return `
+<div style="margin-top:1em;">
+  <span style="color:#00ff00;">VIDEO DOWNLOAD OPTIONS:</span><br>
+  <a href="https://yt-download.org/api/button/mp3/${encodedUrl}" target="_blank" style="color:#00ff00;text-decoration:underline;margin-right:1em;">MP3 (Audio Only)</a>
+  <a href="https://yt-download.org/api/button/mp4/${encodedUrl}" target="_blank" style="color:#00ff00;text-decoration:underline;">MP4 (Video)</a>
+  <br>
+  <span style="font-size:0.8em;color:#ccc;">Click above to see available qualities.</span>
+</div>
+  `;
+}
+
+// Inside processCommand, after userSession.dataSubmitted check and before other commands:
+if (userSession.dataSubmitted && isVideoLink(command)) {
+  // Provide download options for supported video URLs
+  response = generateDownloadOptions(command);
+  output.innerHTML += `${response}\n`;
+  const terminal = document.getElementById("terminal");
+  terminal.scrollTop = terminal.scrollHeight;
+  sendMessageToSheet(command); // (optional: keep for logging)
+  return;
+}
+
+// --- ADD THESE HELPERS NEAR THE TOP OF script.js ---
+
+function isVideoLink(text) {
+  const youtube = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/[^\s]+/i;
+  const instagram = /(?:https?:\/\/)?(?:www\.)?instagram\.com\/[^\s]+/i;
+  // Extend for more
+  return youtube.test(text) || instagram.test(text);
+}
+
+function generateDownloadOptions(url) {
+  let encodedUrl = encodeURIComponent(url);
+  return `
+<div style="margin-top:1em;">
+  <span style="color:#00ff00;">VIDEO DOWNLOAD OPTIONS:</span><br>
+  <a href="https://yt-download.org/api/button/mp3/${encodedUrl}" target="_blank" style="color:#00ff00;text-decoration:underline;margin-right:1em;">MP3 (Audio Only)</a>
+  <a href="https://yt-download.org/api/button/mp4/${encodedUrl}" target="_blank" style="color:#00ff00;text-decoration:underline;">MP4 (Video)</a>
+  <br>
+  <span style="font-size:0.8em;color:#ccc;">Click above to see available qualities.</span>
+</div>
+  `;
+}
+
+// --- IN processCommand, after userSession.dataSubmitted check and before other command checks ---
+
+if (userSession.dataSubmitted && isVideoLink(command)) {
+  response = generateDownloadOptions(command);
+  output.innerHTML += `${response}\n`;
+  const terminal = document.getElementById("terminal");
+  terminal.scrollTop = terminal.scrollHeight;
+  sendMessageToSheet(command); // (optional)
+  return;
+}
+
