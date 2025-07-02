@@ -1,4 +1,4 @@
- // Quiz Data
+// Quiz Data
         const subjectQuestions = {
             "1": [
                 {
@@ -1767,6 +1767,40 @@
             }
         }
 
+          // Send quiz results to Google Sheets
+        async function sendQuizResults() {
+            if (userSession.dataSubmitted && userSession.userName && userSession.userEmail) {
+                try {
+                    const totalPossible = Object.keys(quizSession.completedSubjects).length * 20;
+                    const accuracy = Math.round((quizSession.totalScore / totalPossible) * 100);
+                    
+                    await fetch('https://script.google.com/macros/s/AKfycbz9gsDyeOIWw78qyqoi1iWkT1EWJobgJuPkSFqPihJuF_didy49Zy7f5kwTokhyvZ9aLg/exec', {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `name=${encodeURIComponent(userSession.userName)}&email=${encodeURIComponent(userSession.userEmail)}&results=${encodeURIComponent(JSON.stringify(quizSession.allResults))}&totalScore=${quizSession.totalScore}&totalPossible=${totalPossible}&accuracy=${accuracy}&timestamp=${encodeURIComponent(new Date().toLocaleString())}&action=quiz_results`
+                    });
+                    
+                    // Show success message to user
+                    const output = document.getElementById("commandOutput");
+                    const timestamp = new Date().toLocaleTimeString();
+                    output.innerHTML += `\n[${timestamp}] QUIZ RESULTS SAVED SUCCESSFULLY!\n`;
+                    
+                    const terminal = document.getElementById("terminal");
+                    terminal.scrollTop = terminal.scrollHeight;
+                    
+                    return true;
+                } catch (error) {
+                    console.error('Error sending quiz results:', error);
+                    return false;
+                }
+            }
+            return false;
+        }
+        
+
         // Matrix Rain Effect
         class MatrixRain {
             constructor() {
@@ -1837,7 +1871,7 @@
                 "Welcome to the underground, hacker. What brings you here?",
                 "Salutations, code breaker. The system awaits your command.",
             ],
-            help: `
+             help: `
 AVAILABLE COMMANDS:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 • help / ? - Show this help menu
@@ -1850,6 +1884,7 @@ AVAILABLE COMMANDS:
 • joke - Get a hacker joke
 • quote - Random hacker quote
 • quiz - Start knowledge assessment system
+• save_quiz - Manually save quiz results to database
 • clear - Clear terminal
 • exit - Exit command interface
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
@@ -1998,32 +2033,47 @@ STATUS: FULLY OPERATIONAL
             }, 2000);
         }
 
-        function completeSubject() {
-            const subject = quizSession.currentSubject;
-            const score = quizSession.currentScore;
-            
-            quizSession.completedSubjects[subject] = score;
-            quizSession.totalScore += score;
-            quizSession.allResults[subject] = {
-                name: subjectNames[subject],
-                score: score,
-                total: 20
-            };
-            
-            document.getElementById('questionInterface').classList.add('hidden');
-            document.getElementById('subjectSelection').classList.remove('hidden');
-            
-            generateSubjectButtons();
-            updateQuizProgress();
-            
-            if (Object.keys(quizSession.completedSubjects).length === 3) { // For now, only 3 subjects
-                setTimeout(() => showResults(), 1000);
-            }
+         function completeSubject() {
+    const subject = quizSession.currentSubject;
+    const score = quizSession.currentScore;
+    
+    quizSession.completedSubjects[subject] = score;
+    quizSession.totalScore += score;
+    quizSession.allResults[subject] = {
+        name: subjectNames[subject],
+        score: score,
+        total: 20
+    };
+    
+    document.getElementById('questionInterface').classList.add('hidden');
+    document.getElementById('subjectSelection').classList.remove('hidden');
+    
+    generateSubjectButtons();
+    updateQuizProgress();
+    
+    // Show completion message for this subject
+    const output = document.getElementById("commandOutput");
+    const timestamp = new Date().toLocaleTimeString();
+    if (output) {
+        output.innerHTML += `\n[${timestamp}] SUBJECT COMPLETED: ${subjectNames[subject]} - Score: ${score}/20\n`;
+        const terminal = document.getElementById("terminal");
+        if (terminal) {
+            terminal.scrollTop = terminal.scrollHeight;
         }
+    }
+    
+    // Check if ALL 16 subjects are completed (not just available ones)
+    const totalSubjects = 16;
+    const completedCount = Object.keys(quizSession.completedSubjects).length;
+    
+    if (completedCount === totalSubjects) {
+        setTimeout(() => showResults(), 1000);
+    }
+}
 
-        function updateQuizProgress() {
+         function updateQuizProgress() {
             const completed = Object.keys(quizSession.completedSubjects).length;
-            const total = 3; // For now, only 3 subjects available
+            const total = 16; // All 16 subjects available
             
             document.getElementById('completedCount').textContent = completed;
             document.getElementById('totalScore').textContent = quizSession.totalScore;
@@ -2032,7 +2082,7 @@ STATUS: FULLY OPERATIONAL
             document.getElementById('overallProgress').style.width = progress + '%';
         }
 
-        function showResults() {
+         function showResults() {
             document.getElementById('subjectSelection').classList.add('hidden');
             document.getElementById('resultsInterface').classList.remove('hidden');
             
@@ -2043,75 +2093,130 @@ STATUS: FULLY OPERATIONAL
             document.getElementById('finalAccuracy').textContent = accuracy;
             
             createResultsChart();
+            
+            // Automatically send results to Google Sheets
+            sendQuizResults();
         }
 
         function createResultsChart() {
-            const ctx = document.getElementById('resultsChart').getContext('2d');
-            
-            const labels = Object.values(quizSession.allResults).map(result => result.name);
-            const scores = Object.values(quizSession.allResults).map(result => result.score);
-            const maxScores = Object.values(quizSession.allResults).map(result => result.total);
-            
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Your Score',
-                        data: scores,
-                        backgroundColor: 'rgba(0, 255, 0, 0.8)',
-                        borderColor: 'rgba(0, 255, 0, 1)',
-                        borderWidth: 2
-                    }, {
-                        label: 'Max Score',
-                        data: maxScores,
-                        backgroundColor: 'rgba(0, 100, 0, 0.3)',
-                        borderColor: 'rgba(0, 100, 0, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#00ff00',
-                                font: {
-                                    family: 'Orbitron'
-                                }
-                            }
+    const canvas = document.getElementById('resultsChart');
+    if (!canvas) return;
+    
+    // Destroy existing chart if it exists
+    if (window.quizChart) {
+        window.quizChart.destroy();
+    }
+    
+    const ctx = canvas.getContext('2d');
+    
+    const labels = Object.values(quizSession.allResults).map(result => result.name);
+    const scores = Object.values(quizSession.allResults).map(result => result.score);
+    const maxScores = Object.values(quizSession.allResults).map(result => result.total);
+    
+    // Create the chart and store reference globally
+    window.quizChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Your Score',
+                data: scores,
+                backgroundColor: 'rgba(0, 255, 0, 0.8)',
+                borderColor: 'rgba(0, 255, 0, 1)',
+                borderWidth: 2
+            }, {
+                label: 'Max Score',
+                data: maxScores,
+                backgroundColor: 'rgba(0, 100, 0, 0.3)',
+                borderColor: 'rgba(0, 100, 0, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#00ff00',
+                        font: {
+                            family: 'Orbitron',
+                            size: 12
                         }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 20,
-                            ticks: {
-                                color: '#00ff00',
-                                font: {
-                                    family: 'Orbitron'
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(0, 255, 0, 0.2)'
-                            }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Quiz Results by Subject',
+                    color: '#00ff00',
+                    font: {
+                        family: 'Orbitron',
+                        size: 16
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 20,
+                    ticks: {
+                        color: '#00ff00',
+                        font: {
+                            family: 'Orbitron',
+                            size: 10
                         },
-                        x: {
-                            ticks: {
-                                color: '#00ff00',
-                                font: {
-                                    family: 'Orbitron'
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(0, 255, 0, 0.2)'
-                            }
+                        stepSize: 2
+                    },
+                    grid: {
+                        color: 'rgba(0, 255, 0, 0.2)'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Score',
+                        color: '#00ff00',
+                        font: {
+                            family: 'Orbitron'
+                        }
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#00ff00',
+                        font: {
+                            family: 'Orbitron',
+                            size: 8
+                        },
+                        maxRotation: 45
+                    },
+                    grid: {
+                        color: 'rgba(0, 255, 0, 0.2)'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Subjects',
+                        color: '#00ff00',
+                        font: {
+                            family: 'Orbitron'
                         }
                     }
                 }
-            });
+            },
+            animation: {
+                duration: 2000,
+                easing: 'easeInOutQuart'
+            }
         }
+    });
+}
+
+        // Add this function for testing
+function forceShowResults() {
+    if (Object.keys(quizSession.completedSubjects).length === 0) {
+        alert("Complete at least one subject first!");
+        return;
+    }
+    showResults();
+}
 
         function restartQuiz() {
             quizSession.completedSubjects = {};
@@ -2125,17 +2230,47 @@ STATUS: FULLY OPERATIONAL
             updateQuizProgress();
         }
 
-        function exitQuiz() {
-            document.getElementById('quizContainer').classList.add('hidden');
-            document.getElementById('commandInterface').classList.remove('hidden');
-            
-            const output = document.getElementById("commandOutput");
-            const timestamp = new Date().toLocaleTimeString();
-            output.innerHTML += `\n[${timestamp}] QUIZ SYSTEM EXITED. WHAT YOU NEED NOW?\n`;
-            
-            const terminal = document.getElementById("terminal");
-            terminal.scrollTop = terminal.scrollHeight;
+        async function exitQuiz() {
+    // Send partial results as a message if user has completed any subjects
+    if (Object.keys(quizSession.completedSubjects).length > 0) {
+        const completedSubjects = Object.keys(quizSession.completedSubjects);
+        const totalCompleted = completedSubjects.length;
+        const totalPossible = totalCompleted * 20;
+        const accuracy = totalPossible > 0 ? Math.round((quizSession.totalScore / totalPossible) * 100) : 0;
+        
+        // Create detailed message about completed subjects
+        let resultsMessage = `🎯 PARTIAL QUIZ EXIT RESULTS:\n`;
+        resultsMessage += `✅ Completed Subjects: ${totalCompleted}/16\n`;
+        resultsMessage += `📊 Total Score: ${quizSession.totalScore}/${totalPossible}\n`;
+        resultsMessage += `🎯 Accuracy: ${accuracy}%\n\n`;
+        resultsMessage += `📋 Subject-wise Results:\n`;
+        
+        for (const subjectId of completedSubjects) {
+            const score = quizSession.completedSubjects[subjectId];
+            resultsMessage += `• ${subjectNames[subjectId]}: ${score}/20 (${Math.round((score/20)*100)}%)\n`;
         }
+        
+        resultsMessage += `\n⚠️ Quiz exited before completion - Partial results saved`;
+        
+        // Send as regular message using existing function
+        await sendMessageToSheet(resultsMessage);
+    }
+    
+    document.getElementById('quizContainer').classList.add('hidden');
+    document.getElementById('commandInterface').classList.remove('hidden');
+    
+    const output = document.getElementById("commandOutput");
+    const timestamp = new Date().toLocaleTimeString();
+    
+    if (Object.keys(quizSession.completedSubjects).length > 0) {
+        output.innerHTML += `\n[${timestamp}] QUIZ SYSTEM EXITED. PARTIAL RESULTS SAVED TO DATABASE. WHAT YOU NEED NOW?\n`;
+    } else {
+        output.innerHTML += `\n[${timestamp}] QUIZ SYSTEM EXITED. NO SUBJECTS COMPLETED. WHAT YOU NEED NOW?\n`;
+    }
+    
+    const terminal = document.getElementById("terminal");
+    terminal.scrollTop = terminal.scrollHeight;
+}
 
         // Process Command
         async function processCommand(command) {
@@ -2197,6 +2332,20 @@ STATUS: FULLY OPERATIONAL
                 } else if (cmd === "quote") {
                     response = hackerResponses.quotes[Math.floor(Math.random() * hackerResponses.quotes.length)];
                 } else if (cmd === "clear") {
+    // Add this line to properly clear and reset
+    document.getElementById("commandOutput").innerHTML = `SYSTEM INITIALIZED...\nWELCOME TO THE HACKER TERMINAL\nTYPE 'help' FOR AVAILABLE COMMANDS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+    return;
+                } else if (cmd === "save_quiz" || cmd === "save quiz") {
+                    if (Object.keys(quizSession.completedSubjects).length > 0) {
+                        const success = await sendQuizResults();
+                        if (success) {
+                            response = "QUIZ RESULTS SAVED TO DATABASE SUCCESSFULLY!";
+                        } else {
+                            response = "ERROR: FAILED TO SAVE QUIZ RESULTS. PLEASE TRY AGAIN.";
+                        }
+                    } else {
+                        response = "NO QUIZ RESULTS TO SAVE. COMPLETE AT LEAST ONE SUBJECT FIRST.";
+                    }    
                     output.innerHTML = `SYSTEM INITIALIZED...\nWELCOME TO THE HACKER TERMINAL\nTYPE 'help' FOR AVAILABLE COMMANDS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
                     return;
                 } else if (cmd === "exit") {
