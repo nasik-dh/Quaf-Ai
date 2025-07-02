@@ -2456,51 +2456,23 @@ PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...
             return emailRegex.test(email);
         }
 
-        function doPost(e) {
-  var sheet = SpreadsheetApp.getActiveSheet();
-  var params = e.parameter;
-  
-  if (params.action === 'register') {
-    sheet.appendRow([new Date(), params.name, params.email, 'Registration', '', '']);
-    return ContentService.createTextOutput('Success');
-  }
-  
-  else if (params.action === 'message') {
-    sheet.appendRow([params.timestamp, params.name, params.email, 'Message', params.message, '']);
-    return ContentService.createTextOutput('Success');
-  }
-  
-  else if (params.action === 'quiz_results') {
-    var resultsData = JSON.parse(params.results);
-    
-    // Add a summary row with total score
-    sheet.appendRow([
-      new Date(), 
-      params.name, 
-      params.email, 
-      'Quiz Total', 
-      `Total Score: ${params.totalScore}/${params.totalPossible} (${params.accuracy}%)`,
-      params.totalScore
-    ]);
-    
-    // Add individual subject scores
-    for (var subject in resultsData) {
-      var result = resultsData[subject];
-      sheet.appendRow([
-        new Date(),
-        params.name,
-        params.email,
-        'Quiz Subject',
-        `${result.name}: ${result.score}/${result.total}`,
-        result.score
-      ]);
-    }
-    
-    return ContentService.createTextOutput('Success');
-  }
-  
-  return ContentService.createTextOutput('Error');
-}
+        // Send data to Google Sheets
+        async function sendToGoogleSheets(name, email) {
+            try {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbz9gsDyeOIWw78qyqoi1iWkT1EWJobgJuPkSFqPihJuF_didy49Zy7f5kwTokhyvZ9aLg/exec', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&action=register`
+                });
+                return true;
+            } catch (error) {
+                console.error('Error sending data:', error);
+                return false;
+            }
+        }
 
         // Send message log to Google Sheets
         async function sendMessageToSheet(message) {
@@ -2520,7 +2492,7 @@ PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...
             }
         }
 
-        // Send quiz results to Google Sheets
+          // Send quiz results to Google Sheets
         async function sendQuizResults() {
             if (userSession.dataSubmitted && userSession.userName && userSession.userEmail) {
                 try {
@@ -2552,7 +2524,6 @@ PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...
             }
             return false;
         }
-
         
 
         // Matrix Rain Effect
