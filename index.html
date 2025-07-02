@@ -93,7 +93,92 @@
       </button>
     </div>
   </div>
-    
+
+  <!-- Quiz System -->
+    <div id="quizContainer" class="quiz-container hidden">
+        <div class="quiz-header">
+            <i class="fas fa-brain mr-2"></i>
+            HACKER KNOWLEDGE ASSESSMENT SYSTEM
+        </div>
+        
+        <!-- Subject Selection -->
+        <div id="subjectSelection">
+            <div class="quiz-progress">
+                <div class="quiz-stats">
+                    <span>SUBJECTS COMPLETED: <span id="completedCount">0</span>/16</span>
+                    <span>TOTAL SCORE: <span id="totalScore">0</span></span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="overallProgress"></div>
+                </div>
+            </div>
+            
+            <div class="subjects-grid" id="subjectsGrid">
+                <!-- Subject buttons will be generated here -->
+            </div>
+        </div>
+        
+        <!-- Question Interface -->
+        <div id="questionInterface" class="hidden">
+            <div class="quiz-progress">
+                <div class="quiz-stats">
+                    <span>QUESTION: <span id="currentQuestion">1</span>/20</span>
+                    <span>SCORE: <span id="currentScore">0</span>/20</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="questionProgress"></div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-header" id="questionHeader">
+                    QUESTION 1 OF 20
+                </div>
+                <div class="question-text" id="questionText">
+                    <!-- Question will be loaded here -->
+                </div>
+                <div class="options-container" id="optionsContainer">
+                    <!-- Options will be loaded here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Interface -->
+        <div id="resultsInterface" class="hidden">
+            <div class="results-container">
+                <div class="results-header">
+                    <i class="fas fa-trophy mr-2"></i>
+                    ASSESSMENT COMPLETE
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="resultsChart" style="height: 400px;"></canvas>
+                </div>
+                
+                <div class="total-score">
+                    TOTAL SCORE: <span id="finalTotalScore">0</span>/320
+                    <br>
+                    ACCURACY: <span id="finalAccuracy">0</span>%
+                </div>
+                
+                <div class="replay-buttons">
+                    <button class="replay-btn" onclick="restartQuiz()">
+                        <i class="fas fa-redo mr-2"></i>
+                        YES - RESTART
+                    </button>
+                    <button class="replay-btn no" onclick="exitQuiz()">
+                        <i class="fas fa-times mr-2"></i>
+                        NO - EXIT
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <button class="exit-btn" onclick="exitQuiz()" style="position: absolute; top: 2rem; right: 2rem;">
+            <i class="fas fa-times mr-2"></i>
+            EXIT QUIZ
+        </button>
+    </div>
 
   <script src="script.js"></script>
 </body>
