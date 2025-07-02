@@ -1,4 +1,4 @@
-// Quiz Data
+ // Quiz Data
         const subjectQuestions = {
             "1": [
                 {
@@ -1800,6 +1800,68 @@
             return false;
         }
         
+        // Student Details Functions
+        async function fetchStudentData() {
+            try {
+                const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vSYd5HVi2ehHX75k62gciAcf1a8pTwKi3M0Mpyc4Fzlx8PgYCxWFI4BYCqjqnzm5w/pub?gid=1359753454&single=true&output=csv');
+                const csvText = await response.text();
+                return parseCSV(csvText);
+            } catch (error) {
+                console.error('Error fetching student data:', error);
+                return null;
+            }
+        }
+
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n');
+            const headers = lines[0].split(',').map(header => header.trim().replace(/"/g, ''));
+            const students = {};
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i].trim()) {
+                    const values = lines[i].split(',').map(value => value.trim().replace(/"/g, ''));
+                    if (values.length >= headers.length && values[1]) { // Check if AD NO exists
+                        const adNo = values[1].trim();
+                        const studentData = {};
+                        headers.forEach((header, index) => {
+                            studentData[header] = values[index] || 'N/A';
+                        });
+                        students[adNo] = studentData;
+                    }
+                }
+            }
+            return students;
+        }
+
+        function formatStudentDetails(student) {
+            return `
+STUDENT DETAILS RETRIEVED:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NAME        : ${student.NAME || 'N/A'}
+AD NO       : ${student['AD NO'] || 'N/A'}
+S/O         : ${student['S/O'] || 'N/A'}
+HOUSE NAME  : ${student['HOUSE NAME'] || 'N/A'}
+PLACE       : ${student.PLACE || 'N/A'}
+POST        : ${student.POST || 'N/A'}
+PIN         : ${student.PIN || 'N/A'}
+DISTRICT    : ${student.DISTRICT || 'N/A'}
+STATE       : ${student.STATE || 'N/A'}
+BLOOD GROUP : ${student['BLOOD GROUP'] || 'N/A'}
+DOB         : ${student.DOB || 'N/A'}
+PHONE       : ${student.PHONE || 'N/A'}
+EMAIL       : ${student.EMAIL || 'N/A'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+        }
+
+        // Check if command is a valid student ID
+        function isValidStudentId(cmd) {
+            const validIds = ['960'];
+            // Add range 986-1021
+            for (let i = 986; i <= 1021; i++) {
+                validIds.push(i.toString());
+            }
+            return validIds.includes(cmd);
+        }
 
         // Matrix Rain Effect
         class MatrixRain {
@@ -1871,7 +1933,7 @@
                 "Welcome to the underground, hacker. What brings you here?",
                 "Salutations, code breaker. The system awaits your command.",
             ],
-             help: `
+              help: `
 AVAILABLE COMMANDS:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 • help / ? - Show this help menu
@@ -1885,6 +1947,7 @@ AVAILABLE COMMANDS:
 • quote - Random hacker quote
 • quiz - Start knowledge assessment system
 • save_quiz - Manually save quiz results to database
+• [AD NO] - Lookup student details (960, 986-1021)
 • clear - Clear terminal
 • exit - Exit command interface
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
@@ -2348,6 +2411,20 @@ function forceShowResults() {
                     }    
                     output.innerHTML = `SYSTEM INITIALIZED...\nWELCOME TO THE HACKER TERMINAL\nTYPE 'help' FOR AVAILABLE COMMANDS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
                     return;
+                } else if (isValidStudentId(cmd)) {
+                    response = "FETCHING STUDENT DATA... PLEASE WAIT...";
+                    output.innerHTML += `${response}\n`;
+                    const terminal = document.getElementById("terminal");
+                    terminal.scrollTop = terminal.scrollHeight;
+                    
+                    const studentData = await fetchStudentData();
+                    if (studentData && studentData[cmd]) {
+                        response = formatStudentDetails(studentData[cmd]);
+                    } else if (studentData) {
+                        response = `STUDENT WITH AD NO ${cmd} NOT FOUND IN DATABASE.`;
+                    } else {
+                        response = '<span class="error-text">ERROR: UNABLE TO FETCH STUDENT DATABASE. PLEASE TRY AGAIN LATER.</span>';
+                    }    
                 } else if (cmd === "exit") {
                     exitCommandInterface();
                     return;
