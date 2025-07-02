@@ -565,3 +565,30 @@
             .terminal { max-height: 50vh; }
             .quiz-container { padding: 1rem; }
         }
+        
+        .chart-container {
+    height: 400px;
+    margin: 2rem 0;
+    position: relative;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #00ff00;
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+#resultsChart {
+    max-height: 350px !important;
+    width: 100% !important;
+}
+
+/* Mobile responsive chart */
+@media (max-width: 640px) {
+    .chart-container {
+        height: 300px;
+        padding: 0.5rem;
+    }
+    
+    #resultsChart {
+        max-height: 250px !important;
+    }
+}
