@@ -59,20 +59,14 @@ PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...
             </div>
         </div>
         <div class="command-input-container">
-    <span class="command-prompt">QUAF@TERMINAL:~$</span>
-    <div style="position: relative; flex: 1 1 auto; display: flex; align-items: center;">
-        <input type="text" class="command-input" id="commandInput" placeholder="Enter command..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
-<input type="file" id="fileInput" style="display: none;" accept=".csv,.txt,.xlsx,.xls" />
-        <button class="attach-btn" onclick="triggerFileUpload()" title="Attach Files">
-            <i class="fas fa-paperclip"></i>
-        </button>
+            <span class="command-prompt">QUAF@TERMINAL:~$</span>
+            <input type="text" class="command-input" id="commandInput" placeholder="Enter command..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            <button class="exit-btn" onclick="exitCommandInterface()">
+                <i class="fas fa-times mr-2"></i>
+                EXIT
+            </button>
+        </div>
     </div>
-    <button class="exit-btn" onclick="exitCommandInterface()">
-        <i class="fas fa-times mr-2"></i>
-        EXIT
-    </button>
-</div>
-
     
     <!-- Quiz System -->
     <div id="quizContainer" class="quiz-container hidden">
