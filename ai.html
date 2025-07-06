@@ -11,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
     <style>
-        @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap");
+       @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap");
         
         * {
             margin: 0;
@@ -752,7 +752,7 @@ PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...
     
     
     <script>
-        // Quiz Data
+            // Quiz Data
         const subjectQuestions = {
             "1": [
                 {
@@ -2444,7 +2444,11 @@ PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...
             userName: '',
             userEmail: '',
             dataSubmitted: false,
-            messages: []
+            messages: [],
+                // Add these new properties
+    messagingMode: null, // 'gmail', 'whatsapp', 'telegram'
+    messagingStep: 0, // 0: none, 1: asking for contact, 2: confirmation
+    messagingContact: ''
         };
 
         // Quiz variables
@@ -2701,10 +2705,15 @@ AVAILABLE COMMANDS:
 • quote - Random hacker quote
 • quiz - Start knowledge assessment system
 • save_quiz - Manually save quiz results to database
+• send gmail - Send email via Gmail
+• send whatsapp - Send message via WhatsApp
+• send telegram - Send message via Telegram
 • [AD NO] - Lookup student details (960, 986-1021)
+• [AD NO] pic - Show student photo (960, 986-1021)
 • clear - Clear terminal
 • exit - Exit command interface
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+
             status: [
                 "SYSTEM STATUS: ONLINE\nFIREWALL: BYPASSED\nSECURITY: COMPROMISED\nACCESS LEVEL: ROOT",
                 "NETWORK STATUS: CONNECTED\nENCRYPTION: CRACKED\nSURVEILLANCE: DISABLED\nSTEALTH MODE: ACTIVE",
@@ -3089,113 +3098,249 @@ function forceShowResults() {
     terminal.scrollTop = terminal.scrollHeight;
 }
 
+// Messaging Functions
+function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+function validatePhoneNumber(phone) {
+    // Basic validation for international phone numbers
+    const phoneRegex = /^\+[1-9]\d{1,14}$/;
+    return phoneRegex.test(phone);
+}
+
+function openGmail(emails) {
+    const emailList = emails.split(',').map(email => email.trim()).join(',');
+    const subject = encodeURIComponent("Message from Quaf Hacker Terminal");
+    const body = encodeURIComponent(`Hello,
+
+[Your message here]
+
+Best regards,
+Quaf Hacker Terminal User`);
+    
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailList}&su=${subject}&body=${body}`;
+    window.open(gmailUrl, '_blank');
+}
+
+function openWhatsApp(phoneNumber) {
+    const message = encodeURIComponent(`Hello!
+
+[Your message here]
+
+Sent from Quaf Hacker Terminal`);
+    
+    const whatsappUrl = `https://wa.me/${phoneNumber.replace('+', '')}?text=${message}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+function openTelegram(phoneNumber) {
+    const message = encodeURIComponent(`Hello!
+
+[Your message here]
+
+Sent from Quaf Hacker Terminal`);
+    
+    const telegramUrl = `https://t.me/${phoneNumber.replace('+', '')}?text=${message}`;
+    window.open(telegramUrl, '_blank');
+}
+
+// Add these functions before the processCommand function
+function isPicRequest(cmd) {
+    const parts = cmd.split(' ');
+    if (parts.length !== 2 || parts[1] !== 'pic') {
+        return false;
+    }
+    return isValidStudentId(parts[0]);
+}
+
+function extractStudentIdFromPicCommand(cmd) {
+    const parts = cmd.split(' ');
+    return parts[0];
+}
+
+
+
         // Process Command
-        async function processCommand(command) {
-            const cmd = command.toLowerCase().trim();
-            const output = document.getElementById("commandOutput");
-            const timestamp = new Date().toLocaleTimeString();
-            let response = "";
+async function processCommand(command) {
+    const cmd = command.toLowerCase().trim();
+    const output = document.getElementById("commandOutput");
+    const timestamp = new Date().toLocaleTimeString();
+    let response = "";
 
-            commandHistory.push(command);
-            userSession.messages.push({
-                message: command,
-                timestamp: new Date().toLocaleString()
-            });
+    commandHistory.push(command);
+    userSession.messages.push({
+        message: command,
+        timestamp: new Date().toLocaleString()
+    });
 
-            output.innerHTML += `\n[${timestamp}] HACKER@TERMINAL:~$ ${command}\n`;
+    output.innerHTML += `\n[${timestamp}] HACKER@TERMINAL:~$ ${command}\n`;
 
-            if (!userSession.firstCommand) {
-                userSession.firstCommand = true;
-                response = "WHAT IS YOUR NAME?";
-                userSession.nameAsked = true;
-            } else if (userSession.nameAsked && !userSession.userName) {
-                userSession.userName = command.trim();
-                userSession.nameAsked = false;
-                userSession.emailAsked = true;
-                response = "TYPE YOUR GMAIL...";
-            } else if (userSession.emailAsked && !userSession.userEmail) {
-                const email = command.trim();
-                if (isValidEmail(email) && email.toLowerCase().includes('gmail')) {
-                    userSession.userEmail = email;
-                    userSession.emailAsked = false;
-                    const success = await sendToGoogleSheets(userSession.userName, userSession.userEmail);
-                    userSession.dataSubmitted = true;
-                    response = "THANK YOU.. WHAT YOU NEED NOW..";
-                } else {
-                    response = '<span class="error-text">THIS GMAIL NOT AVAILABLE.. PLEASE TRY AGAIN</span>';
-                }
-            } else if (userSession.dataSubmitted) {
-                sendMessageToSheet(command);
-
-                if (cmd === "quiz") {
-                    startQuiz();
-                    return;
-                } else if (cmd === "help" || cmd === "?") {
-                    response = hackerResponses.help;
-                } else if (cmd === "hi" || cmd === "hello") {
-                    response = hackerResponses.greetings[Math.floor(Math.random() * hackerResponses.greetings.length)];
-                } else if (cmd === "status") {
-                    response = hackerResponses.status[Math.floor(Math.random() * hackerResponses.status.length)];
-                } else if (cmd === "scan") {
-                    response = hackerResponses.scan[Math.floor(Math.random() * hackerResponses.scan.length)];
-                } else if (cmd === "hack") {
-                    response = hackerResponses.hack[Math.floor(Math.random() * hackerResponses.hack.length)];
-                } else if (cmd === "info") {
-                    response = hackerResponses.info;
-                } else if (cmd === "time") {
-                    response = `CURRENT SYSTEM TIME: ${new Date().toLocaleString()}\nUTC TIME: ${new Date().toUTCString()}\nUNIX TIMESTAMP: ${Math.floor(Date.now() / 1000)}`;
-                } else if (cmd === "joke") {
-                    response = hackerResponses.jokes[Math.floor(Math.random() * hackerResponses.jokes.length)];
-                } else if (cmd === "quote") {
-                    response = hackerResponses.quotes[Math.floor(Math.random() * hackerResponses.quotes.length)];
-                } else if (cmd === "clear") {
-    // Add this line to properly clear and reset
-    document.getElementById("commandOutput").innerHTML = `SYSTEM INITIALIZED...\nWELCOME TO THE HACKER TERMINAL\nTYPE 'help' FOR AVAILABLE COMMANDS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
-    return;
-                } else if (cmd === "save_quiz" || cmd === "save quiz") {
-                    if (Object.keys(quizSession.completedSubjects).length > 0) {
-                        const success = await sendQuizResults();
-                        if (success) {
-                            response = "QUIZ RESULTS SAVED TO DATABASE SUCCESSFULLY!";
-                        } else {
-                            response = "ERROR: FAILED TO SAVE QUIZ RESULTS. PLEASE TRY AGAIN.";
-                        }
-                    } else {
-                        response = "NO QUIZ RESULTS TO SAVE. COMPLETE AT LEAST ONE SUBJECT FIRST.";
-                    }    
-                    output.innerHTML = `SYSTEM INITIALIZED...\nWELCOME TO THE HACKER TERMINAL\nTYPE 'help' FOR AVAILABLE COMMANDS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
-                    return;
-                } else if (isValidStudentId(cmd)) {
-                    response = "FETCHING STUDENT DATA... PLEASE WAIT...";
-                    output.innerHTML += `${response}\n`;
-                    const terminal = document.getElementById("terminal");
-                    terminal.scrollTop = terminal.scrollHeight;
-                    
-                    const studentData = await fetchStudentData();
-                    if (studentData && studentData[cmd]) {
-                        response = formatStudentDetails(studentData[cmd]);
-                    } else if (studentData) {
-                        response = `STUDENT WITH AD NO ${cmd} NOT FOUND IN DATABASE.`;
-                    } else {
-                        response = '<span class="error-text">ERROR: UNABLE TO FETCH STUDENT DATABASE. PLEASE TRY AGAIN LATER.</span>';
-                    }    
-                } else if (cmd === "exit") {
-                    exitCommandInterface();
-                    return;
-                } else {
-                    response = hackerResponses.unknown[Math.floor(Math.random() * hackerResponses.unknown.length)];
-                }
-            } else {
-                response = "PLEASE COMPLETE THE REGISTRATION PROCESS FIRST.";
-            }
-
-            if (response) {
-                output.innerHTML += `${response}\n`;
-            }
-
-            const terminal = document.getElementById("terminal");
-            terminal.scrollTop = terminal.scrollHeight;
+    if (!userSession.firstCommand) {
+        userSession.firstCommand = true;
+        response = "WHAT IS YOUR NAME?";
+        userSession.nameAsked = true;
+    } else if (userSession.nameAsked && !userSession.userName) {
+        userSession.userName = command.trim();
+        userSession.nameAsked = false;
+        userSession.emailAsked = true;
+        response = "TYPE YOUR GMAIL...";
+    } else if (userSession.emailAsked && !userSession.userEmail) {
+        const email = command.trim();
+        if (isValidEmail(email) && email.toLowerCase().includes('gmail')) {
+            userSession.userEmail = email;
+            userSession.emailAsked = false;
+            const success = await sendToGoogleSheets(userSession.userName, userSession.userEmail);
+            userSession.dataSubmitted = true;
+            response = "THANK YOU.. WHAT YOU NEED NOW..";
+        } else {
+            response = '<span class="error-text">THIS GMAIL NOT AVAILABLE.. PLEASE TRY AGAIN</span>';
         }
+    } else if (userSession.dataSubmitted) {
+        // Handle messaging modes
+        if (userSession.messagingMode && userSession.messagingStep === 1) {
+            if (userSession.messagingMode === 'gmail') {
+                const emails = command.trim();
+                const emailList = emails.split(',').map(e => e.trim());
+                const validEmails = emailList.every(email => validateEmail(email));
+                
+                if (validEmails) {
+                    userSession.messagingContact = emails;
+                    userSession.messagingStep = 2;
+                    response = `GMAIL ADDRESSES CONFIRMED: ${emails}\nTYPE 'ok' TO PROCEED OR 'cancel' TO ABORT`;
+                } else {
+                    response = '<span class="error-text">INVALID EMAIL FORMAT. PLEASE ENTER VALID EMAIL ADDRESSES SEPARATED BY COMMAS</span>';
+                }
+            } else if (userSession.messagingMode === 'whatsapp' || userSession.messagingMode === 'telegram') {
+                const phone = command.trim();
+                if (validatePhoneNumber(phone)) {
+                    userSession.messagingContact = phone;
+                    userSession.messagingStep = 2;
+                    response = `PHONE NUMBER CONFIRMED: ${phone}\nTYPE 'ok' TO PROCEED OR 'cancel' TO ABORT`;
+                } else {
+                    response = '<span class="error-text">INVALID PHONE NUMBER. PLEASE ENTER WITH COUNTRY CODE (e.g., +1234567890)</span>';
+                }
+            }
+        } else if (userSession.messagingMode && userSession.messagingStep === 2) {
+            if (cmd === 'ok') {
+                if (userSession.messagingMode === 'gmail') {
+                    openGmail(userSession.messagingContact);
+                    response = `GMAIL COMPOSER OPENED FOR: ${userSession.messagingContact}`;
+                } else if (userSession.messagingMode === 'whatsapp') {
+                    openWhatsApp(userSession.messagingContact);
+                    response = `WHATSAPP OPENED FOR: ${userSession.messagingContact}`;
+                } else if (userSession.messagingMode === 'telegram') {
+                    openTelegram(userSession.messagingContact);
+                    response = `TELEGRAM OPENED FOR: ${userSession.messagingContact}`;
+                }
+                
+                // Reset messaging mode
+                userSession.messagingMode = null;
+                userSession.messagingStep = 0;
+                userSession.messagingContact = '';
+            } else if (cmd === 'cancel') {
+                response = "MESSAGING CANCELLED. WHAT YOU NEED NOW?";
+                userSession.messagingMode = null;
+                userSession.messagingStep = 0;
+                userSession.messagingContact = '';
+            } else {
+                response = "TYPE 'ok' TO CONFIRM OR 'cancel' TO ABORT";
+            }
+        } else {
+            // Regular command processing
+            sendMessageToSheet(command);
+
+            if (cmd === "send gmail") {
+                userSession.messagingMode = 'gmail';
+                userSession.messagingStep = 1;
+                response = "ENTER GMAIL ADDRESS(ES) - MULTIPLE ADDRESSES SEPARATED BY COMMAS:";
+            } else if (cmd === "send whatsapp") {
+                userSession.messagingMode = 'whatsapp';
+                userSession.messagingStep = 1;
+                response = "ENTER PHONE NUMBER WITH COUNTRY CODE (e.g., +1234567890):";
+            } else if (cmd === "send telegram") {
+                userSession.messagingMode = 'telegram';
+                userSession.messagingStep = 1;
+                response = "ENTER PHONE NUMBER WITH COUNTRY CODE (e.g., +1234567890):";
+            } else if (cmd === "quiz") {
+                startQuiz();
+                return;
+            } else if (cmd === "help" || cmd === "?") {
+                response = hackerResponses.help;
+            } else if (cmd === "hi" || cmd === "hello") {
+                response = hackerResponses.greetings[Math.floor(Math.random() * hackerResponses.greetings.length)];
+            } else if (cmd === "status") {
+                response = hackerResponses.status[Math.floor(Math.random() * hackerResponses.status.length)];
+            } else if (cmd === "scan") {
+                response = hackerResponses.scan[Math.floor(Math.random() * hackerResponses.scan.length)];
+            } else if (cmd === "hack") {
+                response = hackerResponses.hack[Math.floor(Math.random() * hackerResponses.hack.length)];
+            } else if (cmd === "info") {
+                response = hackerResponses.info;
+            } else if (cmd === "time") {
+                response = `CURRENT SYSTEM TIME: ${new Date().toLocaleString()}\nUTC TIME: ${new Date().toUTCString()}\nUNIX TIMESTAMP: ${Math.floor(Date.now() / 1000)}`;
+            } else if (cmd === "joke") {
+                response = hackerResponses.jokes[Math.floor(Math.random() * hackerResponses.jokes.length)];
+            } else if (cmd === "quote") {
+                response = hackerResponses.quotes[Math.floor(Math.random() * hackerResponses.quotes.length)];
+            } else if (cmd === "clear") {
+                document.getElementById("commandOutput").innerHTML = `SYSTEM INITIALIZED...\nWELCOME TO THE HACKER TERMINAL\nTYPE 'help' FOR AVAILABLE COMMANDS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+                return;
+            } else if (cmd === "save_quiz" || cmd === "save quiz") {
+                if (Object.keys(quizSession.completedSubjects).length > 0) {
+                    const success = await sendQuizResults();
+                    if (success) {
+                        response = "QUIZ RESULTS SAVED TO DATABASE SUCCESSFULLY!";
+                    } else {
+                        response = "ERROR: FAILED TO SAVE QUIZ RESULTS. PLEASE TRY AGAIN.";
+                    }
+                } else {
+                    response = "NO QUIZ RESULTS TO SAVE. COMPLETE AT LEAST ONE SUBJECT FIRST.";
+                }
+            } else if (isPicRequest(cmd)) {
+    const studentId = extractStudentIdFromPicCommand(cmd);
+    const imageUrl = `https://quaf.netlify.app/pic/pic/${studentId}.${studentId === '960' ? 'png' : 'jpg'}`;
+    
+    response = `FETCHING STUDENT PHOTO... PLEASE WAIT...\n\n`;
+    response += `STUDENT ID: ${studentId}\n`;
+    response += `PHOTO URL: ${imageUrl}\n\n`;
+    response += `<img src="${imageUrl}" alt="Student ${studentId}" style="max-width: 250px; max-height: 350px; border: 2px solid #00ff00; border-radius: 10px; display: block; margin: 10px 0;" onerror="this.style.display='none'; this.nextSibling.style.display='block';">`;
+    response += `<div style="display: none; color: #ff0000; font-weight: bold;">❌ PHOTO NOT FOUND OR FAILED TO LOAD</div>`;
+} else if (isValidStudentId(cmd)) {
+    response = "FETCHING STUDENT DATA... PLEASE WAIT...";
+    output.innerHTML += `${response}\n`;
+    const terminal = document.getElementById("terminal");
+    terminal.scrollTop = terminal.scrollHeight;
+    
+    const studentData = await fetchStudentData();
+    if (studentData && studentData[cmd]) {
+        response = formatStudentDetails(studentData[cmd]);
+    } else if (studentData) {
+        response = `STUDENT WITH AD NO ${cmd} NOT FOUND IN DATABASE.`;
+    } else {
+        response = '<span class="error-text">ERROR: UNABLE TO FETCH STUDENT DATABASE. PLEASE TRY AGAIN LATER.</span>';
+    }
+
+            } else if (cmd === "exit") {
+                exitCommandInterface();
+                return;
+            } else {
+                response = hackerResponses.unknown[Math.floor(Math.random() * hackerResponses.unknown.length)];
+            }
+        }
+    } else {
+        response = "PLEASE COMPLETE THE REGISTRATION PROCESS FIRST.";
+    }
+
+    if (response) {
+        output.innerHTML += `${response}\n`;
+    }
+
+    const terminal = document.getElementById("terminal");
+    terminal.scrollTop = terminal.scrollHeight;
+}
+
 
         // Start Game Function
         function startGame() {
@@ -3232,42 +3377,46 @@ function forceShowResults() {
             }
         }
 
-        // Exit Command Interface
         function exitCommandInterface() {
-            document.getElementById("commandInterface").classList.add("hidden");
-            
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
-            }
-            
-            document.getElementById("startScreen").classList.remove("hidden");
-            gameStarted = false;
-            
-            userSession = {
-                firstCommand: false,
-                nameAsked: false,
-                emailAsked: false,
-                userName: '',
-                userEmail: '',
-                dataSubmitted: false,
-                messages: []
-            };
-            
-            quizSession = {
-                currentSubject: null,
-                currentQuestion: 0,
-                currentScore: 0,
-                completedSubjects: {},
-                totalScore: 0,
-                allResults: {}
-            };
-            
-            document.getElementById("commandOutput").innerHTML = `SYSTEM INITIALIZED...\nWELCOME TO THE HACKER TERMINAL\nPLEASE ENTER YOUR FIRST COMMAND TO BEGIN...\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
-        }
+    document.getElementById("commandInterface").classList.add("hidden");
+    
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+    }
+    
+    document.getElementById("startScreen").classList.remove("hidden");
+    gameStarted = false;
+    
+    userSession = {
+        firstCommand: false,
+        nameAsked: false,
+        emailAsked: false,
+        userName: '',
+        userEmail: '',
+        dataSubmitted: false,
+        messages: [],
+        // Reset messaging state
+        messagingMode: null,
+        messagingStep: 0,
+        messagingContact: ''
+    };
+    
+    quizSession = {
+        currentSubject: null,
+        currentQuestion: 0,
+        currentScore: 0,
+        completedSubjects: {},
+        totalScore: 0,
+        allResults: {}
+    };
+    
+    document.getElementById("commandOutput").innerHTML = `SYSTEM INITIALIZED...\nWELCOME TO THE HACKER TERMINAL\nPLEASE ENTER YOUR FIRST COMMAND TO BEGIN...\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+}
+
 
         // Trigger Alert System
         function triggerAlert() {
