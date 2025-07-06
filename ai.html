@@ -605,7 +605,7 @@
         max-height: 250px !important;
     }
 }
-/* QUAF Animation Styles */
+/* Enhanced QUAF Animation Styles */
 .quaf-animation {
     position: fixed;
     top: 0;
@@ -619,127 +619,57 @@
     justify-content: center;
     align-items: center;
     font-family: 'Orbitron', monospace;
+    overflow: hidden;
 }
 
-.quaf-main {
-    font-size: 8rem;
-    font-weight: 900;
-    color: #0066ff;
-    text-shadow: 0 0 30px #0066ff, 0 0 60px #0066ff;
-    margin-bottom: 1rem;
-    opacity: 0;
-    transform: scale(0.5);
-    animation: quafMainAppear 2s ease-out forwards;
-}
-
-.quaf-subtitle {
-    font-size: 1.8rem;
-    font-weight: 400;
-    color: #ffffff;
-    text-shadow: 0 0 20px #ffffff;
-    opacity: 0;
-    transform: translateY(50px);
-    animation: quafSubtitleAppear 1.5s ease-out 2s forwards;
-    text-align: center;
-    letter-spacing: 0.2em;
-}
-
-@keyframes quafMainAppear {
-    0% {
-        opacity: 0;
-        transform: scale(0.5) rotateY(-180deg);
-    }
-    50% {
-        opacity: 0.8;
-        transform: scale(1.2) rotateY(-90deg);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1) rotateY(0deg);
-    }
-}
-
-@keyframes quafSubtitleAppear {
-    0% {
-        opacity: 0;
-        transform: translateY(50px);
-        letter-spacing: 1em;
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-        letter-spacing: 0.2em;
-    }
-}
-
-.quaf-pixels {
+.quaf-pixels-field {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: -1;
+    z-index: 1;
 }
 
-.pixel {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: #00ff00;
+.quaf-text-container {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.quaf-main-text {
+    font-size: 8rem;
+    font-weight: 900;
+    color: transparent;
+    text-shadow: none;
+    margin-bottom: 2rem;
     opacity: 0;
-    animation: pixelGlow 0.1s ease-in forwards;
+    position: relative;
+    overflow: hidden;
 }
 
-@keyframes pixelGlow {
-    0% {
-        opacity: 0;
-        transform: scale(0);
-        box-shadow: 0 0 0px #00ff00;
-    }
-    100% {
-        opacity: 0.8;
-        transform: scale(1);
-        box-shadow: 0 0 8px #00ff00;
-    }
+.quaf-subtitle-text {
+    font-size: 2rem;
+    font-weight: 400;
+    color: transparent;
+    text-shadow: none;
+    opacity: 0;
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 0.2em;
 }
 
-@keyframes pixelFade {
-    0% {
-        opacity: 0.8;
-        background: #00ff00;
-        box-shadow: 0 0 8px #00ff00;
-    }
-    100% {
-        opacity: 0;
-        background: #000;
-        box-shadow: none;
-    }
+.animated-pixel {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: #00ff00;
+    border-radius: 1px;
+    transition: all 0.1s ease;
+    box-shadow: 0 0 4px currentColor;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .quaf-main {
-        font-size: 4rem;
-    }
-    
-    .quaf-subtitle {
-        font-size: 1.2rem;
-        padding: 0 1rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .quaf-main {
-        font-size: 3rem;
-    }
-    
-    .quaf-subtitle {
-        font-size: 1rem;
-        padding: 0 1rem;
-    }
-}
-/* QUAF Logo Display Styles */
 .quaf-logo-container {
     position: absolute;
     top: 0;
@@ -753,70 +683,126 @@
 }
 
 .quaf-logo-image {
-    max-width: 90vw;
-    max-height: 90vh;
+    max-width: 60vw;
+    max-height: 60vh;
     object-fit: contain;
     opacity: 0;
     transform: scale(0.8);
-    animation: logoAppear 1s ease-out forwards;
-    border: 4px solid transparent;
-    border-radius: 20px;
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
     position: relative;
+    border-radius: 20px;
 }
 
-.logo-border-glow {
+.logo-shape-border {
     position: absolute;
-    top: -8px;
-    left: -8px;
-    right: -8px;
-    bottom: -8px;
-    border: 4px solid;
-    border-radius: 24px;
-    animation: borderGlow 1.5s linear infinite;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
+    border-radius: 20px;
+    filter: drop-shadow(0 0 30px currentColor);
 }
 
-@keyframes logoAppear {
+.logo-shape-border::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 25px;
+    background: linear-gradient(45deg, #ff0000, #00ff00, #0066ff, #ff0000);
+    background-size: 400% 400%;
+    animation: logoShapeBorderGlow 2s linear infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    padding: 5px;
+}
+
+@keyframes logoShapeBorderGlow {
+    0% {
+        background-position: 0% 50%;
+        filter: hue-rotate(0deg) brightness(1.5);
+    }
+    25% {
+        background-position: 100% 50%;
+        filter: hue-rotate(90deg) brightness(2);
+    }
+    50% {
+        background-position: 100% 50%;
+        filter: hue-rotate(180deg) brightness(1.5);
+    }
+    75% {
+        background-position: 0% 50%;
+        filter: hue-rotate(270deg) brightness(2);
+    }
+    100% {
+        background-position: 0% 50%;
+        filter: hue-rotate(360deg) brightness(1.5);
+    }
+}
+
+@keyframes logoAppearEnhanced {
     0% {
         opacity: 0;
         transform: scale(0.8) rotate(-5deg);
+        filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5)) blur(10px);
     }
     100% {
         opacity: 1;
         transform: scale(1) rotate(0deg);
+        filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5)) blur(0px);
     }
 }
 
-@keyframes borderGlow {
-    0% {
-        border-color: #ff0000;
-        box-shadow: 0 0 20px #ff0000, inset 0 0 20px #ff0000;
-    }
-    33% {
-        border-color: #00ff00;
-        box-shadow: 0 0 20px #00ff00, inset 0 0 20px #00ff00;
-    }
-    66% {
-        border-color: #0066ff;
-        box-shadow: 0 0 20px #0066ff, inset 0 0 20px #0066ff;
-    }
-    100% {
-        border-color: #ff0000;
-        box-shadow: 0 0 20px #ff0000, inset 0 0 20px #ff0000;
-    }
-}
-
-@keyframes logoFadeOut {
+@keyframes logoFadeOutEnhanced {
     0% {
         opacity: 1;
         transform: scale(1);
+        filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5)) blur(0px);
     }
     100% {
         opacity: 0;
         transform: scale(1.1);
+        filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5)) blur(10px);
     }
-}        
-        
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .quaf-main-text {
+        font-size: 4rem;
+    }
+    
+    .quaf-subtitle-text {
+        font-size: 1.2rem;
+        padding: 0 1rem;
+    }
+    
+    .quaf-logo-image {
+        max-width: 80vw;
+        max-height: 50vh;
+    }
+}
+
+@media (max-width: 480px) {
+    .quaf-main-text {
+        font-size: 3rem;
+    }
+    
+    .quaf-subtitle-text {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+    
+    .quaf-logo-image {
+        max-width: 90vw;
+        max-height: 40vh;
+    }
+} 
     </style>
 </head>
 <body>
@@ -961,18 +947,19 @@ PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...
             EXIT QUIZ
         </button>
     </div>
-    <!-- QUAF Animation -->
+    <!-- Enhanced QUAF Animation -->
 <div id="quafAnimation" class="quaf-animation hidden">
-    <div class="quaf-pixels" id="quafPixels"></div>
-    <div class="quaf-main" id="quafMainText">QUAF</div>
-    <div class="quaf-subtitle" id="quafSubtitle">QUALITATIVE UNION FOR ACADEMIC FOCUS</div>
-    <div class="quaf-logo-container hidden" id="quafLogoContainer">
-    <div style="position: relative;">
-        <img src="https://quafai.vercel.app/quaf-logo.png" alt="QUAF Logo" class="quaf-logo-image" id="quafLogoImage">
-        <div class="logo-border-glow"></div>
+    <div class="quaf-pixels-field" id="quafPixelsField"></div>
+    <div class="quaf-text-container">
+        <div class="quaf-main-text" id="quafMainText">QUAF</div>
+        <div class="quaf-subtitle-text" id="quafSubtitleText">QUALITATIVE UNION FOR ACADEMIC FOCUS</div>
     </div>
-</div>
-
+    <div class="quaf-logo-container hidden" id="quafLogoContainer">
+        <div style="position: relative;">
+            <img src="https://quafai.vercel.app/quaf-logo.png" alt="QUAF Logo" class="quaf-logo-image" id="quafLogoImage">
+            <div class="logo-shape-border" id="logoShapeBorder"></div>
+        </div>
+    </div>
 </div>
     
     <script>
@@ -3416,50 +3403,108 @@ function extractStudentIdFromPicCommand(cmd) {
     return parts[0];
 }
 
-// QUAF Animation Functions
-function createPixelField() {
-    const pixelsContainer = document.getElementById('quafPixels');
+// Enhanced QUAF Animation Functions
+function createEnhancedPixelField() {
+    const pixelsContainer = document.getElementById('quafPixelsField');
     pixelsContainer.innerHTML = '';
     
-    const pixelCount = Math.floor((window.innerWidth * window.innerHeight) / 1000);
+    const pixelCount = Math.floor((window.innerWidth * window.innerHeight) / 500); // Denser pixels
     
     for (let i = 0; i < pixelCount; i++) {
         const pixel = document.createElement('div');
-        pixel.className = 'pixel';
+        pixel.className = 'animated-pixel';
         pixel.style.left = Math.random() * 100 + '%';
         pixel.style.top = Math.random() * 100 + '%';
-        pixel.style.animationDelay = Math.random() * 2 + 's';
+        pixel.style.animationDelay = Math.random() * 0.5 + 's';
         pixelsContainer.appendChild(pixel);
     }
 }
 
-function animatePixelsOut() {
-    const pixels = document.querySelectorAll('.pixel');
-    pixels.forEach((pixel, index) => {
-        setTimeout(() => {
-            pixel.style.animation = 'pixelFade 0.5s ease-out forwards';
-        }, index * 2);
+function animateTextWithPixels(element, text, color, direction = 'left-to-right') {
+    return new Promise((resolve) => {
+        element.style.opacity = '1';
+        element.textContent = text;
+        
+        // Get text dimensions
+        const rect = element.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        // Find pixels within text area
+        const pixels = document.querySelectorAll('.animated-pixel');
+        const textPixels = Array.from(pixels).filter(pixel => {
+            const pixelRect = pixel.getBoundingClientRect();
+            const pixelX = pixelRect.left + pixelRect.width / 2;
+            const pixelY = pixelRect.top + pixelRect.height / 2;
+            
+            return pixelX >= rect.left && pixelX <= rect.right && 
+                   pixelY >= rect.top && pixelY <= rect.bottom;
+        });
+        
+        // Sort pixels by position for wave effect
+        textPixels.sort((a, b) => {
+            const aRect = a.getBoundingClientRect();
+            const bRect = b.getBoundingClientRect();
+            if (direction === 'left-to-right') {
+                return aRect.left - bRect.left;
+            } else {
+                return bRect.left - aRect.left;
+            }
+        });
+        
+        // Animate pixels color change in waves
+        let delay = 0;
+        textPixels.forEach((pixel, index) => {
+            setTimeout(() => {
+                pixel.style.background = color;
+                pixel.style.boxShadow = `0 0 8px ${color}`;
+                
+                if (index === textPixels.length - 1) {
+                    // Wait a bit then resolve
+                    setTimeout(resolve, 1000);
+                }
+            }, delay);
+            delay += 20; // Stagger the animation
+        });
+        
+        if (textPixels.length === 0) {
+            setTimeout(resolve, 1000);
+        }
     });
 }
 
-function typeWriter(element, text, speed = 100) {
+function fadeTextAndPixelsToBlack() {
     return new Promise((resolve) => {
-        element.textContent = '';
-        element.style.opacity = '1';
-        let i = 0;
+        const mainText = document.getElementById('quafMainText');
+        const subtitleText = document.getElementById('quafSubtitleText');
+        const pixels = document.querySelectorAll('.animated-pixel');
         
-        function type() {
-            if (i < text.length) {
-                element.textContent += text.charAt(i);
-                i++;
-                setTimeout(type, speed);
-            } else {
-                resolve();
-            }
+        // Fade text
+        mainText.style.transition = 'opacity 1s ease';
+        subtitleText.style.transition = 'opacity 1s ease';
+        mainText.style.opacity = '0';
+        subtitleText.style.opacity = '0';
+        
+        // Change all pixels to black with staggered animation
+        let delay = 0;
+        pixels.forEach((pixel, index) => {
+            setTimeout(() => {
+                pixel.style.background = '#000';
+                pixel.style.boxShadow = 'none';
+                
+                if (index === pixels.length - 1) {
+                    setTimeout(resolve, 500);
+                }
+            }, delay);
+            delay += 2; // Very fast stagger
+        });
+        
+        if (pixels.length === 0) {
+            setTimeout(resolve, 1000);
         }
-        type();
     });
 }
+
 async function showQuafAnimation() {
     // Hide command interface and show animation
     document.getElementById('commandInterface').classList.add('hidden');
@@ -3468,49 +3513,72 @@ async function showQuafAnimation() {
     // Set matrix to green mode
     matrix.setMode("green");
     
-    // Create pixel field
-    createPixelField();
+    // Create enhanced pixel field
+    createEnhancedPixelField();
     
-    // Wait for initial animations to complete
-    await new Promise(resolve => setTimeout(resolve, 4000));
+    // Wait for pixels to settle
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Start fading pixels to black
-    animatePixelsOut();
+    // Animate "QUAF" text with blue pixels (left to right)
+    await animateTextWithPixels(
+        document.getElementById('quafMainText'), 
+        'QUAF', 
+        '#0066ff', 
+        'left-to-right'
+    );
     
-    // Wait for pixels to fade
+    // Wait a bit
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    // Show logo with glowing border
-    document.getElementById('quafLogoContainer').classList.remove('hidden');
+    // Animate subtitle with white pixels (left to right)
+    await animateTextWithPixels(
+        document.getElementById('quafSubtitleText'), 
+        'QUALITATIVE UNION FOR ACADEMIC FOCUS', 
+        '#ffffff', 
+        'left-to-right'
+    );
     
-    // Wait for logo display (5 seconds)
+    // Wait to display both texts
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Fade everything to black
+    await fadeTextAndPixelsToBlack();
+    
+    // Show logo with enhanced border
+    document.getElementById('quafLogoContainer').classList.remove('hidden');
+    const logoImage = document.getElementById('quafLogoImage');
+    logoImage.style.animation = 'logoAppearEnhanced 1s ease-out forwards';
+    
+    // Wait for logo display
     await new Promise(resolve => setTimeout(resolve, 5000));
     
     // Fade out logo
-    document.getElementById('quafLogoImage').style.animation = 'logoFadeOut 0.5s ease-out forwards';
+    logoImage.style.animation = 'logoFadeOutEnhanced 1s ease-out forwards';
     
     // Wait for fade out
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     // Hide animation and return to terminal
     document.getElementById('quafAnimation').classList.add('hidden');
     document.getElementById('quafLogoContainer').classList.add('hidden');
     document.getElementById('commandInterface').classList.remove('hidden');
     
-    // Reset logo animation for next time
-    document.getElementById('quafLogoImage').style.animation = '';
+    // Reset for next time
+    logoImage.style.animation = '';
+    document.getElementById('quafMainText').style.opacity = '0';
+    document.getElementById('quafSubtitleText').style.opacity = '0';
     
     // Add completion message to terminal
     const output = document.getElementById("commandOutput");
     const timestamp = new Date().toLocaleTimeString();
-    output.innerHTML += `\n[${timestamp}] QUAF ANIMATION SEQUENCE COMPLETED\n`;
+    output.innerHTML += `\n[${timestamp}] ENHANCED QUAF ANIMATION SEQUENCE COMPLETED\n`;
     
     const terminal = document.getElementById("terminal");
     terminal.scrollTop = terminal.scrollHeight;
     
     // Focus back on command input
     document.getElementById("commandInput").focus();
-}        
+}    
 
         // Process Command
 async function processCommand(command) {
