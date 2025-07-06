@@ -1856,6 +1856,34 @@ PHONE       : ${student.PHONE || 'N/A'}
 EMAIL       : ${student.EMAIL || 'N/A'}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
         }
+         function displayPDF(pdfUrl) {
+    return `
+🔥 MALABART DOCUMENTATION ACCESS GRANTED 🔥
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 DOCUMENT: MALABART OFFICIAL DOCUMENTATION
+🔗 SOURCE: ${pdfUrl}
+⚡ STATUS: LOADING...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+<div style="width: 100%; height: 70vh; border: 2px solid #00ff00; border-radius: 10px; margin: 20px 0; background: rgba(0, 255, 0, 0.1);">
+    <iframe src="${pdfUrl}" 
+            style="width: 100%; height: 100%; border: none; border-radius: 8px;" 
+            frameborder="0"
+            allow="fullscreen"
+            loading="lazy">
+        <p style="color: #ff0000; padding: 20px; text-align: center;">
+            ❌ PDF VIEWER NOT SUPPORTED IN THIS BROWSER
+            <br><br>
+            <a href="${pdfUrl}" target="_blank" style="color: #00ff00; text-decoration: underline;">
+                🔗 CLICK HERE TO OPEN PDF IN NEW TAB
+            </a>
+        </p>
+    </iframe>
+</div>
+
+🔒 CONFIDENTIAL DOCUMENT - AUTHORIZED ACCESS ONLY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+}
 
         // Check if command is a valid student ID
         function isValidStudentId(cmd) {
@@ -1951,6 +1979,7 @@ AVAILABLE COMMANDS:
 • quote - Random hacker quote
 • quiz - Start knowledge assessment system
 • save_quiz - Manually save quiz results to database
+• malabart doc - Access Malabart document recorded
 • send gmail - Send email via Gmail
 • send whatsapp - Send message via WhatsApp
 • send telegram - Send message via Telegram
@@ -2544,6 +2573,9 @@ async function processCommand(command) {
                 } else {
                     response = "NO QUIZ RESULTS TO SAVE. COMPLETE AT LEAST ONE SUBJECT FIRST.";
                 }
+                } else if (cmd === "malabart doc") {
+    const pdfUrl = "https://quaf.netlify.app/fest/doc.pdf";
+    response = displayPDF(pdfUrl);
             } else if (isPicRequest(cmd)) {
     const studentId = extractStudentIdFromPicCommand(cmd);
     const imageUrl = `https://quaf.netlify.app/pic/pic/${studentId}.${studentId === '960' ? 'png' : 'jpg'}`;
