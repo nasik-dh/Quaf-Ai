@@ -605,6 +605,218 @@
         max-height: 250px !important;
     }
 }
+/* QUAF Animation Styles */
+.quaf-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Orbitron', monospace;
+}
+
+.quaf-main {
+    font-size: 8rem;
+    font-weight: 900;
+    color: #0066ff;
+    text-shadow: 0 0 30px #0066ff, 0 0 60px #0066ff;
+    margin-bottom: 1rem;
+    opacity: 0;
+    transform: scale(0.5);
+    animation: quafMainAppear 2s ease-out forwards;
+}
+
+.quaf-subtitle {
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: #ffffff;
+    text-shadow: 0 0 20px #ffffff;
+    opacity: 0;
+    transform: translateY(50px);
+    animation: quafSubtitleAppear 1.5s ease-out 2s forwards;
+    text-align: center;
+    letter-spacing: 0.2em;
+}
+
+@keyframes quafMainAppear {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) rotateY(-180deg);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.2) rotateY(-90deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotateY(0deg);
+    }
+}
+
+@keyframes quafSubtitleAppear {
+    0% {
+        opacity: 0;
+        transform: translateY(50px);
+        letter-spacing: 1em;
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        letter-spacing: 0.2em;
+    }
+}
+
+.quaf-pixels {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.pixel {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #00ff00;
+    opacity: 0;
+    animation: pixelGlow 0.1s ease-in forwards;
+}
+
+@keyframes pixelGlow {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+        box-shadow: 0 0 0px #00ff00;
+    }
+    100% {
+        opacity: 0.8;
+        transform: scale(1);
+        box-shadow: 0 0 8px #00ff00;
+    }
+}
+
+@keyframes pixelFade {
+    0% {
+        opacity: 0.8;
+        background: #00ff00;
+        box-shadow: 0 0 8px #00ff00;
+    }
+    100% {
+        opacity: 0;
+        background: #000;
+        box-shadow: none;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .quaf-main {
+        font-size: 4rem;
+    }
+    
+    .quaf-subtitle {
+        font-size: 1.2rem;
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .quaf-main {
+        font-size: 3rem;
+    }
+    
+    .quaf-subtitle {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+}
+/* QUAF Logo Display Styles */
+.quaf-logo-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.quaf-logo-image {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    opacity: 0;
+    transform: scale(0.8);
+    animation: logoAppear 1s ease-out forwards;
+    border: 4px solid transparent;
+    border-radius: 20px;
+    position: relative;
+}
+
+.logo-border-glow {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    border: 4px solid;
+    border-radius: 24px;
+    animation: borderGlow 1.5s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes logoAppear {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) rotate(-5deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+@keyframes borderGlow {
+    0% {
+        border-color: #ff0000;
+        box-shadow: 0 0 20px #ff0000, inset 0 0 20px #ff0000;
+    }
+    33% {
+        border-color: #00ff00;
+        box-shadow: 0 0 20px #00ff00, inset 0 0 20px #00ff00;
+    }
+    66% {
+        border-color: #0066ff;
+        box-shadow: 0 0 20px #0066ff, inset 0 0 20px #0066ff;
+    }
+    100% {
+        border-color: #ff0000;
+        box-shadow: 0 0 20px #ff0000, inset 0 0 20px #ff0000;
+    }
+}
+
+@keyframes logoFadeOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.1);
+    }
+}        
+        
     </style>
 </head>
 <body>
@@ -749,7 +961,19 @@ PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...
             EXIT QUIZ
         </button>
     </div>
-    
+    <!-- QUAF Animation -->
+<div id="quafAnimation" class="quaf-animation hidden">
+    <div class="quaf-pixels" id="quafPixels"></div>
+    <div class="quaf-main" id="quafMainText">QUAF</div>
+    <div class="quaf-subtitle" id="quafSubtitle">QUALITATIVE UNION FOR ACADEMIC FOCUS</div>
+    <div class="quaf-logo-container hidden" id="quafLogoContainer">
+    <div style="position: relative;">
+        <img src="https://quafai.vercel.app/quaf-logo.png" alt="QUAF Logo" class="quaf-logo-image" id="quafLogoImage">
+        <div class="logo-border-glow"></div>
+    </div>
+</div>
+
+</div>
     
     <script>
             // Quiz Data
@@ -2736,6 +2960,7 @@ AVAILABLE COMMANDS:
 • quiz - Start knowledge assessment system
 • save_quiz - Manually save quiz results to database
 • malabart doc - Access Malabart document recorded
+• quaf - Display QUAF organization logo animation
 • send gmail - Send email via Gmail
 • send whatsapp - Send message via WhatsApp
 • send telegram - Send message via Telegram
@@ -3191,7 +3416,101 @@ function extractStudentIdFromPicCommand(cmd) {
     return parts[0];
 }
 
+// QUAF Animation Functions
+function createPixelField() {
+    const pixelsContainer = document.getElementById('quafPixels');
+    pixelsContainer.innerHTML = '';
+    
+    const pixelCount = Math.floor((window.innerWidth * window.innerHeight) / 1000);
+    
+    for (let i = 0; i < pixelCount; i++) {
+        const pixel = document.createElement('div');
+        pixel.className = 'pixel';
+        pixel.style.left = Math.random() * 100 + '%';
+        pixel.style.top = Math.random() * 100 + '%';
+        pixel.style.animationDelay = Math.random() * 2 + 's';
+        pixelsContainer.appendChild(pixel);
+    }
+}
 
+function animatePixelsOut() {
+    const pixels = document.querySelectorAll('.pixel');
+    pixels.forEach((pixel, index) => {
+        setTimeout(() => {
+            pixel.style.animation = 'pixelFade 0.5s ease-out forwards';
+        }, index * 2);
+    });
+}
+
+function typeWriter(element, text, speed = 100) {
+    return new Promise((resolve) => {
+        element.textContent = '';
+        element.style.opacity = '1';
+        let i = 0;
+        
+        function type() {
+            if (i < text.length) {
+                element.textContent += text.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            } else {
+                resolve();
+            }
+        }
+        type();
+    });
+}
+async function showQuafAnimation() {
+    // Hide command interface and show animation
+    document.getElementById('commandInterface').classList.add('hidden');
+    document.getElementById('quafAnimation').classList.remove('hidden');
+    
+    // Set matrix to green mode
+    matrix.setMode("green");
+    
+    // Create pixel field
+    createPixelField();
+    
+    // Wait for initial animations to complete
+    await new Promise(resolve => setTimeout(resolve, 4000));
+    
+    // Start fading pixels to black
+    animatePixelsOut();
+    
+    // Wait for pixels to fade
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Show logo with glowing border
+    document.getElementById('quafLogoContainer').classList.remove('hidden');
+    
+    // Wait for logo display (5 seconds)
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    
+    // Fade out logo
+    document.getElementById('quafLogoImage').style.animation = 'logoFadeOut 0.5s ease-out forwards';
+    
+    // Wait for fade out
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Hide animation and return to terminal
+    document.getElementById('quafAnimation').classList.add('hidden');
+    document.getElementById('quafLogoContainer').classList.add('hidden');
+    document.getElementById('commandInterface').classList.remove('hidden');
+    
+    // Reset logo animation for next time
+    document.getElementById('quafLogoImage').style.animation = '';
+    
+    // Add completion message to terminal
+    const output = document.getElementById("commandOutput");
+    const timestamp = new Date().toLocaleTimeString();
+    output.innerHTML += `\n[${timestamp}] QUAF ANIMATION SEQUENCE COMPLETED\n`;
+    
+    const terminal = document.getElementById("terminal");
+    terminal.scrollTop = terminal.scrollHeight;
+    
+    // Focus back on command input
+    document.getElementById("commandInput").focus();
+}        
 
         // Process Command
 async function processCommand(command) {
@@ -3332,6 +3651,9 @@ async function processCommand(command) {
                 } else if (cmd === "malabart doc") {
     const pdfUrl = "https://quaf.netlify.app/fest/doc.pdf";
     response = displayPDF(pdfUrl);
+                } else if (cmd === "quaf") {
+    showQuafAnimation();
+    return;
             } else if (isPicRequest(cmd)) {
     const studentId = extractStudentIdFromPicCommand(cmd);
     const imageUrl = `https://quaf.netlify.app/pic/pic/${studentId}.${studentId === '960' ? 'png' : 'jpg'}`;
