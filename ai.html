@@ -2431,6 +2431,49 @@ PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...
             "15": "IT",
             "16": "Science"
         };
+        // Sheet names and URLs mapping
+const sheetConfig = {
+    "sheet1": {
+        name: "DHDC Students Database",
+        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQueyDr_RerDpK9evwHFOV7lp2SiI8ls_gtPBakTkEuukrdkZWUrEiMVdBD6ItxQ/pub?gid=436920225&single=true&output=csv"
+    },
+    "sheet2": {
+        name: "Academic Records",
+        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQueyDr_RerDpK9evwHFOV7lp2SiI8ls_gtPBakTkEuukrdkZWUrEiMVdBD6ItxQ/pub?gid=1491954663&single=true&output=csv"
+    },
+    "sheet3": {
+        name: "Attendance Records",
+        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQueyDr_RerDpK9evwHFOV7lp2SiI8ls_gtPBakTkEuukrdkZWUrEiMVdBD6ItxQ/pub?gid=943975063&single=true&output=csv"
+    },
+    "sheet4": {
+        name: "Exam Results",
+        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQueyDr_RerDpK9evwHFOV7lp2SiI8ls_gtPBakTkEuukrdkZWUrEiMVdBD6ItxQ/pub?gid=1379136267&single=true&output=csv"
+    },
+    "sheet5": {
+        name: "Fee Records",
+        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQueyDr_RerDpK9evwHFOV7lp2SiI8ls_gtPBakTkEuukrdkZWUrEiMVdBD6ItxQ/pub?gid=2123172704&single=true&output=csv"
+    },
+    "sheet6": {
+        name: "Library Records",
+        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQueyDr_RerDpK9evwHFOV7lp2SiI8ls_gtPBakTkEuukrdkZWUrEiMVdBD6ItxQ/pub?gid=491533326&single=true&output=csv"
+    },
+    "sheet7": {
+        name: "Hostel Records",
+        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQueyDr_RerDpK9evwHFOV7lp2SiI8ls_gtPBakTkEuukrdkZWUrEiMVdBD6ItxQ/pub?gid=1326814678&single=true&output=csv"
+    },
+    "sheet8": {
+        name: "Staff Records",
+        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQueyDr_RerDpK9evwHFOV7lp2SiI8ls_gtPBakTkEuukrdkZWUrEiMVdBD6ItxQ/pub?gid=1283347559&single=true&output=csv"
+    },
+    "sheet9": {
+        name: "Transport Records",
+        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQueyDr_RerDpK9evwHFOV7lp2SiI8ls_gtPBakTkEuukrdkZWUrEiMVdBD6ItxQ/pub?gid=1883498839&single=true&output=csv"
+    },
+    "sheet10": {
+        name: "Event Records",
+        url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTQueyDr_RerDpK9evwHFOV7lp2SiI8ls_gtPBakTkEuukrdkZWUrEiMVdBD6ItxQ/pub?gid=1562650117&single=true&output=csv"
+    }
+};
 
         // Initialize variables
         let audioContext;
@@ -2687,6 +2730,86 @@ function formatMalabartData(malabartData) {
 
     return formatted;
 }
+// Generic Sheet Data Functions
+async function fetchSheetData(url) {
+    try {
+        const response = await fetch(url);
+        const csvText = await response.text();
+        return parseGenericCSV(csvText);
+    } catch (error) {
+        console.error('Error fetching sheet data:', error);
+        return null;
+    }
+}
+
+function parseGenericCSV(csvText) {
+    const lines = csvText.split('\n');
+    const headers = lines[0].split(',').map(header => header.trim().replace(/"/g, ''));
+    const data = [];
+    
+    for (let i = 1; i < lines.length; i++) {
+        if (lines[i].trim()) {
+            const values = lines[i].split(',').map(value => value.trim().replace(/"/g, ''));
+            if (values.length >= headers.length) {
+                const rowData = {};
+                headers.forEach((header, index) => {
+                    rowData[header] = values[index] || 'N/A';
+                });
+                data.push(rowData);
+            }
+        }
+    }
+    return { headers, data };
+}
+
+function formatSheetData(sheetData, sheetName) {
+    if (!sheetData || !sheetData.data || sheetData.data.length === 0) {
+        return '<span class="error-text">❌ SHEET DATABASE IS EMPTY OR INACCESSIBLE</span>';
+    }
+
+    let formatted = `
+🔥 ${sheetName.toUpperCase()} DATABASE ACCESS GRANTED 🔥
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 TOTAL RECORDS FOUND: ${sheetData.data.length}
+🗂️  COLUMNS DETECTED: ${sheetData.headers.length}
+⚡ DATA CLASSIFICATION: CONFIDENTIAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 COLUMN HEADERS:
+`;
+
+    // Display headers with styling
+    sheetData.headers.forEach((header, index) => {
+        formatted += `   [${(index + 1).toString().padStart(2, '0')}] ${header}\n`;
+    });
+
+    formatted += `\n🔍 DETAILED RECORDS:\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+
+    // Display each record
+    sheetData.data.forEach((record, index) => {
+        formatted += `\n🎯 RECORD #${(index + 1).toString().padStart(3, '0')}:\n`;
+        formatted += `┌${'─'.repeat(70)}┐\n`;
+        
+        sheetData.headers.forEach(header => {
+            const value = record[header] || 'N/A';
+            const displayValue = value.length > 50 ? value.substring(0, 47) + '...' : value;
+            formatted += `│ ${header.padEnd(20)} : ${displayValue.padEnd(47)} │\n`;
+        });
+        
+        formatted += `└${'─'.repeat(70)}┘\n`;
+    });
+
+    formatted += `\n🏁 END OF ${sheetName.toUpperCase()} DATABASE DUMP\n`;
+    formatted += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    formatted += `⚠️  CONFIDENTIAL DATA - AUTHORIZED ACCESS ONLY\n`;
+    formatted += `🔒 SESSION LOGGED - ADMIN NOTIFIED\n`;
+
+    return formatted;
+}
+
+function isValidSheetName(cmd) {
+    return sheetConfig.hasOwnProperty(cmd.toLowerCase());
+}
 
 
         // Check if command is a valid student ID
@@ -2784,6 +2907,16 @@ AVAILABLE COMMANDS:
 • quiz - Start knowledge assessment system
 • save_quiz - Manually save quiz results to database
 • malabart - Access Malabart database (CLASSIFIED)
+• sheet1 - Access DHDC Students Database
+• sheet2 - Access Academic Records
+• sheet3 - Access Attendance Records
+• sheet4 - Access Exam Results
+• sheet5 - Access Fee Records
+• sheet6 - Access Library Records
+• sheet7 - Access Hostel Records
+• sheet8 - Access Staff Records
+• sheet9 - Access Transport Records
+• sheet10 - Access Event Records
 • send gmail - Send email via Gmail
 • send whatsapp - Send message via WhatsApp
 • send telegram - Send message via Telegram
@@ -3389,6 +3522,20 @@ async function processCommand(command) {
                 } else {
                     response = '<span class="error-text">❌ ERROR: UNABLE TO ACCESS MALABART DATABASE. CONNECTION FAILED.</span>';
                 }    
+                } else if (isValidSheetName(cmd)) {
+    const sheetInfo = sheetConfig[cmd.toLowerCase()];
+    response = `🔍 ACCESSING ${sheetInfo.name.toUpperCase()}... PLEASE WAIT...\n⚡ ESTABLISHING SECURE CONNECTION...\n🔓 BYPASSING SECURITY PROTOCOLS...\n`;
+    output.innerHTML += `${response}\n`;
+    const terminal = document.getElementById("terminal");
+    terminal.scrollTop = terminal.scrollHeight;
+    
+    const sheetData = await fetchSheetData(sheetInfo.url);
+    if (sheetData) {
+        response = formatSheetData(sheetData, sheetInfo.name);
+    } else {
+        response = `<span class="error-text">❌ ERROR: UNABLE TO ACCESS ${sheetInfo.name.toUpperCase()} DATABASE. CONNECTION FAILED.</span>`;
+    }
+
             } else if (isPicRequest(cmd)) {
     const studentId = extractStudentIdFromPicCommand(cmd);
     const imageUrl = `https://quaf.netlify.app/pic/pic/${studentId}.${studentId === '960' ? 'png' : 'jpg'}`;
