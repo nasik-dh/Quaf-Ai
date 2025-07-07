@@ -1,4 +1,4 @@
-    // Quiz Data
+// Quiz Data
         const subjectQuestions = {
             "1": [
                 {
@@ -2435,250 +2435,7 @@ function extractStudentIdFromPicCommand(cmd) {
     return parts[0];
 }
 
-function openGmailOfficial(emails) {
-    const emailList = emails.split(',').map(email => email.trim()).join(',');
-    const subject = encodeURIComponent("🔥 EXCLUSIVE INVITATION: Join Elite Ethical Hacking Academy 🔥");
-    
-    const officialBody = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            background: linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e);
-            color: #ffffff;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: linear-gradient(135deg, #0f0f23, #1a1a2e, #16213e);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 255, 0, 0.3);
-            border: 2px solid #00ff00;
-        }
-        .header {
-            background: linear-gradient(45deg, #00ff00, #00cc00, #009900);
-            padding: 30px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="matrix" patternUnits="userSpaceOnUse" width="10" height="10"><rect width="10" height="10" fill="rgba(0,0,0,0.1)"/><text x="5" y="8" font-family="monospace" font-size="8" fill="rgba(0,255,0,0.3)" text-anchor="middle">1</text></pattern></defs><rect width="100" height="100" fill="url(%23matrix)"/></svg>');
-            opacity: 0.2;
-        }
-        .header h1 {
-            font-size: 2.5em;
-            margin: 0;
-            color: #000000;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            position: relative;
-            z-index: 1;
-        }
-        .header .subtitle {
-            font-size: 1.2em;
-            color: #003300;
-            margin-top: 10px;
-            font-weight: bold;
-            position: relative;
-            z-index: 1;
-        }
-        .content {
-            padding: 40px;
-            background: radial-gradient(circle at center, #1a1a2e, #0f0f23);
-            position: relative;
-        }
-        .content::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: repeating-linear-gradient(
-                90deg,
-                transparent,
-                transparent 98px,
-                rgba(0, 255, 0, 0.03) 100px
-            );
-        }
-        .welcome-text {
-            font-size: 1.3em;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            color: #00ff00;
-            text-align: center;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-        }
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin: 30px 0;
-        }
-        .feature-card {
-            background: linear-gradient(135deg, #2a2a3e, #1a1a2e);
-            padding: 25px;
-            border-radius: 15px;
-            border: 2px solid #00ff00;
-            box-shadow: 0 10px 20px rgba(0, 255, 0, 0.2);
-            transition: transform 0.3s ease;
-        }
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 255, 0, 0.3);
-        }
-        .feature-card h3 {
-            color: #00ff00;
-            font-size: 1.4em;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        .feature-card p {
-            color: #cccccc;
-            line-height: 1.5;
-            text-align: center;
-        }
-        .cta-section {
-            text-align: center;
-            margin: 40px 0;
-            padding: 30px;
-            background: linear-gradient(135deg, #003300, #006600);
-            border-radius: 15px;
-            border: 2px solid #00ff00;
-        }
-        .cta-button {
-            display: inline-block;
-            padding: 15px 30px;
-            background: linear-gradient(45deg, #00ff00, #00cc00);
-            color: #000000;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: bold;
-            font-size: 1.2em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.4);
-            transition: all 0.3s ease;
-        }
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 255, 0, 0.6);
-        }
-        .footer {
-            background: linear-gradient(135deg, #0a0a0a, #1a1a2e);
-            padding: 20px;
-            text-align: center;
-            border-top: 2px solid #00ff00;
-        }
-        .footer p {
-            margin: 5px 0;
-            color: #888888;
-        }
-        .matrix-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0, 255, 0, 0.03) 2px,
-                rgba(0, 255, 0, 0.03) 4px
-            );
-            pointer-events: none;
-            z-index: -1;
-        }
-        .glow {
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-        @keyframes glow {
-            from { text-shadow: 0 0 10px rgba(0, 255, 0, 0.5); }
-            to { text-shadow: 0 0 20px rgba(0, 255, 0, 0.8), 0 0 30px rgba(0, 255, 0, 0.6); }
-        }
-    </style>
-</head>
-<body>
-    <div class="matrix-bg"></div>
-    <div class="container">
-        <div class="header">
-            <h1 class="glow">🔐 ELITE HACKING ACADEMY 🔐</h1>
-            <div class="subtitle">EXCLUSIVE INVITATION TO JOIN OUR ETHICAL HACKING COMMUNITY</div>
-        </div>
-        
-        <div class="content">
-            <div class="welcome-text">
-                <strong>Greetings, Future Cyber Warrior!</strong><br>
-                You have been personally selected to join our exclusive Ethical Hacking Academy. 
-                This is your gateway to mastering the art of cybersecurity and ethical hacking.
-            </div>
-            
-            <div class="features">
-                <div class="feature-card">
-                    <h3>🎯 Advanced Penetration Testing</h3>
-                    <p>Learn cutting-edge techniques for identifying and exploiting vulnerabilities in systems and networks.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>🛡️ Cybersecurity Mastery</h3>
-                    <p>Master the defensive side of cybersecurity with hands-on experience in protecting digital assets.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>🔍 Digital Forensics</h3>
-                    <p>Discover the secrets of digital investigation and evidence collection in cybercrime cases.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>⚡ Real-World Scenarios</h3>
-                    <p>Practice on live systems and participate in capture-the-flag competitions with global hackers.</p>
-                </div>
-            </div>
-            
-            <div class="cta-section">
-                <h2 style="color: #00ff00; margin-bottom: 20px;">Ready to Begin Your Journey?</h2>
-                <p style="color: #cccccc; margin-bottom: 20px;">Join thousands of ethical hackers who have transformed their careers with our academy.</p>
-                <a href="https://quaf.netlify.app" class="cta-button">🚀 ACCESS ACADEMY NOW 🚀</a>
-            </div>
-            
-            <div style="background: linear-gradient(135deg, #1a1a2e, #2a2a3e); padding: 25px; border-radius: 15px; border: 1px solid #00ff00; margin-top: 30px;">
-                <h3 style="color: #00ff00; text-align: center; margin-bottom: 20px;">🎓 What You'll Master:</h3>
-                <ul style="color: #cccccc; columns: 2; column-gap: 30px; list-style: none; padding: 0;">
-                    <li style="margin-bottom: 10px;">✅ Advanced Linux Systems</li>
-                    <li style="margin-bottom: 10px;">✅ Network Security Analysis</li>
-                    <li style="margin-bottom: 10px;">✅ Web Application Testing</li>
-                    <li style="margin-bottom: 10px;">✅ Malware Analysis</li>
-                    <li style="margin-bottom: 10px;">✅ Social Engineering Defense</li>
-                    <li style="margin-bottom: 10px;">✅ Cryptography & Encryption</li>
-                    <li style="margin-bottom: 10px;">✅ Mobile Security Testing</li>
-                    <li style="margin-bottom: 10px;">✅ Cloud Security Auditing</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="footer">
-            <p><strong>🔥 ELITE ETHICAL HACKING ACADEMY 🔥</strong></p>
-            <p>Building the next generation of cybersecurity professionals</p>
-            <p style="font-size: 0.9em; color: #666666;">This invitation is confidential and intended for authorized recipients only.</p>
-        </div>
-    </div>
-</body>
-</html>`;
 
-    const body = encodeURIComponent(officialBody);
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailList}&su=${subject}&body=${body}`;
-    window.open(gmailUrl, '_blank');
-}
 
         // Process Command
 async function processCommand(command) {
@@ -2740,33 +2497,18 @@ async function processCommand(command) {
                     response = '<span class="error-text">INVALID PHONE NUMBER. PLEASE ENTER WITH COUNTRY CODE (e.g., +1234567890)</span>';
                 }
             }
-            } else if (userSession.messagingMode === 'gmail_official') {
-    const emails = command.trim();
-    const emailList = emails.split(',').map(e => e.trim());
-    const validEmails = emailList.every(email => validateEmail(email));
-    
-    if (validEmails) {
-        userSession.messagingContact = emails;
-        userSession.messagingStep = 2;
-        response = `🔥 OFFICIAL INVITATION RECIPIENTS CONFIRMED 🔥\nRECIPIENTS: ${emails}\nTYPE 'ok' TO SEND PROFESSIONAL INVITATION OR 'cancel' TO ABORT`;
-    } else {
-        response = '<span class="error-text">INVALID EMAIL FORMAT. PLEASE ENTER VALID EMAIL ADDRESSES SEPARATED BY COMMAS</span>';
-    }
         } else if (userSession.messagingMode && userSession.messagingStep === 2) {
-           if (cmd === 'ok') {
-    if (userSession.messagingMode === 'gmail') {
-        openGmail(userSession.messagingContact);
-        response = `GMAIL COMPOSER OPENED FOR: ${userSession.messagingContact}`;
-    } else if (userSession.messagingMode === 'gmail_official') {
-        openGmailOfficial(userSession.messagingContact);
-        response = `🔥 OFFICIAL INVITATION SENT TO: ${userSession.messagingContact} 🔥\nPROFESSIONAL GMAIL COMPOSER OPENED WITH ELITE HACKING ACADEMY INVITATION`;
-    } else if (userSession.messagingMode === 'whatsapp') {
-        openWhatsApp(userSession.messagingContact);
-        response = `WHATSAPP OPENED FOR: ${userSession.messagingContact}`;
-    } else if (userSession.messagingMode === 'telegram') {
-        openTelegram(userSession.messagingContact);
-        response = `TELEGRAM OPENED FOR: ${userSession.messagingContact}`;
-    }
+            if (cmd === 'ok') {
+                if (userSession.messagingMode === 'gmail') {
+                    openGmail(userSession.messagingContact);
+                    response = `GMAIL COMPOSER OPENED FOR: ${userSession.messagingContact}`;
+                } else if (userSession.messagingMode === 'whatsapp') {
+                    openWhatsApp(userSession.messagingContact);
+                    response = `WHATSAPP OPENED FOR: ${userSession.messagingContact}`;
+                } else if (userSession.messagingMode === 'telegram') {
+                    openTelegram(userSession.messagingContact);
+                    response = `TELEGRAM OPENED FOR: ${userSession.messagingContact}`;
+                }
                 
                 // Reset messaging mode
                 userSession.messagingMode = null;
@@ -2796,10 +2538,6 @@ async function processCommand(command) {
                 userSession.messagingMode = 'telegram';
                 userSession.messagingStep = 1;
                 response = "ENTER PHONE NUMBER WITH COUNTRY CODE (e.g., +1234567890):";
-            } else if (cmd === "send gmail official") {
-    userSession.messagingMode = 'gmail_official';
-    userSession.messagingStep = 1;
-    response = "🔥 OFFICIAL INVITATION MODE ACTIVATED 🔥\nENTER GMAIL ADDRESS(ES) - MULTIPLE ADDRESSES SEPARATED BY COMMAS:";    
             } else if (cmd === "quiz") {
                 startQuiz();
                 return;
@@ -3073,4 +2811,4 @@ async function processCommand(command) {
                     triggerAlert();
                 }
             }
-        });
+        });   
