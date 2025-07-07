@@ -982,6 +982,236 @@
         font-size: 2.5rem;
     }
 }    
+
+    /* Professional Messaging Templates */
+.messaging-template-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 300;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Orbitron', monospace;
+}
+
+.messaging-template {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border: 3px solid #00ff00;
+    border-radius: 20px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 0 50px rgba(0, 255, 0, 0.3);
+    animation: templateSlideIn 0.5s ease-out;
+}
+
+@keyframes templateSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.template-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.quaf-logo-text {
+    font-size: 3rem;
+    font-weight: 900;
+    background: linear-gradient(45deg, #00ff00, #00aaff, #ff00aa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+    margin-bottom: 0.5rem;
+}
+
+.quaf-subtitle {
+    font-size: 1rem;
+    color: #ffffff;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+.platform-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.gmail-badge {
+    background: linear-gradient(45deg, #ea4335, #fbbc05);
+    color: #fff;
+}
+
+.whatsapp-badge {
+    background: linear-gradient(45deg, #25d366, #128c7e);
+    color: #fff;
+}
+
+.telegram-badge {
+    background: linear-gradient(45deg, #0088cc, #0066aa);
+    color: #fff;
+}
+
+.template-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    color: #00ff00;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.form-input {
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #00ff00;
+    border-radius: 8px;
+    padding: 1rem;
+    color: #ffffff;
+    font-size: 1rem;
+    font-family: 'Orbitron', monospace;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #00aaff;
+    box-shadow: 0 0 20px rgba(0, 170, 255, 0.3);
+    background: rgba(0, 170, 255, 0.1);
+}
+
+.form-textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.user-info {
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid #00ff00;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.user-info h4 {
+    color: #00ff00;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.user-info p {
+    color: #ffffff;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.template-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.template-btn {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Orbitron', monospace;
+    min-width: 120px;
+}
+
+.send-btn {
+    background: linear-gradient(45deg, #00ff00, #00aa00);
+    color: #000;
+}
+
+.send-btn:hover {
+    background: linear-gradient(45deg, #00aa00, #00ff00);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+.cancel-btn {
+    background: linear-gradient(45deg, #ff4444, #cc0000);
+    color: #fff;
+}
+
+.cancel-btn:hover {
+    background: linear-gradient(45deg, #cc0000, #ff4444);
+    box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+    transform: translateY(-2px);
+}
+
+.message-preview {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #00ff00;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    color: #ffffff;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.preview-label {
+    color: #00ff00;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .messaging-template {
+        padding: 1.5rem;
+        width: 95%;
+    }
+    
+    .quaf-logo-text {
+        font-size: 2rem;
+    }
+    
+    .template-actions {
+        flex-direction: column;
+    }
+    
+    .template-btn {
+        width: 100%;
+    }
+}    
     </style>
 </head>
 <body>
@@ -1172,6 +1402,64 @@ PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...
 <div id="accessDeniedOverlay" class="access-denied-overlay hidden">
     <div class="access-denied-text">
         ACCESS DENIED
+    </div>
+</div>
+
+    <!-- Professional Messaging Template -->
+<div id="messagingTemplateOverlay" class="messaging-template-overlay hidden">
+    <div class="messaging-template">
+        <div class="template-header">
+            <div class="quaf-logo-text">QUAF</div>
+            <div class="quaf-subtitle">Qualitative Union for Academic Focus</div>
+            <div id="platformBadge" class="platform-badge gmail-badge">
+                <i class="fas fa-envelope mr-2"></i>Gmail
+            </div>
+        </div>
+        
+        <div class="user-info">
+            <h4><i class="fas fa-user mr-2"></i>Sender Information</h4>
+            <p><strong>Name:</strong> <span id="senderName">-</span></p>
+            <p><strong>Email:</strong> <span id="senderEmail">-</span></p>
+        </div>
+        
+        <form class="template-form" id="messagingForm">
+            <div class="form-group">
+                <label class="form-label" id="recipientLabel">
+                    <i class="fas fa-users mr-2"></i>Recipient Email(s)
+                </label>
+                <input type="text" id="recipientInput" class="form-input" placeholder="Enter email addresses separated by commas">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-tag mr-2"></i>Subject
+                </label>
+                <input type="text" id="subjectInput" class="form-input" value="Message from QUAF Academic Portal" placeholder="Enter subject">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-edit mr-2"></i>Your Message
+                </label>
+                <textarea id="messageInput" class="form-input form-textarea" placeholder="Type your message here..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="preview-label">
+                    <i class="fas fa-eye mr-2"></i>Message Preview
+                </label>
+                <div id="messagePreview" class="message-preview"></div>
+            </div>
+        </form>
+        
+        <div class="template-actions">
+            <button class="template-btn send-btn" onclick="sendMessage()">
+                <i class="fas fa-paper-plane mr-2"></i>Send Message
+            </button>
+            <button class="template-btn cancel-btn" onclick="closeMessagingTemplate()">
+                <i class="fas fa-times mr-2"></i>Cancel
+            </button>
+        </div>
     </div>
 </div>
     
@@ -3554,53 +3842,170 @@ function forceShowResults() {
     terminal.scrollTop = terminal.scrollHeight;
 }
 
-// Messaging Functions
-function validateEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+// Global messaging variables
+let currentMessagingPlatform = '';
+
+// Enhanced messaging functions
+function showMessagingTemplate(platform) {
+    currentMessagingPlatform = platform;
+    
+    // Update platform badge and styling
+    const badge = document.getElementById('platformBadge');
+    const recipientLabel = document.getElementById('recipientLabel');
+    const recipientInput = document.getElementById('recipientInput');
+    const subjectInput = document.getElementById('subjectInput');
+    const subjectGroup = subjectInput.parentElement;
+    
+    badge.innerHTML = `<i class="fas fa-${platform === 'gmail' ? 'envelope' : platform === 'whatsapp' ? 'comments' : 'paper-plane'} mr-2"></i>${platform.charAt(0).toUpperCase() + platform.slice(1)}`;
+    badge.className = `platform-badge ${platform}-badge`;
+    
+    if (platform === 'gmail') {
+        recipientLabel.innerHTML = '<i class="fas fa-envelope mr-2"></i>Recipient Email(s)';
+        recipientInput.placeholder = 'Enter email addresses separated by commas';
+        subjectGroup.style.display = 'flex';
+    } else {
+        recipientLabel.innerHTML = '<i class="fas fa-phone mr-2"></i>Phone Number';
+        recipientInput.placeholder = 'Enter phone number with country code (e.g., +1234567890)';
+        subjectGroup.style.display = 'none';
+    }
+    
+    // Set sender information
+    document.getElementById('senderName').textContent = userSession.userName || 'Anonymous';
+    document.getElementById('senderEmail').textContent = userSession.userEmail || 'Not provided';
+    
+    // Show template
+    document.getElementById('messagingTemplateOverlay').classList.remove('hidden');
+    document.getElementById('commandInterface').classList.add('hidden');
+    
+    // Focus on recipient input
+    recipientInput.focus();
+    
+    // Update preview
+    updateMessagePreview();
 }
 
-function validatePhoneNumber(phone) {
-    // Basic validation for international phone numbers
-    const phoneRegex = /^\+[1-9]\d{1,14}$/;
-    return phoneRegex.test(phone);
-}
+function updateMessagePreview() {
+    const senderName = userSession.userName || 'Anonymous User';
+    const message = document.getElementById('messageInput').value || '[Your message will appear here]';
+    
+    const preview = `Dear Recipient,
 
-function openGmail(emails) {
-    const emailList = emails.split(',').map(email => email.trim()).join(',');
-    const subject = encodeURIComponent("Message from Quaf Hacker Terminal");
-    const body = encodeURIComponent(`Hello,
-
-[Your message here]
+${message}
 
 Best regards,
-Quaf Hacker Terminal User`);
+${senderName}
+QUAF - Qualitative Union for Academic Focus
+
+---
+This message was sent through QUAF Academic Portal
+Contact: ${userSession.userEmail || 'Not provided'}
+Date: ${new Date().toLocaleDateString()}`;
     
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailList}&su=${subject}&body=${body}`;
-    window.open(gmailUrl, '_blank');
+    document.getElementById('messagePreview').textContent = preview;
 }
 
-function openWhatsApp(phoneNumber) {
-    const message = encodeURIComponent(`Hello!
-
-[Your message here]
-
-Sent from Quaf Hacker Terminal`);
+function sendMessage() {
+    const recipient = document.getElementById('recipientInput').value.trim();
+    const subject = document.getElementById('subjectInput').value.trim();
+    const message = document.getElementById('messageInput').value.trim();
     
-    const whatsappUrl = `https://wa.me/${phoneNumber.replace('+', '')}?text=${message}`;
-    window.open(whatsappUrl, '_blank');
+    if (!recipient) {
+        alert('Please enter recipient information');
+        return;
+    }
+    
+    if (!message) {
+        alert('Please enter your message');
+        return;
+    }
+    
+    const senderName = userSession.userName || 'Anonymous User';
+    const fullMessage = `Dear Recipient,
+
+${message}
+
+Best regards,
+${senderName}
+QUAF - Qualitative Union for Academic Focus
+
+---
+This message was sent through QUAF Academic Portal
+Contact: ${userSession.userEmail || 'Not provided'}
+Date: ${new Date().toLocaleDateString()}`;
+    
+    if (currentMessagingPlatform === 'gmail') {
+        const emailList = recipient.split(',').map(email => email.trim()).join(',');
+        const isValid = recipient.split(',').every(email => validateEmail(email.trim()));
+        
+        if (!isValid) {
+            alert('Please enter valid email addresses');
+            return;
+        }
+        
+        const encodedSubject = encodeURIComponent(subject || 'Message from QUAF Academic Portal');
+        const encodedMessage = encodeURIComponent(fullMessage);
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailList}&su=${encodedSubject}&body=${encodedMessage}`;
+        
+        window.open(gmailUrl, '_blank');
+        
+    } else if (currentMessagingPlatform === 'whatsapp') {
+        if (!validatePhoneNumber(recipient)) {
+            alert('Please enter a valid phone number with country code');
+            return;
+        }
+        
+        const encodedMessage = encodeURIComponent(fullMessage);
+        const whatsappUrl = `https://wa.me/${recipient.replace('+', '')}?text=${encodedMessage}`;
+        
+        window.open(whatsappUrl, '_blank');
+        
+    } else if (currentMessagingPlatform === 'telegram') {
+        if (!validatePhoneNumber(recipient)) {
+            alert('Please enter a valid phone number with country code');
+            return;
+        }
+        
+        const encodedMessage = encodeURIComponent(fullMessage);
+        const telegramUrl = `https://t.me/${recipient.replace('+', '')}?text=${encodedMessage}`;
+        
+        window.open(telegramUrl, '_blank');
+    }
+    
+    // Log the message
+    sendMessageToSheet(`${currentMessagingPlatform.toUpperCase()} message sent to ${recipient}: ${message}`);
+    
+    // Show success message
+    closeMessagingTemplate();
+    
+    const output = document.getElementById("commandOutput");
+    const timestamp = new Date().toLocaleTimeString();
+    output.innerHTML += `\n[${timestamp}] ${currentMessagingPlatform.toUpperCase()} MESSAGE SENT SUCCESSFULLY TO: ${recipient}\n`;
+    
+    const terminal = document.getElementById("terminal");
+    terminal.scrollTop = terminal.scrollHeight;
 }
 
-function openTelegram(phoneNumber) {
-    const message = encodeURIComponent(`Hello!
-
-[Your message here]
-
-Sent from Quaf Hacker Terminal`);
+function closeMessagingTemplate() {
+    document.getElementById('messagingTemplateOverlay').classList.add('hidden');
+    document.getElementById('commandInterface').classList.remove('hidden');
     
-    const telegramUrl = `https://t.me/${phoneNumber.replace('+', '')}?text=${message}`;
-    window.open(telegramUrl, '_blank');
+    // Clear form
+    document.getElementById('recipientInput').value = '';
+    document.getElementById('subjectInput').value = 'Message from QUAF Academic Portal';
+    document.getElementById('messageInput').value = '';
+    updateMessagePreview();
+    
+    // Focus back on command input
+    document.getElementById('commandInput').focus();
 }
+
+// Add event listeners for real-time preview
+document.addEventListener('DOMContentLoaded', function() {
+    const messageInput = document.getElementById('messageInput');
+    if (messageInput) {
+        messageInput.addEventListener('input', updateMessagePreview);
+    }
+});
 
 // Add these functions before the processCommand function
 function isPicRequest(cmd) {
@@ -4062,18 +4467,16 @@ async function processCommand(command) {
             // Regular command processing
             sendMessageToSheet(command);
 
-            if (cmd === "send gmail") {
-                userSession.messagingMode = 'gmail';
-                userSession.messagingStep = 1;
-                response = "ENTER GMAIL ADDRESS(ES) - MULTIPLE ADDRESSES SEPARATED BY COMMAS:";
-            } else if (cmd === "send whatsapp") {
-                userSession.messagingMode = 'whatsapp';
-                userSession.messagingStep = 1;
-                response = "ENTER PHONE NUMBER WITH COUNTRY CODE (e.g., +1234567890):";
-            } else if (cmd === "send telegram") {
-                userSession.messagingMode = 'telegram';
-                userSession.messagingStep = 1;
-                response = "ENTER PHONE NUMBER WITH COUNTRY CODE (e.g., +1234567890):";
+            else if (cmd === "send gmail") {
+    showMessagingTemplate('gmail');
+    return;
+} else if (cmd === "send whatsapp") {
+    showMessagingTemplate('whatsapp');
+    return;
+} else if (cmd === "send telegram") {
+    showMessagingTemplate('telegram');
+    return;
+}
             } else if (cmd === "quiz") {
                 startQuiz();
                 return;
