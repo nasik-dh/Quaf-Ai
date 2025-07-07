@@ -803,6 +803,185 @@
         max-height: 40vh;
     }
 } 
+    /* Pattern Lock Styles */
+.pattern-lock-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Orbitron', monospace;
+}
+
+.pattern-lock-container {
+    text-align: center;
+    padding: 2rem;
+}
+
+.pattern-lock-title {
+    color: #00ff00;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 20px #00ff00;
+    text-transform: uppercase;
+}
+
+.pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 20px;
+    width: 300px;
+    height: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 2px solid #00ff00;
+    border-radius: 15px;
+    background: rgba(0, 255, 0, 0.1);
+}
+
+.pattern-dot {
+    width: 60px;
+    height: 60px;
+    border: 3px solid #00ff00;
+    border-radius: 50%;
+    background: rgba(0, 255, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #00ff00;
+    user-select: none;
+}
+
+.pattern-dot:hover {
+    background: rgba(0, 255, 0, 0.4);
+    box-shadow: 0 0 15px #00ff00;
+}
+
+.pattern-dot.selected {
+    background: #00ff00;
+    color: #000;
+    box-shadow: 0 0 25px #00ff00;
+}
+
+.pattern-dot.correct {
+    background: #00ff00;
+    color: #000;
+    animation: correctPulse 0.5s ease;
+}
+
+.pattern-dot.incorrect {
+    background: #ff0000;
+    color: #fff;
+    border-color: #ff0000;
+    animation: incorrectShake 0.5s ease;
+}
+
+@keyframes correctPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+@keyframes incorrectShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.pattern-status {
+    color: #00ff00;
+    font-size: 1.2rem;
+    margin-top: 2rem;
+    text-shadow: 0 0 10px #00ff00;
+}
+
+.pattern-clear-btn {
+    background: linear-gradient(45deg, #ff0000, #aa0000);
+    border: 2px solid #ff0000;
+    color: #fff;
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+    font-family: 'Orbitron', monospace;
+}
+
+.pattern-clear-btn:hover {
+    background: linear-gradient(45deg, #aa0000, #ff0000);
+    box-shadow: 0 0 20px #ff0000;
+}
+
+/* Access Denied Animation */
+.access-denied-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Orbitron', monospace;
+}
+
+.access-denied-text {
+    font-size: 4rem;
+    font-weight: 900;
+    color: #ff0000;
+    text-shadow: 0 0 30px #ff0000, 0 0 60px #ff0000;
+    animation: accessDeniedGlow 0.5s ease-in-out infinite alternate;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+}
+
+@keyframes accessDeniedGlow {
+    0% { 
+        text-shadow: 0 0 30px #ff0000, 0 0 60px #ff0000;
+        transform: scale(1);
+    }
+    100% { 
+        text-shadow: 0 0 50px #ff0000, 0 0 100px #ff0000, 0 0 150px #ff0000;
+        transform: scale(1.1);
+    }
+}
+
+@media (max-width: 640px) {
+    .pattern-grid {
+        width: 250px;
+        height: 250px;
+        gap: 15px;
+    }
+    
+    .pattern-dot {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+    
+    .pattern-lock-title {
+        font-size: 1.5rem;
+    }
+    
+    .access-denied-text {
+        font-size: 2.5rem;
+    }
+}    
     </style>
 </head>
 <body>
@@ -959,6 +1138,40 @@ PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...
             <img src="https://quafai.vercel.app/quaf-logo.png" alt="QUAF Logo" class="quaf-logo-image" id="quafLogoImage">
             <div class="logo-shape-border" id="logoShapeBorder"></div>
         </div>
+    </div>
+</div>
+    <!-- Pattern Lock Overlay -->
+<div id="patternLockOverlay" class="pattern-lock-overlay hidden">
+    <div class="pattern-lock-container">
+        <div class="pattern-lock-title">
+            <i class="fas fa-lock mr-2"></i>
+            Security Pattern Required
+        </div>
+        <div class="pattern-grid" id="patternGrid">
+            <div class="pattern-dot" data-number="1">1</div>
+            <div class="pattern-dot" data-number="2">2</div>
+            <div class="pattern-dot" data-number="3">3</div>
+            <div class="pattern-dot" data-number="4">4</div>
+            <div class="pattern-dot" data-number="5">5</div>
+            <div class="pattern-dot" data-number="6">6</div>
+            <div class="pattern-dot" data-number="7">7</div>
+            <div class="pattern-dot" data-number="8">8</div>
+            <div class="pattern-dot" data-number="9">9</div>
+        </div>
+        <div class="pattern-status" id="patternStatus">
+            Draw the pattern to unlock terminal
+        </div>
+        <button class="pattern-clear-btn" onclick="clearPattern()">
+            <i class="fas fa-redo mr-2"></i>
+            Clear Pattern
+        </button>
+    </div>
+</div>
+
+<!-- Access Denied Overlay -->
+<div id="accessDeniedOverlay" class="access-denied-overlay hidden">
+    <div class="access-denied-text">
+        ACCESS DENIED
     </div>
 </div>
     
@@ -3579,7 +3792,188 @@ async function showQuafAnimation() {
     // Focus back on command input
     document.getElementById("commandInput").focus();
 }    
+// Pattern Lock Variables
+let patternLockActive = false;
+let selectedPattern = [];
+let correctPattern = [2, 5, 8, 9, 7, 6, 4, 3, 1];
+let isDrawing = false;
 
+// Pattern Lock Functions
+function showPatternLock() {
+    patternLockActive = true;
+    document.getElementById('patternLockOverlay').classList.remove('hidden');
+    document.getElementById('commandInterface').classList.add('hidden');
+    matrix.setMode("red");
+    initializePatternGrid();
+}
+
+function hidePatternLock() {
+    patternLockActive = false;
+    document.getElementById('patternLockOverlay').classList.add('hidden');
+    document.getElementById('commandInterface').classList.remove('hidden');
+    matrix.setMode("green");
+    clearPattern();
+}
+
+function initializePatternGrid() {
+    const dots = document.querySelectorAll('.pattern-dot');
+    dots.forEach(dot => {
+        dot.classList.remove('selected', 'correct', 'incorrect');
+        
+        // Mouse events
+        dot.addEventListener('mousedown', startDrawing);
+        dot.addEventListener('mouseenter', continueDrawing);
+        dot.addEventListener('mouseup', stopDrawing);
+        
+        // Touch events for mobile
+        dot.addEventListener('touchstart', handleTouchStart);
+        dot.addEventListener('touchmove', handleTouchMove);
+        dot.addEventListener('touchend', handleTouchEnd);
+    });
+    
+    // Add global mouse/touch end events
+    document.addEventListener('mouseup', stopDrawing);
+    document.addEventListener('touchend', stopDrawing);
+}
+
+function startDrawing(e) {
+    e.preventDefault();
+    isDrawing = true;
+    selectDot(e.target);
+}
+
+function continueDrawing(e) {
+    if (isDrawing) {
+        selectDot(e.target);
+    }
+}
+
+function stopDrawing() {
+    if (isDrawing) {
+        isDrawing = false;
+        checkPattern();
+    }
+}
+
+function handleTouchStart(e) {
+    e.preventDefault();
+    isDrawing = true;
+    selectDot(e.target);
+}
+
+function handleTouchMove(e) {
+    if (isDrawing) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (element && element.classList.contains('pattern-dot')) {
+            selectDot(element);
+        }
+    }
+}
+
+function handleTouchEnd(e) {
+    if (isDrawing) {
+        e.preventDefault();
+        isDrawing = false;
+        checkPattern();
+    }
+}
+
+function selectDot(dot) {
+    if (!dot.classList.contains('pattern-dot') || dot.classList.contains('selected')) {
+        return;
+    }
+    
+    const number = parseInt(dot.dataset.number);
+    selectedPattern.push(number);
+    dot.classList.add('selected');
+    
+    updatePatternStatus();
+}
+
+function checkPattern() {
+    if (selectedPattern.length === 0) return;
+    
+    const isCorrect = selectedPattern.length === correctPattern.length && 
+                     selectedPattern.every((num, index) => num === correctPattern[index]);
+    
+    const dots = document.querySelectorAll('.pattern-dot');
+    
+    if (isCorrect) {
+    // Correct pattern
+    dots.forEach(dot => {
+        if (dot.classList.contains('selected')) {
+            dot.classList.add('correct');
+        }
+    });
+    
+    document.getElementById('patternStatus').innerHTML = 
+        '<span style="color: #00ff00;">✓ Pattern Correct - Unlocking Terminal...</span>';
+    
+    setTimeout(() => {
+        hidePatternLock();  // This hides the pattern lock
+        const output = document.getElementById("commandOutput");
+        const timestamp = new Date().toLocaleTimeString();
+        output.innerHTML += `\n[${timestamp}] TERMINAL UNLOCKED SUCCESSFULLY\n`;
+        const terminal = document.getElementById("terminal");
+        terminal.scrollTop = terminal.scrollHeight;
+        document.getElementById("commandInput").focus();  // Returns focus to terminal
+    }, 1500);  // After 1.5 seconds
+}
+        
+    } else {
+        // Incorrect pattern
+        dots.forEach(dot => {
+            if (dot.classList.contains('selected')) {
+                dot.classList.add('incorrect');
+            }
+        });
+        
+        document.getElementById('patternStatus').innerHTML = 
+            '<span style="color: #ff0000;">✗ Incorrect Pattern - Access Denied</span>';
+        
+        // Show access denied screen and close tab
+        setTimeout(() => {
+            showAccessDenied();
+        }, 1000);
+    }
+}
+
+function showAccessDenied() {
+    document.getElementById('accessDeniedOverlay').classList.remove('hidden');
+    matrix.setMode("red");
+    
+    // Play alert sound
+    playAlertSound(3000);
+    
+    // Close tab after 3 seconds
+    setTimeout(() => {
+        window.close();
+        // Fallback if window.close() doesn't work
+        if (!window.closed) {
+            window.location.href = "about:blank";
+        }
+    }, 3000);
+}
+
+function clearPattern() {
+    selectedPattern = [];
+    const dots = document.querySelectorAll('.pattern-dot');
+    dots.forEach(dot => {
+        dot.classList.remove('selected', 'correct', 'incorrect');
+    });
+    updatePatternStatus();
+}
+
+function updatePatternStatus() {
+    const status = document.getElementById('patternStatus');
+    if (selectedPattern.length === 0) {
+        status.innerHTML = 'Draw the pattern to unlock terminal';
+    } else {
+        status.innerHTML = `Pattern: ${selectedPattern.join(' → ')} (${selectedPattern.length}/9)`;
+    }
+}
         // Process Command
 async function processCommand(command) {
     const cmd = command.toLowerCase().trim();
@@ -3721,6 +4115,9 @@ async function processCommand(command) {
     response = displayPDF(pdfUrl);
                 } else if (cmd === "quaf") {
     showQuafAnimation();
+    return;
+                } else if (cmd === "lock") {
+    showPatternLock();
     return;
             } else if (isPicRequest(cmd)) {
     const studentId = extractStudentIdFromPicCommand(cmd);
@@ -3958,6 +4355,15 @@ async function processCommand(command) {
                 }
             }
         });
+        // Prevent bypassing pattern lock
+document.addEventListener("keydown", function (e) {
+    if (patternLockActive) {
+        e.preventDefault();
+        return false;
+    }
+    
+    // ... rest of existing keydown handler
+});
     </script>
 </body>
 </html>
