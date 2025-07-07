@@ -4378,6 +4378,31 @@ function updatePatternStatus() {
         status.innerHTML = `Pattern: ${selectedPattern.join(' → ')} (${selectedPattern.length}/9)`;
     }
 }
+        // Add these functions before the processCommand function
+function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+function validatePhoneNumber(phone) {
+    const phoneRegex = /^\+[1-9]\d{1,14}$/;
+    return phoneRegex.test(phone);
+}
+
+function openGmail(recipient) {
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}`;
+    window.open(gmailUrl, '_blank');
+}
+
+function openWhatsApp(phone) {
+    const whatsappUrl = `https://wa.me/${phone.replace('+', '')}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+function openTelegram(phone) {
+    const telegramUrl = `https://t.me/${phone.replace('+', '')}`;
+    window.open(telegramUrl, '_blank');
+}
         // Process Command
 async function processCommand(command) {
     const cmd = command.toLowerCase().trim();
