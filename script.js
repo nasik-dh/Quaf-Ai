@@ -1770,6 +1770,192 @@
                 }
             }
         }
+                // File Upload Functions
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit (reduced for better handling)
+        const output = document.getElementById("commandOutput");
+        const timestamp = new Date().toLocaleTimeString();
+        output.innerHTML += `\n[${timestamp}] ERROR: FILE TOO LARGE (MAX 5MB)\n`;
+        const terminal = document.getElementById("terminal");
+        terminal.scrollTop = terminal.scrollHeight;
+        return;
+    }
+
+    const progressDiv = document.getElementById('fileUploadProgress');
+    progressDiv.style.display = 'block';
+    progressDiv.textContent = 'CONVERTING TO BINARY...';
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        progressDiv.textContent = 'PROCESSING FILE...';
+        
+        // Convert to binary in chunks to avoid memory issues
+        const binaryData = arrayBufferToBinary(e.target.result);
+        const fileInfo = {
+            name: file.name,
+            size: file.size,
+            type: file.type || 'Unknown',
+            lastModified: new Date(file.lastModified).toISOString(),
+            binaryData: binaryData
+        };
+
+        progressDiv.textContent = 'SENDING TO DATABASE...';
+        sendFileAsMessage(fileInfo);
+    };
+
+    reader.onerror = function() {
+        progressDiv.style.display = 'none';
+        const output = document.getElementById("commandOutput");
+        const timestamp = new Date().toLocaleTimeString();
+        output.innerHTML += `\n[${timestamp}] ERROR: FAILED TO READ FILE\n`;
+        const terminal = document.getElementById("terminal");
+        terminal.scrollTop = terminal.scrollHeight;
+    };
+
+    reader.readAsArrayBuffer(file);
+    
+    // Clear the input
+    event.target.value = '';
+}
+
+function arrayBufferToBinary(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    const chunkSize = 512; // Smaller chunks for better performance
+    
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+        const chunk = bytes.slice(i, i + chunkSize);
+        for (let j = 0; j < chunk.length; j++) {
+            binary += chunk[j].toString(2).padStart(8, '0');
+        }
+    }
+    return binary;
+}
+
+async function sendFileAsMessage(fileInfo) {
+    if (userSession.dataSubmitted && userSession.userName && userSession.userEmail) {
+        try {
+            // Create multiple messages for large files
+            const maxBinaryLength = 8000; // Limit per message to avoid issues
+            const binaryChunks = [];
+            
+            for (let i = 0; i < fileInfo.binaryData.length; i += maxBinaryLength) {
+                binaryChunks.push(fileInfo.binaryData.substring(i, i + maxBinaryLength));
+            }
+
+            // Send file header first
+            const headerMessage = `📎 FILE_UPLOAD_START
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 FILENAME: ${fileInfo.name}
+📊 SIZE: ${formatFileSize(fileInfo.size)}
+🔧 TYPE: ${fileInfo.type}
+📅 MODIFIED: ${fileInfo.lastModified}
+🔢 BINARY_LENGTH: ${fileInfo.binaryData.length} bits
+🔐 CHECKSUM: ${simpleChecksum(fileInfo.binaryData)}
+📦 TOTAL_CHUNKS: ${binaryChunks.length}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+
+            await sendMessageToSheet(headerMessage);
+
+            // Send binary data in chunks
+            for (let i = 0; i < binaryChunks.length; i++) {
+                const chunkMessage = `📎 FILE_BINARY_CHUNK_${i + 1}/${binaryChunks.length}
+FILENAME: ${fileInfo.name}
+CHUNK_DATA: ${binaryChunks[i]}`;
+                
+                await sendMessageToSheet(chunkMessage);
+                
+                // Small delay to prevent overwhelming the API
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+
+            // Send end marker
+            const endMessage = `📎 FILE_UPLOAD_END
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 FILENAME: ${fileInfo.name}
+✅ STATUS: UPLOAD_COMPLETE
+🔢 TOTAL_BITS: ${fileInfo.binaryData.length}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+
+            await sendMessageToSheet(endMessage);
+
+            // Show success message in terminal
+            const output = document.getElementById("commandOutput");
+            const timestamp = new Date().toLocaleTimeString();
+            output.innerHTML += `\n[${timestamp}] FILE UPLOAD SUCCESSFUL!\n`;
+            output.innerHTML += `📄 FILE: ${fileInfo.name}\n`;
+            output.innerHTML += `📊 SIZE: ${formatFileSize(fileInfo.size)}\n`;
+            output.innerHTML += `🔢 BINARY LENGTH: ${fileInfo.binaryData.length} bits\n`;
+            output.innerHTML += `📦 CHUNKS SENT: ${binaryChunks.length}\n`;
+            output.innerHTML += `✅ STATUS: SENT TO DATABASE\n`;
+
+            const terminal = document.getElementById("terminal");
+            terminal.scrollTop = terminal.scrollHeight;
+
+        } catch (error) {
+            console.error('Error sending file:', error);
+            const output = document.getElementById("commandOutput");
+            const timestamp = new Date().toLocaleTimeString();
+            output.innerHTML += `\n[${timestamp}] ERROR: FAILED TO UPLOAD FILE\n`;
+            const terminal = document.getElementById("terminal");
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+    } else {
+        const output = document.getElementById("commandOutput");
+        const timestamp = new Date().toLocaleTimeString();
+        output.innerHTML += `\n[${timestamp}] ERROR: PLEASE COMPLETE REGISTRATION FIRST\n`;
+        const terminal = document.getElementById("terminal");
+        terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    // Hide progress
+    document.getElementById('fileUploadProgress').style.display = 'none';
+}
+
+// Helper functions
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function simpleChecksum(data) {
+    let checksum = 0;
+    for (let i = 0; i < data.length; i++) {
+        checksum += data.charCodeAt(i);
+    }
+    return checksum.toString(16).toUpperCase();
+}
+
+// Add file upload command to help
+function addFileUploadToHelp() {
+    const originalHelp = hackerResponses.help;
+    if (!originalHelp.includes('📎 ATTACH')) {
+        hackerResponses.help = originalHelp.replace(
+            '• clear - Clear terminal',
+            `• clear - Clear terminal
+• 📎 ATTACH - Upload files (click attach button)`
+        ) + `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📎 FILE UPLOAD FEATURES:
+   - Click ATTACH button to upload any file
+   - Files are converted to binary code
+   - Maximum file size: 5MB
+   - All file types supported
+   - Data sent through existing message system
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
+    }
+}
+
+// Call this function when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    addFileUploadToHelp();
+});
 
           // Send quiz results to Google Sheets
         async function sendQuizResults() {
@@ -1982,8 +2168,14 @@ AVAILABLE COMMANDS:
 • malabart doc - Access Malabart document recorded
 • [AD NO] - Lookup student details (960, 986-1021)
 • [AD NO] pic - Show student photo (960, 986-1021)
+• 📎 ATTACH - Upload files (click attach button)
 • clear - Clear terminal
 • exit - Exit command interface
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📎 FILE UPLOAD: Click ATTACH button to upload any file
+   - Files are converted to binary code
+   - Maximum file size: 10MB
+   - All file types supported
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
 
             status: [
