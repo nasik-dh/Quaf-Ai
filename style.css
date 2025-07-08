@@ -592,3 +592,47 @@
         max-height: 250px !important;
     }
 }
+/* File Upload Styles */
+.file-upload-container {
+    position: relative;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.file-upload-btn {
+    background: #00ff00;
+    color: #000;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.file-upload-btn:hover {
+    background: #00cc00;
+    transform: translateY(-2px);
+}
+
+.file-upload-input {
+    display: none;
+}
+
+.file-upload-progress {
+    position: absolute;
+    top: -25px;
+    left: 0;
+    right: 0;
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid #00ff00;
+    border-radius: 3px;
+    padding: 2px 5px;
+    font-size: 10px;
+    color: #00ff00;
+    display: none;
+}
