@@ -1980,10 +1980,6 @@ AVAILABLE COMMANDS:
 • quiz - Start knowledge assessment system
 • save_quiz - Manually save quiz results to database
 • malabart doc - Access Malabart document recorded
-• send gmail - Send email via Gmail
-• send gmail official - Send professional invitation email
-• send whatsapp - Send message via WhatsApp
-• send telegram - Send message via Telegram
 • [AD NO] - Lookup student details (960, 986-1021)
 • [AD NO] pic - Show student photo (960, 986-1021)
 • clear - Clear terminal
@@ -2388,13 +2384,28 @@ function validatePhoneNumber(phone) {
 
 function openGmail(emails) {
     const emailList = emails.split(',').map(email => email.trim()).join(',');
-    const subject = encodeURIComponent("Message from Quaf Hacker Terminal");
+    const subject = encodeURIComponent("Message from EHC");
     const body = encodeURIComponent(`Hello,
 
-[Your message here]
+[🟢 Welcome, Cyber Defender!
 
-Best regards,
-Quaf Hacker Terminal User`);
+You’re officially invited to join EHC (Ethical Hacking Collective) — a high-trust group of ethical hackers, cybersecurity enthusiasts, and digital warriors. If you believe in hacking to protect, not to exploit — this space is for you.
+
+🔍 Why Join EHC?
+💾 Hands-on workshops (Metasploit, Nmap, Burp Suite, and more)
+🧠 Weekly challenges & Capture the Flag (CTF) contests
+🛡️ Peer learning + Pro mentorship
+🚨 Instant updates on zero-days, patches, and threat intel
+🌐 Community-led cyber missions & project opportunities
+
+🔗 Join us now: [https://quafai.vercel.app/]
+📧 Contact: ethical.hacker.cop@gmail.com
+
+Step into the code. Be the firewall.
+We are EHC – Hack to Secure.]
+
+Best Of Luck,
+ETHICAL HACKER COP`);
     
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailList}&su=${subject}&body=${body}`;
     window.open(gmailUrl, '_blank');
@@ -2403,9 +2414,25 @@ Quaf Hacker Terminal User`);
 function openWhatsApp(phoneNumber) {
     const message = encodeURIComponent(`Hello!
 
-[Your message here]
+[🟢 Welcome, Cyber Defender!
 
-Sent from Quaf Hacker Terminal`);
+You’re officially invited to join EHC (Ethical Hacking Collective) — a high-trust group of ethical hackers, cybersecurity enthusiasts, and digital warriors. If you believe in hacking to protect, not to exploit — this space is for you.
+
+🔍 Why Join EHC?
+💾 Hands-on workshops (Metasploit, Nmap, Burp Suite, and more)
+🧠 Weekly challenges & Capture the Flag (CTF) contests
+🛡️ Peer learning + Pro mentorship
+🚨 Instant updates on zero-days, patches, and threat intel
+🌐 Community-led cyber missions & project opportunities
+
+🔗 Join us now: [https://quafai.vercel.app/]
+📧 Contact: ethical.hacker.cop@gmail.com
+
+Step into the code. Be the firewall.
+We are EHC – Hack to Secure.]
+
+Best Of Luck,
+ETHICAL HACKER COP`);
     
     const whatsappUrl = `https://wa.me/${phoneNumber.replace('+', '')}?text=${message}`;
     window.open(whatsappUrl, '_blank');
@@ -2414,9 +2441,25 @@ Sent from Quaf Hacker Terminal`);
 function openTelegram(phoneNumber) {
     const message = encodeURIComponent(`Hello!
 
-[Your message here]
+[🟢 Welcome, Cyber Defender!
 
-Sent from Quaf Hacker Terminal`);
+You’re officially invited to join EHC (Ethical Hacking Collective) — a high-trust group of ethical hackers, cybersecurity enthusiasts, and digital warriors. If you believe in hacking to protect, not to exploit — this space is for you.
+
+🔍 Why Join EHC?
+💾 Hands-on workshops (Metasploit, Nmap, Burp Suite, and more)
+🧠 Weekly challenges & Capture the Flag (CTF) contests
+🛡️ Peer learning + Pro mentorship
+🚨 Instant updates on zero-days, patches, and threat intel
+🌐 Community-led cyber missions & project opportunities
+
+🔗 Join us now: [https://quafai.vercel.app/]
+📧 Contact: ethical.hacker.cop@gmail.com
+
+Step into the code. Be the firewall.
+We are EHC – Hack to Secure.]
+
+Best Of Luck,
+ETHICAL HACKER COP`);
     
     const telegramUrl = `https://t.me/${phoneNumber.replace('+', '')}?text=${message}`;
     window.open(telegramUrl, '_blank');
