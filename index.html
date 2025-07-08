@@ -153,6 +153,27 @@ PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...
             EXIT QUIZ
         </button>
     </div>
+    <div id="commandInterface" class="hidden">
+    <div id="terminal">
+        <div id="commandOutput">
+            SYSTEM INITIALIZED...<br>
+            WELCOME TO THE HACKER TERMINAL<br>
+            PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...<br>
+            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        </div>
+    </div>
+    <div class="command-line">
+        <span class="prompt">HACKER@TERMINAL:~$ </span>
+        <input type="text" id="commandInput" placeholder="Enter command..." autocomplete="off" spellcheck="false">
+        <div class="file-upload-container">
+            <button class="file-upload-btn" onclick="document.getElementById('fileInput').click()">
+                📎 ATTACH
+            </button>
+            <input type="file" id="fileInput" class="file-upload-input" onchange="handleFileUpload(event)">
+            <div id="fileUploadProgress" class="file-upload-progress"></div>
+        </div>
+    </div>
+</div>
 
   <script src="script.js"></script>
 </body>
