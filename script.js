@@ -2711,79 +2711,68 @@ async function processCommand(command) {
             userSession.userEmail = email;
             userSession.emailAsked = false;
             const success = await sendToGoogleSheets(userSession.userName, userSession.userEmail);
-            userSession.dataSubmitted = true;
-            response = "THANK YOU.. WHAT YOU NEED NOW..";
+            userSession.dataSubmitted = success;
+            response = success ? "THANK YOU.. WHAT YOU NEED NOW.." : "<span class='error-text'>FAILED TO REGISTER. PLEASE TRY AGAIN.</span>";
         } else {
             response = '<span class="error-text">THIS GMAIL NOT AVAILABLE.. PLEASE TRY AGAIN</span>';
         }
     } else if (userSession.dataSubmitted) {
-        // Handle messaging modes
-        } else if (userSession.messagingMode && userSession.messagingStep === 1) {
-    if (userSession.messagingMode === 'gmail') {
-        // existing gmail logic
-    } else if (userSession.messagingMode === 'gmail_official') {  // ✅ INSIDE the block
-        const emails = command.trim();
-        // ... rest of the logic
-    } else if (userSession.messagingMode === 'whatsapp' || userSession.messagingMode === 'telegram') {
-        // phone logic
-    }
-        
-        if (validEmails) {
-            userSession.messagingContact = emails;
-            userSession.messagingStep = 2;
-            response = `🔥 OFFICIAL INVITATION RECIPIENTS CONFIRMED 🔥\nRECIPIENTS: ${emails}\nTYPE 'ok' TO SEND PROFESSIONAL INVITATION OR 'cancel' TO ABORT`;
-        } else {
-            response = '<span class="error-text">INVALID EMAIL FORMAT. PLEASE ENTER VALID EMAIL ADDRESSES SEPARATED BY COMMAS</span>';
-        }
-            } else if (userSession.messagingMode === 'whatsapp' || userSession.messagingMode === 'telegram') {
-                const phone = command.trim();
-                if (validatePhoneNumber(phone)) {
-                    userSession.messagingContact = phone;
-                    userSession.messagingStep = 2;
-                    response = `PHONE NUMBER CONFIRMED: ${phone}\nTYPE 'ok' TO PROCEED OR 'cancel' TO ABORT`;
-                } else {
-                    response = '<span class="error-text">INVALID PHONE NUMBER. PLEASE ENTER WITH COUNTRY CODE (e.g., +1234567890)</span>';
+        // Handle messaging modes if active
+        if (userSession.messagingMode) {
+            if (userSession.messagingStep === 1) {
+                // Asking for contacts
+                if (userSession.messagingMode === 'gmail' || userSession.messagingMode === 'gmail_official') {
+                    const emails = command.trim();
+                    const emailList = emails.split(',').map(e => e.trim());
+                    const validEmails = emailList.every(validateEmail);
+                    if (validEmails) {
+                        userSession.messagingContact = emails;
+                        userSession.messagingStep = 2;
+                        if (userSession.messagingMode === 'gmail_official') {
+                            response = `🔥 OFFICIAL INVITATION RECIPIENTS CONFIRMED 🔥\nRECIPIENTS: ${emails}\nTYPE 'ok' TO SEND PROFESSIONAL INVITATION OR 'cancel' TO ABORT`;
+                        } else {
+                            response = `GMAIL RECIPIENTS CONFIRMED: ${emails}\nTYPE 'ok' TO SEND EMAIL OR 'cancel' TO ABORT`;
+                        }
+                    } else {
+                        response = '<span class="error-text">INVALID EMAIL FORMAT. PLEASE ENTER VALID EMAIL ADDRESSES SEPARATED BY COMMAS</span>';
+                    }
+                } else if (userSession.messagingMode === 'whatsapp' || userSession.messagingMode === 'telegram') {
+                    const phone = command.trim();
+                    if (validatePhoneNumber(phone)) {
+                        userSession.messagingContact = phone;
+                        userSession.messagingStep = 2;
+                        response = `PHONE NUMBER CONFIRMED: ${phone}\nTYPE 'ok' TO PROCEED OR 'cancel' TO ABORT`;
+                    } else {
+                        response = '<span class="error-text">INVALID PHONE NUMBER. PLEASE ENTER WITH COUNTRY CODE (e.g., +1234567890)</span>';
+                    }
                 }
-            }
-                } else if (userSession.messagingMode === 'gmail_official') {
-    const emails = command.trim();
-    const emailList = emails.split(',').map(e => e.trim());
-    const validEmails = emailList.every(email => validateEmail(email));
-    
-    if (validEmails) {
-        userSession.messagingContact = emails;
-        userSession.messagingStep = 2;
-        response = `🔥 OFFICIAL INVITATION RECIPIENTS CONFIRMED 🔥\nRECIPIENTS: ${emails}\nTYPE 'ok' TO SEND PROFESSIONAL INVITATION OR 'cancel' TO ABORT`;
-    } else {
-        response = '<span class="error-text">INVALID EMAIL FORMAT. PLEASE ENTER VALID EMAIL ADDRESSES SEPARATED BY COMMAS</span>';
-    }
-        } else if (userSession.messagingMode && userSession.messagingStep === 2) {
-    if (cmd === 'ok') {
-        if (userSession.messagingMode === 'gmail') {
-            openGmail(userSession.messagingContact);
-            response = `GMAIL COMPOSER OPENED FOR: ${userSession.messagingContact}`;
-        } else if (userSession.messagingMode === 'gmail_official') {
-            openGmailOfficial(userSession.messagingContact);
-            response = `🔥 OFFICIAL INVITATION SENT TO: ${userSession.messagingContact} 🔥\nPROFESSIONAL GMAIL COMPOSER OPENED WITH ELITE HACKING ACADEMY INVITATION`;
-        } else if (userSession.messagingMode === 'whatsapp') {
-            openWhatsApp(userSession.messagingContact);
-            response = `WHATSAPP OPENED FOR: ${userSession.messagingContact}`;
-        } else if (userSession.messagingMode === 'telegram') {
-            openTelegram(userSession.messagingContact);
-            response = `TELEGRAM OPENED FOR: ${userSession.messagingContact}`;
-        }
-                
-                // Reset messaging mode
-                userSession.messagingMode = null;
-                userSession.messagingStep = 0;
-                userSession.messagingContact = '';
-            } else if (cmd === 'cancel') {
-                response = "MESSAGING CANCELLED. WHAT YOU NEED NOW?";
-                userSession.messagingMode = null;
-                userSession.messagingStep = 0;
-                userSession.messagingContact = '';
-            } else {
-                response = "TYPE 'ok' TO CONFIRM OR 'cancel' TO ABORT";
+            } else if (userSession.messagingStep === 2) {
+                if (cmd === 'ok') {
+                    if (userSession.messagingMode === 'gmail') {
+                        openGmail(userSession.messagingContact);
+                        response = `GMAIL COMPOSER OPENED FOR: ${userSession.messagingContact}`;
+                    } else if (userSession.messagingMode === 'gmail_official') {
+                        openGmailOfficial(userSession.messagingContact);
+                        response = `🔥 OFFICIAL INVITATION SENT TO: ${userSession.messagingContact} 🔥\nPROFESSIONAL GMAIL COMPOSER OPENED WITH ELITE HACKING ACADEMY INVITATION`;
+                    } else if (userSession.messagingMode === 'whatsapp') {
+                        openWhatsApp(userSession.messagingContact);
+                        response = `WHATSAPP OPENED FOR: ${userSession.messagingContact}`;
+                    } else if (userSession.messagingMode === 'telegram') {
+                        openTelegram(userSession.messagingContact);
+                        response = `TELEGRAM OPENED FOR: ${userSession.messagingContact}`;
+                    }
+                    // Reset messaging state after sending
+                    userSession.messagingMode = null;
+                    userSession.messagingStep = 0;
+                    userSession.messagingContact = '';
+                } else if (cmd === 'cancel') {
+                    response = "MESSAGING CANCELLED. WHAT YOU NEED NOW?";
+                    userSession.messagingMode = null;
+                    userSession.messagingStep = 0;
+                    userSession.messagingContact = '';
+                } else {
+                    response = "TYPE 'ok' TO CONFIRM OR 'cancel' TO ABORT";
+                }
             }
         } else {
             // Regular command processing
