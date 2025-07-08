@@ -636,3 +636,9 @@
     color: #00ff00;
     display: none;
 }
+.command-input-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
