@@ -45,6 +45,7 @@
         </div>
     </div>
     
+    <!-- Single Command Interface (merged and fixed) -->
     <div id="commandInterface" class="command-interface hidden">
         <div class="command-header">
             <i class="fas fa-terminal mr-2"></i>
@@ -61,6 +62,16 @@ PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...
         <div class="command-input-container">
             <span class="command-prompt">QUAF@TERMINAL:~$</span>
             <input type="text" class="command-input" id="commandInput" placeholder="Enter command..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+            
+            <!-- File Upload Section -->
+            <div class="file-upload-container">
+                <button class="file-upload-btn" onclick="document.getElementById('fileInput').click()">
+                    📎 ATTACH
+                </button>
+                <input type="file" id="fileInput" class="file-upload-input" onchange="handleFileUpload(event)" accept="*/*" style="display: none;">
+                <div id="fileUploadProgress" class="file-upload-progress" style="display: none;"></div>
+            </div>
+            
             <button class="exit-btn" onclick="exitCommandInterface()">
                 <i class="fas fa-times mr-2"></i>
                 EXIT
@@ -153,28 +164,7 @@ PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...
             EXIT QUIZ
         </button>
     </div>
-    <div id="commandInterface" class="hidden">
-    <div id="terminal">
-        <div id="commandOutput">
-            SYSTEM INITIALIZED...<br>
-            WELCOME TO THE HACKER TERMINAL<br>
-            PLEASE ENTER YOUR FIRST COMMAND TO BEGIN...<br>
-            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        </div>
-    </div>
-    <div class="command-line">
-        <span class="prompt">HACKER@TERMINAL:~$ </span>
-        <input type="text" id="commandInput" placeholder="Enter command..." autocomplete="off" spellcheck="false">
-        <div class="file-upload-container">
-            <button class="file-upload-btn" onclick="document.getElementById('fileInput').click()">
-                📎 ATTACH
-            </button>
-            <input type="file" id="fileInput" class="file-upload-input" onchange="handleFileUpload(event)">
-            <div id="fileUploadProgress" class="file-upload-progress"></div>
-        </div>
-    </div>
-</div>
 
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
