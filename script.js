@@ -1981,6 +1981,7 @@ AVAILABLE COMMANDS:
 • save_quiz - Manually save quiz results to database
 • malabart doc - Access Malabart document recorded
 • send gmail - Send email via Gmail
+• send gmail official - Send professional invitation email
 • send whatsapp - Send message via WhatsApp
 • send telegram - Send message via Telegram
 • [AD NO] - Lookup student details (960, 986-1021)
@@ -2717,19 +2718,21 @@ async function processCommand(command) {
         }
     } else if (userSession.dataSubmitted) {
         // Handle messaging modes
-        if (userSession.messagingMode && userSession.messagingStep === 1) {
-            if (userSession.messagingMode === 'gmail') {
-                const emails = command.trim();
-                const emailList = emails.split(',').map(e => e.trim());
-                const validEmails = emailList.every(email => validateEmail(email));
-                
-                if (validEmails) {
-                    userSession.messagingContact = emails;
-                    userSession.messagingStep = 2;
-                    response = `GMAIL ADDRESSES CONFIRMED: ${emails}\nTYPE 'ok' TO PROCEED OR 'cancel' TO ABORT`;
-                } else {
-                    response = '<span class="error-text">INVALID EMAIL FORMAT. PLEASE ENTER VALID EMAIL ADDRESSES SEPARATED BY COMMAS</span>';
-                }
+        } else if (userSession.messagingMode && userSession.messagingStep === 1) {
+    if (userSession.messagingMode === 'gmail') {
+        // existing gmail logic
+    } else if (userSession.messagingMode === 'gmail_official') {  // ✅ Move this INSIDE
+        const emails = command.trim();
+        const emailList = emails.split(',').map(e => e.trim());
+        const validEmails = emailList.every(email => validateEmail(email));
+        
+        if (validEmails) {
+            userSession.messagingContact = emails;
+            userSession.messagingStep = 2;
+            response = `🔥 OFFICIAL INVITATION RECIPIENTS CONFIRMED 🔥\nRECIPIENTS: ${emails}\nTYPE 'ok' TO SEND PROFESSIONAL INVITATION OR 'cancel' TO ABORT`;
+        } else {
+            response = '<span class="error-text">INVALID EMAIL FORMAT. PLEASE ENTER VALID EMAIL ADDRESSES SEPARATED BY COMMAS</span>';
+        }
             } else if (userSession.messagingMode === 'whatsapp' || userSession.messagingMode === 'telegram') {
                 const phone = command.trim();
                 if (validatePhoneNumber(phone)) {
@@ -2753,20 +2756,20 @@ async function processCommand(command) {
         response = '<span class="error-text">INVALID EMAIL FORMAT. PLEASE ENTER VALID EMAIL ADDRESSES SEPARATED BY COMMAS</span>';
     }
         } else if (userSession.messagingMode && userSession.messagingStep === 2) {
-            if (cmd === 'ok') {
-    if (userSession.messagingMode === 'gmail') {
-        openGmail(userSession.messagingContact);
-        response = `GMAIL COMPOSER OPENED FOR: ${userSession.messagingContact}`;
-    } else if (userSession.messagingMode === 'gmail_official') {
-        openGmailOfficial(userSession.messagingContact);
-        response = `🔥 OFFICIAL INVITATION SENT TO: ${userSession.messagingContact} 🔥\nPROFESSIONAL GMAIL COMPOSER OPENED WITH ELITE HACKING ACADEMY INVITATION`;
-    } else if (userSession.messagingMode === 'whatsapp') {
-        openWhatsApp(userSession.messagingContact);
-        response = `WHATSAPP OPENED FOR: ${userSession.messagingContact}`;
-    } else if (userSession.messagingMode === 'telegram') {
-        openTelegram(userSession.messagingContact);
-        response = `TELEGRAM OPENED FOR: ${userSession.messagingContact}`;
-    }
+    if (cmd === 'ok') {
+        if (userSession.messagingMode === 'gmail') {
+            openGmail(userSession.messagingContact);
+            response = `GMAIL COMPOSER OPENED FOR: ${userSession.messagingContact}`;
+        } else if (userSession.messagingMode === 'gmail_official') {
+            openGmailOfficial(userSession.messagingContact);
+            response = `🔥 OFFICIAL INVITATION SENT TO: ${userSession.messagingContact} 🔥\nPROFESSIONAL GMAIL COMPOSER OPENED WITH ELITE HACKING ACADEMY INVITATION`;
+        } else if (userSession.messagingMode === 'whatsapp') {
+            openWhatsApp(userSession.messagingContact);
+            response = `WHATSAPP OPENED FOR: ${userSession.messagingContact}`;
+        } else if (userSession.messagingMode === 'telegram') {
+            openTelegram(userSession.messagingContact);
+            response = `TELEGRAM OPENED FOR: ${userSession.messagingContact}`;
+        }
                 
                 // Reset messaging mode
                 userSession.messagingMode = null;
@@ -2788,7 +2791,7 @@ async function processCommand(command) {
                 userSession.messagingMode = 'gmail';
                 userSession.messagingStep = 1;
                 response = "ENTER GMAIL ADDRESS(ES) - MULTIPLE ADDRESSES SEPARATED BY COMMAS:";
-            } else if (cmd === "send gmail official") {
+            } else if (cmd === "send gmail official" || cmd === "gmail official") {
     userSession.messagingMode = 'gmail_official';
     userSession.messagingStep = 1;
     response = "🔥 OFFICIAL INVITATION MODE ACTIVATED 🔥\nENTER GMAIL ADDRESS(ES) - MULTIPLE ADDRESSES SEPARATED BY COMMAS:";        
