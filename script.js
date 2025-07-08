@@ -2721,10 +2721,12 @@ async function processCommand(command) {
         } else if (userSession.messagingMode && userSession.messagingStep === 1) {
     if (userSession.messagingMode === 'gmail') {
         // existing gmail logic
-    } else if (userSession.messagingMode === 'gmail_official') {  // ✅ Move this INSIDE
+    } else if (userSession.messagingMode === 'gmail_official') {  // ✅ INSIDE the block
         const emails = command.trim();
-        const emailList = emails.split(',').map(e => e.trim());
-        const validEmails = emailList.every(email => validateEmail(email));
+        // ... rest of the logic
+    } else if (userSession.messagingMode === 'whatsapp' || userSession.messagingMode === 'telegram') {
+        // phone logic
+    }
         
         if (validEmails) {
             userSession.messagingContact = emails;
