@@ -1797,67 +1797,42 @@ function handleFileUpload(event) {
 
 async function uploadFileToCloud(file) {
     try {
-        const formData = new FormData();
-        formData.append('file', file);
+        // Convert file to base64 for permanent storage
+        const base64Data = await fileToBase64(file);
         
-        // Upload to file.io (temporary file hosting service)
-        const response = await fetch('https://file.io', {
-            method: 'POST',
-            body: formData
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            const fileInfo = {
-                name: file.name,
-                size: file.size,
-                type: file.type || 'Unknown',
-                lastModified: new Date(file.lastModified).toISOString(),
-                downloadLink: result.link,
-                key: result.key
-            };
+        const fileInfo = {
+            name: file.name,
+            size: file.size,
+            type: file.type || 'Unknown',
+            lastModified: new Date(file.lastModified).toISOString(),
+            base64Data: base64Data,
+            key: 'file_' + Date.now()
+        };
 
-            document.getElementById('fileUploadProgress').textContent = 'SENDING TO DATABASE...';
-            sendFileAsMessage(fileInfo);
-        } else {
-            throw new Error('Upload failed');
-        }
+        document.getElementById('fileUploadProgress').textContent = 'SENDING TO DATABASE...';
+        sendFileAsMessage(fileInfo);
     } catch (error) {
         console.error('Upload error:', error);
-        // Fallback to local URL method
-        uploadFileLocally(file);
+        const output = document.getElementById("commandOutput");
+        const timestamp = new Date().toLocaleTimeString();
+        output.innerHTML += `\n[${timestamp}] ERROR: FILE UPLOAD FAILED\n`;
+        document.getElementById('fileUploadProgress').style.display = 'none';
     }
 }
 
-function uploadFileLocally(file) {
-    // Create a local object URL as fallback
-    const localUrl = URL.createObjectURL(file);
-    
-    const fileInfo = {
-        name: file.name,
-        size: file.size,
-        type: file.type || 'Unknown',
-        lastModified: new Date(file.lastModified).toISOString(),
-        downloadLink: localUrl,
-        key: 'local_' + Date.now()
-    };
-
-    sendFileAsMessage(fileInfo);
-}
 
 async function sendFileAsMessage(fileInfo) {
     if (userSession.dataSubmitted && userSession.userName && userSession.userEmail) {
         try {
-            // Send file information with direct link
+            // Send file with base64 data instead of link
             const fileMessage = `📎 FILE UPLOADED SUCCESSFULLY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📄 FILENAME: ${fileInfo.name}
 📊 SIZE: ${formatFileSize(fileInfo.size)}
 🔧 TYPE: ${fileInfo.type}
 📅 MODIFIED: ${fileInfo.lastModified}
-🔗 DOWNLOAD LINK: ${fileInfo.downloadLink}
 🔑 FILE KEY: ${fileInfo.key}
+📋 BASE64 DATA: ${fileInfo.base64Data}
 ✅ STATUS: READY FOR DOWNLOAD
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
@@ -1869,8 +1844,8 @@ async function sendFileAsMessage(fileInfo) {
             output.innerHTML += `\n[${timestamp}] FILE UPLOAD SUCCESSFUL!\n`;
             output.innerHTML += `📄 FILE: ${fileInfo.name}\n`;
             output.innerHTML += `📊 SIZE: ${formatFileSize(fileInfo.size)}\n`;
-            output.innerHTML += `🔗 DOWNLOAD LINK: ${fileInfo.downloadLink}\n`;
-            output.innerHTML += `✅ STATUS: SENT TO DATABASE\n`;
+            output.innerHTML += `✅ STATUS: SENT TO DATABASE WITH BASE64 DATA\n`;
+            output.innerHTML += `💡 ADMIN CAN DOWNLOAD AND VIEW THE FILE FROM DATABASE\n`;
 
             const terminal = document.getElementById("terminal");
             terminal.scrollTop = terminal.scrollHeight;
@@ -1911,8 +1886,15 @@ function simpleChecksum(data) {
     }
     return checksum.toString(16).toUpperCase();
 }
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
 
-// Update addFileUploadToHelp function
 function addFileUploadToHelp() {
     const originalHelp = hackerResponses.help;
     if (!originalHelp.includes('📎 ATTACH')) {
@@ -1924,10 +1906,10 @@ function addFileUploadToHelp() {
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📎 FILE UPLOAD FEATURES:
    - Click ATTACH button to upload any file
-   - Files uploaded to cloud storage
+   - Files converted to base64 and stored in database
    - Maximum file size: 100MB
    - All file types supported
-   - Direct download links generated
+   - Admin can download files from database
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
     }
 }
@@ -2153,9 +2135,10 @@ AVAILABLE COMMANDS:
 • exit - Exit command interface
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📎 FILE UPLOAD: Click ATTACH button to upload any file
-   - Files are converted to binary code
-   - Maximum file size: 10MB
+   - Files converted to base64 and stored in database
+   - Maximum file size: 100MB
    - All file types supported
+   - Admin can download files from database
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
 
             status: [
