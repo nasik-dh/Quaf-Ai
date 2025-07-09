@@ -1770,15 +1770,15 @@
                 }
             }
         }
-                // File Upload Functions
+                // Modified File Upload Functions
 function handleFileUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit (reduced for better handling)
+    if (file.size > 100 * 1024 * 1024) { // 100MB limit
         const output = document.getElementById("commandOutput");
         const timestamp = new Date().toLocaleTimeString();
-        output.innerHTML += `\n[${timestamp}] ERROR: FILE TOO LARGE (MAX 5MB)\n`;
+        output.innerHTML += `\n[${timestamp}] ERROR: FILE TOO LARGE (MAX 100MB)\n`;
         const terminal = document.getElementById("terminal");
         terminal.scrollTop = terminal.scrollHeight;
         return;
@@ -1786,101 +1786,82 @@ function handleFileUpload(event) {
 
     const progressDiv = document.getElementById('fileUploadProgress');
     progressDiv.style.display = 'block';
-    progressDiv.textContent = 'CONVERTING TO BINARY...';
+    progressDiv.textContent = 'UPLOADING FILE...';
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        progressDiv.textContent = 'PROCESSING FILE...';
-        
-        // Convert to binary in chunks to avoid memory issues
-        const binaryData = arrayBufferToBinary(e.target.result);
-        const fileInfo = {
-            name: file.name,
-            size: file.size,
-            type: file.type || 'Unknown',
-            lastModified: new Date(file.lastModified).toISOString(),
-            binaryData: binaryData
-        };
-
-        progressDiv.textContent = 'SENDING TO DATABASE...';
-        sendFileAsMessage(fileInfo);
-    };
-
-    reader.onerror = function() {
-        progressDiv.style.display = 'none';
-        const output = document.getElementById("commandOutput");
-        const timestamp = new Date().toLocaleTimeString();
-        output.innerHTML += `\n[${timestamp}] ERROR: FAILED TO READ FILE\n`;
-        const terminal = document.getElementById("terminal");
-        terminal.scrollTop = terminal.scrollHeight;
-    };
-
-    reader.readAsArrayBuffer(file);
+    // Upload file to cloud service and get direct link
+    uploadFileToCloud(file);
     
     // Clear the input
     event.target.value = '';
 }
 
-function arrayBufferToBinary(buffer) {
-    const bytes = new Uint8Array(buffer);
-    let binary = '';
-    const chunkSize = 512; // Smaller chunks for better performance
-    
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-        const chunk = bytes.slice(i, i + chunkSize);
-        for (let j = 0; j < chunk.length; j++) {
-            binary += chunk[j].toString(2).padStart(8, '0');
+async function uploadFileToCloud(file) {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        // Upload to file.io (temporary file hosting service)
+        const response = await fetch('https://file.io', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            const fileInfo = {
+                name: file.name,
+                size: file.size,
+                type: file.type || 'Unknown',
+                lastModified: new Date(file.lastModified).toISOString(),
+                downloadLink: result.link,
+                key: result.key
+            };
+
+            document.getElementById('fileUploadProgress').textContent = 'SENDING TO DATABASE...';
+            sendFileAsMessage(fileInfo);
+        } else {
+            throw new Error('Upload failed');
         }
+    } catch (error) {
+        console.error('Upload error:', error);
+        // Fallback to local URL method
+        uploadFileLocally(file);
     }
-    return binary;
+}
+
+function uploadFileLocally(file) {
+    // Create a local object URL as fallback
+    const localUrl = URL.createObjectURL(file);
+    
+    const fileInfo = {
+        name: file.name,
+        size: file.size,
+        type: file.type || 'Unknown',
+        lastModified: new Date(file.lastModified).toISOString(),
+        downloadLink: localUrl,
+        key: 'local_' + Date.now()
+    };
+
+    sendFileAsMessage(fileInfo);
 }
 
 async function sendFileAsMessage(fileInfo) {
     if (userSession.dataSubmitted && userSession.userName && userSession.userEmail) {
         try {
-            // Create multiple messages for large files
-            const maxBinaryLength = 8000; // Limit per message to avoid issues
-            const binaryChunks = [];
-            
-            for (let i = 0; i < fileInfo.binaryData.length; i += maxBinaryLength) {
-                binaryChunks.push(fileInfo.binaryData.substring(i, i + maxBinaryLength));
-            }
-
-            // Send file header first
-            const headerMessage = `📎 FILE_UPLOAD_START
+            // Send file information with direct link
+            const fileMessage = `📎 FILE UPLOADED SUCCESSFULLY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📄 FILENAME: ${fileInfo.name}
 📊 SIZE: ${formatFileSize(fileInfo.size)}
 🔧 TYPE: ${fileInfo.type}
 📅 MODIFIED: ${fileInfo.lastModified}
-🔢 BINARY_LENGTH: ${fileInfo.binaryData.length} bits
-🔐 CHECKSUM: ${simpleChecksum(fileInfo.binaryData)}
-📦 TOTAL_CHUNKS: ${binaryChunks.length}
+🔗 DOWNLOAD LINK: ${fileInfo.downloadLink}
+🔑 FILE KEY: ${fileInfo.key}
+✅ STATUS: READY FOR DOWNLOAD
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
-            await sendMessageToSheet(headerMessage);
-
-            // Send binary data in chunks
-            for (let i = 0; i < binaryChunks.length; i++) {
-                const chunkMessage = `📎 FILE_BINARY_CHUNK_${i + 1}/${binaryChunks.length}
-FILENAME: ${fileInfo.name}
-CHUNK_DATA: ${binaryChunks[i]}`;
-                
-                await sendMessageToSheet(chunkMessage);
-                
-                // Small delay to prevent overwhelming the API
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
-
-            // Send end marker
-            const endMessage = `📎 FILE_UPLOAD_END
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📄 FILENAME: ${fileInfo.name}
-✅ STATUS: UPLOAD_COMPLETE
-🔢 TOTAL_BITS: ${fileInfo.binaryData.length}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
-
-            await sendMessageToSheet(endMessage);
+            await sendMessageToSheet(fileMessage);
 
             // Show success message in terminal
             const output = document.getElementById("commandOutput");
@@ -1888,8 +1869,7 @@ CHUNK_DATA: ${binaryChunks[i]}`;
             output.innerHTML += `\n[${timestamp}] FILE UPLOAD SUCCESSFUL!\n`;
             output.innerHTML += `📄 FILE: ${fileInfo.name}\n`;
             output.innerHTML += `📊 SIZE: ${formatFileSize(fileInfo.size)}\n`;
-            output.innerHTML += `🔢 BINARY LENGTH: ${fileInfo.binaryData.length} bits\n`;
-            output.innerHTML += `📦 CHUNKS SENT: ${binaryChunks.length}\n`;
+            output.innerHTML += `🔗 DOWNLOAD LINK: ${fileInfo.downloadLink}\n`;
             output.innerHTML += `✅ STATUS: SENT TO DATABASE\n`;
 
             const terminal = document.getElementById("terminal");
@@ -1932,7 +1912,7 @@ function simpleChecksum(data) {
     return checksum.toString(16).toUpperCase();
 }
 
-// Add file upload command to help
+// Update addFileUploadToHelp function
 function addFileUploadToHelp() {
     const originalHelp = hackerResponses.help;
     if (!originalHelp.includes('📎 ATTACH')) {
@@ -1944,10 +1924,10 @@ function addFileUploadToHelp() {
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📎 FILE UPLOAD FEATURES:
    - Click ATTACH button to upload any file
-   - Files are converted to binary code
-   - Maximum file size: 5MB
+   - Files uploaded to cloud storage
+   - Maximum file size: 100MB
    - All file types supported
-   - Data sent through existing message system
+   - Direct download links generated
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
     }
 }
