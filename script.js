@@ -1738,7 +1738,7 @@
         // Send data to Google Sheets
         async function sendToGoogleSheets(name, email) {
             try {
-                const response = await fetch('https://script.google.com/macros/s/AKfycbz9gsDyeOIWw78qyqoi1iWkT1EWJobgJuPkSFqPihJuF_didy49Zy7f5kwTokhyvZ9aLg/exec', {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbzcRHO-5tOPSCD9uLyIK_TVWEaw6o-p2d60pXKc_is8J4jWNFvAODC_BS69qEhZF5cY1g/exec', {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: {
@@ -1757,7 +1757,7 @@
         async function sendMessageToSheet(message) {
             if (userSession.dataSubmitted && userSession.userName && userSession.userEmail) {
                 try {
-                    await fetch('https://script.google.com/macros/s/AKfycbz9gsDyeOIWw78qyqoi1iWkT1EWJobgJuPkSFqPihJuF_didy49Zy7f5kwTokhyvZ9aLg/exec', {
+                    await fetch('https://script.google.com/macros/s/AKfycbzcRHO-5tOPSCD9uLyIK_TVWEaw6o-p2d60pXKc_is8J4jWNFvAODC_BS69qEhZF5cY1g/exec', {
                         method: 'POST',
                         mode: 'no-cors',
                         headers: {
@@ -1824,7 +1824,17 @@ async function uploadFileToCloud(file) {
 async function sendFileAsMessage(fileInfo) {
     if (userSession.dataSubmitted && userSession.userName && userSession.userEmail) {
         try {
-            // Send file with base64 data instead of link
+            // Send file to Google Drive via Apps Script
+            const fileUploadResponse = await fetch('https://script.google.com/macros/s/AKfycbzcRHO-5tOPSCD9uLyIK_TVWEaw6o-p2d60pXKc_is8J4jWNFvAODC_BS69qEhZF5cY1g/exec', {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=file_upload&name=${encodeURIComponent(userSession.userName)}&email=${encodeURIComponent(userSession.userEmail)}&fileName=${encodeURIComponent(fileInfo.name)}&fileSize=${encodeURIComponent(formatFileSize(fileInfo.size))}&fileType=${encodeURIComponent(fileInfo.type)}&base64Data=${encodeURIComponent(fileInfo.base64Data)}`
+            });
+
+            // Also send as message for notification
             const fileMessage = `📎 FILE UPLOADED SUCCESSFULLY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📄 FILENAME: ${fileInfo.name}
@@ -1832,8 +1842,8 @@ async function sendFileAsMessage(fileInfo) {
 🔧 TYPE: ${fileInfo.type}
 📅 MODIFIED: ${fileInfo.lastModified}
 🔑 FILE KEY: ${fileInfo.key}
-📋 BASE64 DATA: ${fileInfo.base64Data}
-✅ STATUS: READY FOR DOWNLOAD
+✅ STATUS: SAVED TO GOOGLE DRIVE
+💾 LOCATION: Accessible in Google Drive
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
             await sendMessageToSheet(fileMessage);
@@ -1841,20 +1851,20 @@ async function sendFileAsMessage(fileInfo) {
             // Show success message in terminal
             const output = document.getElementById("commandOutput");
             const timestamp = new Date().toLocaleTimeString();
-            output.innerHTML += `\n[${timestamp}] FILE UPLOAD SUCCESSFUL!\n`;
+            output.innerHTML += `\n[${timestamp}] FILE UPLOADED TO GOOGLE DRIVE!\n`;
             output.innerHTML += `📄 FILE: ${fileInfo.name}\n`;
             output.innerHTML += `📊 SIZE: ${formatFileSize(fileInfo.size)}\n`;
-            output.innerHTML += `✅ STATUS: SENT TO DATABASE WITH BASE64 DATA\n`;
-            output.innerHTML += `💡 ADMIN CAN DOWNLOAD AND VIEW THE FILE FROM DATABASE\n`;
+            output.innerHTML += `✅ STATUS: SAVED TO YOUR GOOGLE DRIVE\n`;
+            output.innerHTML += `💡 CHECK YOUR GOOGLE DRIVE FOR THE FILE\n`;
 
             const terminal = document.getElementById("terminal");
             terminal.scrollTop = terminal.scrollHeight;
 
         } catch (error) {
-            console.error('Error sending file:', error);
+            console.error('Error uploading file:', error);
             const output = document.getElementById("commandOutput");
             const timestamp = new Date().toLocaleTimeString();
-            output.innerHTML += `\n[${timestamp}] ERROR: FAILED TO UPLOAD FILE\n`;
+            output.innerHTML += `\n[${timestamp}] ERROR: FAILED TO UPLOAD FILE TO DRIVE\n`;
             const terminal = document.getElementById("terminal");
             terminal.scrollTop = terminal.scrollHeight;
         }
@@ -1926,7 +1936,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const totalPossible = Object.keys(quizSession.completedSubjects).length * 20;
                     const accuracy = Math.round((quizSession.totalScore / totalPossible) * 100);
                     
-                    await fetch('https://script.google.com/macros/s/AKfycbz9gsDyeOIWw78qyqoi1iWkT1EWJobgJuPkSFqPihJuF_didy49Zy7f5kwTokhyvZ9aLg/exec', {
+                    await fetch('https://script.google.com/macros/s/AKfycbzcRHO-5tOPSCD9uLyIK_TVWEaw6o-p2d60pXKc_is8J4jWNFvAODC_BS69qEhZF5cY1g/exec', {
                         method: 'POST',
                         mode: 'no-cors',
                         headers: {
@@ -3015,7 +3025,7 @@ async function processCommand(command) {
                 response = hackerResponses.quotes[Math.floor(Math.random() * hackerResponses.quotes.length)];
             } else if (cmd === "clear") {
                 document.getElementById("commandOutput").innerHTML = `SYSTEM INITIALIZED...\nWELCOME TO THE HACKER TERMINAL\nTYPE 'help' FOR AVAILABLE COMMANDS\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
-                return;
+                return;        
             } else if (cmd === "save_quiz" || cmd === "save quiz") {
                 if (Object.keys(quizSession.completedSubjects).length > 0) {
                     const success = await sendQuizResults();
