@@ -1809,7 +1809,7 @@ async function uploadFileToCloud(file) {
             key: 'file_' + Date.now()
         };
 
-        document.getElementById('fileUploadProgress').textContent = 'SENDING TO DATABASE...';
+        document.getElementById('fileUploadProgress').textContent = 'SENDING TO EHC...';
         sendFileAsMessage(fileInfo);
     } catch (error) {
         console.error('Upload error:', error);
