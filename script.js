@@ -3112,7 +3112,7 @@ async function processCommand(command) {
         // Check PIN Function
         function checkPin() {
             const pin = document.getElementById("pinInput").value;
-            const correctPin = "quaf@dhdc";
+            const correctPin = "569786";
             
             if (pin === correctPin) {
                 document.getElementById("securityPanel").classList.add("hidden");
