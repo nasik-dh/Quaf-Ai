@@ -2138,6 +2138,8 @@ AVAILABLE COMMANDS:
 • quiz - Start knowledge assessment system
 • save_quiz - Manually save quiz results to database
 • malabart doc - Access Malabart document recorded
+• list files - Check uploaded files
+• organize files - Organize files by user in Google Drive
 • [AD NO] - Lookup student details (960, 986-1021)
 • [AD NO] pic - Show student photo (960, 986-1021)
 • 📎 ATTACH - Upload files (click attach button)
@@ -3040,7 +3042,12 @@ async function processCommand(command) {
                 } else if (cmd === "malabart doc") {
     const pdfUrl = "https://quaf.netlify.app/fest/doc.pdf";
     response = displayPDF(pdfUrl);
-            } else if (isPicRequest(cmd)) {
+                } else if (cmd === "list files") {
+    response = "CHECKING YOUR UPLOADED FILES...";
+    // You could fetch and display file list here
+                } else if (cmd === "organize files") {
+    response = "ORGANIZING FILES BY USER... CHECK YOUR GOOGLE DRIVE";    
+                 } else if (isPicRequest(cmd)) {
     const studentId = extractStudentIdFromPicCommand(cmd);
     const imageUrl = `https://quaf.netlify.app/pic/pic/${studentId}.${studentId === '960' ? 'png' : 'jpg'}`;
     
