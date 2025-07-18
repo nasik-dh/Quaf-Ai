@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Clone - Web Messenger</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --whatsapp-green: #075e54;
+            --whatsapp-light-green: #25d366;
+            --whatsapp-teal: #128c7e;
+            --whatsapp-gray: #f0f2f5;
+            --whatsapp-dark-gray: #8696a0;
+            --whatsapp-border: #e9edef;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--whatsapp-gray);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .whatsapp-container {
+            display: flex;
+            height: 100vh;
+            background-color: #f0f2f5;
+        }
+        
+        .sidebar {
+            width: 30%;
+            min-width: 320px;
+            background-color: white;
+            border-right: 1px solid var(--whatsapp-border);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            background-color: var(--whatsapp-gray);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--whatsapp-border);
+        }
+        
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .profile-pic.contact-pic {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+        }
+        
+        .online-indicator {
+            width: 12px;
+            height: 12px;
+            background-color: var(--whatsapp-light-green);
+            border-radius: 50%;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            border: 2px solid white;
+        }
+        
+        .search-container {
+            padding: 8px 12px;
+            background-color: white;
+            border-bottom: 1px solid var(--whatsapp-border);
+        }
+        
+        .search-box {
+            background-color: var(--whatsapp-gray);
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            width: 100%;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+            background-color: white;
+        }
+        
+        .chat-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--whatsapp-border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background-color 0.2s;
+        }
+        
+        .chat-item:hover {
+            background-color: #f5f6f6;
+        }
+        
+        .chat-item.active {
+            background-color: #e9edef;
+        }
+        
+        .chat-info {
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .chat-name {
+            font-weight: 600;
+            color: #111b21;
+            margin-bottom: 2px;
+        }
+        
+        .chat-preview {
+            font-size: 14px;
+            color: var(--whatsapp-dark-gray);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .chat-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+        
+        .chat-time {
+            font-size: 12px;
+            color: var(--whatsapp-dark-gray);
+        }
+        
+        .unread-badge {
+            background-color: var(--whatsapp-light-green);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .main-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #efeae2;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="chat-bg" patternUnits="userSpaceOnUse" width="100" height="100"><circle cx="50" cy="50" r="1" fill="%23d9d0c4" opacity="0.3"/></pattern></defs><rect width="100%" height="100%" fill="url(%23chat-bg)"/></svg>');
+        }
+        
+        .chat-header {
+            background-color: var(--whatsapp-gray);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--whatsapp-border);
+        }
+        
+        .chat-header-info {
+            flex: 1;
+        }
+        
+        .chat-header-name {
+            font-weight: 600;
+            color: #111b21;
+            margin-bottom: 2px;
+        }
+        
+        .chat-header-status {
+            font-size: 13px;
+            color: var(--whatsapp-dark-gray);
+        }
+        
+        .chat-actions {
+            display: flex;
+            gap: 16px;
+            color: var(--whatsapp-dark-gray);
+        }
+        
+        .chat-actions i {
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .chat-actions i:hover {
+            color: var(--whatsapp-teal);
+        }
+        
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .message {
+    max-width: 65%;
+    padding: 8px 12px 8px 12px;
+    margin: 4px 0;
+    border-radius: 8px;
+    position: relative;
+    word-wrap: break-word;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    font-size: 14px;
+    line-height: 1.4;
+    display: flex;
+    flex-direction: column;
+}
+
+.message.sent {
+    background-color: #d9fdd3;
+    margin-left: auto;
+    border-bottom-right-radius: 2px;
+    align-self: flex-end;
+}
+
+.message.received {
+    background-color: white;
+    margin-right: auto;
+    border-bottom-left-radius: 2px;
+    align-self: flex-start;
+}
+
+.message-content {
+    margin-bottom: 4px;
+    word-break: break-word;
+}
+
+.message-time {
+    font-size: 11px;
+    color: #667781;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    margin-top: 2px;
+}
+
+.message.sent .message-time {
+    color: #667781;
+}
+
+.message.received .message-time {
+    color: #999;
+}
+
+.messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background-color: #efeae2;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="chat-bg" patternUnits="userSpaceOnUse" width="100" height="100"><circle cx="50" cy="50" r="1" fill="%23d9d0c4" opacity="0.3"/></pattern></defs><rect width="100%" height="100%" fill="url(%23chat-bg)"/></svg>');
+}
+
+/* Fix the main chat area */
+.main-chat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #efeae2;
+    height: 100vh;
+}
+
+.chat-area {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Fix input area */
+.input-area {
+    background-color: var(--whatsapp-gray);
+    padding: 10px 16px;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    border-top: 1px solid var(--whatsapp-border);
+    min-height: 60px;
+}
+
+.message-input {
+    flex: 1;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 12px;
+    outline: none;
+    font-size: 14px;
+    background-color: white;
+    resize: none;
+    min-height: 20px;
+    max-height: 120px;
+    line-height: 1.4;
+    font-family: inherit;
+}
+        .send-button {
+            background-color: var(--whatsapp-teal);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: background-color 0.2s;
+        }
+        
+        .send-button:hover {
+            background-color: var(--whatsapp-green);
+        }
+        
+        .emoji-picker {
+            position: absolute;
+            bottom: 70px;
+            right: 80px;
+            background-color: white;
+            border: 1px solid var(--whatsapp-border);
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            max-width: 240px;
+        }
+        
+        .emoji {
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 20px;
+        }
+        
+        .emoji:hover {
+            background-color: var(--whatsapp-gray);
+        }
+        
+        .typing-indicator {
+            display: none;
+            background-color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-right: auto;
+            max-width: 65%;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--whatsapp-dark-gray);
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+        
+        .no-chat-selected {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            border-left: 6px solid var(--whatsapp-teal);
+        }
+        
+        .no-chat-icon {
+            font-size: 120px;
+            color: var(--whatsapp-dark-gray);
+            margin-bottom: 24px;
+        }
+        
+        .no-chat-text {
+            font-size: 32px;
+            color: var(--whatsapp-dark-gray);
+            margin-bottom: 8px;
+        }
+        
+        .no-chat-subtext {
+            font-size: 14px;
+            color: var(--whatsapp-dark-gray);
+        }
+        
+/* Mobile First - Base styles for mobile devices */
+@media (max-width: 480px) {
+    .whatsapp-container {
+        position: relative;
+    }
+    
+    .sidebar {
+        width: 100%;
+        min-width: 100%;
+        position: absolute;
+        z-index: 10;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        height: 100vh;
+    }
+    
+    .sidebar.mobile-active {
+        transform: translateX(0);
+    }
+    
+    .main-chat {
+        width: 100%;
+    }
+    
+    .mobile-back {
+        display: block;
+        margin-right: 16px;
+        cursor: pointer;
+    }
+    
+    .chat-header {
+        padding: 12px 16px;
+    }
+    
+    .sidebar-header {
+        padding: 16px;
+    }
+    
+    .messages-container {
+        padding: 16px 12px;
+    }
+    
+    .input-area {
+        padding: 12px 16px;
+    }
+    
+    .message {
+        max-width: 85%;
+        font-size: 14px;
+    }
+    
+    .chat-item {
+        padding: 12px 16px;
+    }
+    
+    .profile-pic {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+    
+    .profile-pic.contact-pic {
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
+    }
+    
+    .no-chat-icon {
+        font-size: 80px;
+    }
+    
+    .no-chat-text {
+        font-size: 24px;
+    }
+    
+    .chat-actions {
+        gap: 12px;
+    }
+    
+    .chat-actions i {
+        font-size: 16px;
+        padding: 8px;
+        margin: -8px;
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .input-actions i {
+        padding: 8px;
+        margin: -8px;
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .send-button {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
+/* Small tablets and large phones */
+@media (min-width: 481px) and (max-width: 768px) {
+    .whatsapp-container {
+        position: relative;
+    }
+    
+    .sidebar {
+        width: 100%;
+        position: absolute;
+        z-index: 10;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        height: 100vh;
+    }
+    
+    .sidebar.mobile-active {
+        transform: translateX(0);
+    }
+    
+    .main-chat {
+        width: 100%;
+    }
+    
+    .mobile-back {
+        display: block;
+        margin-right: 16px;
+        cursor: pointer;
+    }
+    
+    .message {
+        max-width: 75%;
+    }
+    
+    .messages-container {
+        padding: 18px 16px;
+    }
+    
+    .no-chat-icon {
+        font-size: 100px;
+    }
+    
+    .no-chat-text {
+        font-size: 28px;
+    }
+}
+
+/* Medium tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .sidebar {
+        width: 35%;
+        min-width: 280px;
+        position: relative;
+        transform: translateX(0);
+    }
+    
+    .main-chat {
+        width: 65%;
+    }
+    
+    .mobile-back {
+        display: none;
+    }
+    
+    .message {
+        max-width: 70%;
+    }
+    
+    .chat-item {
+        padding: 14px 16px;
+    }
+}
+
+/* Large tablets and small desktops */
+@media (min-width: 1025px) and (max-width: 1200px) {
+    .sidebar {
+        width: 32%;
+        min-width: 320px;
+        position: relative;
+        transform: translateX(0);
+    }
+    
+    .main-chat {
+        width: 68%;
+    }
+    
+    .mobile-back {
+        display: none;
+    }
+    
+    .message {
+        max-width: 65%;
+    }
+}
+
+/* Large desktops */
+@media (min-width: 1201px) {
+    .sidebar {
+        width: 30%;
+        min-width: 340px;
+        position: relative;
+        transform: translateX(0);
+    }
+    
+    .main-chat {
+        width: 70%;
+    }
+    
+    .mobile-back {
+        display: none;
+    }
+    
+    .message {
+        max-width: 60%;
+    }
+    
+    .whatsapp-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+}
+
+/* Ultra-wide screens */
+@media (min-width: 1400px) {
+    .whatsapp-container {
+        max-width: 1600px;
+    }
+    
+    .sidebar {
+        max-width: 420px;
+    }
+}
+
+/* Landscape orientation adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+    .sidebar-header {
+        padding: 12px 16px;
+    }
+    
+    .chat-header {
+        padding: 10px 16px;
+    }
+    
+    .messages-container {
+        padding: 12px 16px;
+    }
+    
+    .input-area {
+        padding: 10px 16px;
+    }
+    
+    .no-chat-icon {
+        font-size: 60px;
+        margin-bottom: 16px;
+    }
+    
+    .no-chat-text {
+        font-size: 20px;
+    }
+}
+
+/* Touch-friendly improvements */
+.chat-item,
+.send-button,
+.input-actions i,
+.chat-actions i,
+.profile-pic,
+.emoji {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Scrollbar styling for mobile */
+.chat-list::-webkit-scrollbar,
+.messages-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.chat-list::-webkit-scrollbar-track,
+.messages-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-list::-webkit-scrollbar-thumb,
+.messages-container::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+}
+        .profile-colors {
+            --color-1: #ff6b6b;
+            --color-2: #4ecdc4;
+            --color-3: #45b7d1;
+            --color-4: #f9ca24;
+            --color-5: #f0932b;
+            --color-6: #eb4d4b;
+            --color-7: #6c5ce7;
+            --color-8: #a29bfe;
+            --color-9: #fd79a8;
+            --color-10: #00b894;
+        }
+.search-container {
+    position: relative;
+}
+
+.search-container::before {
+    content: '\f002';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--whatsapp-dark-gray);
+    z-index: 10;
+}
+
+.search-box {
+    padding-left: 40px;
+}
+    </style>
+</head>
+<body>
+    <div class="whatsapp-container">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="profile-pic">
+                    <span>Me</span>
+                </div>
+                <div class="flex gap-4">
+                    <i class="fas fa-circle-notch text-xl text-gray-600 cursor-pointer hover:text-teal-600"></i>
+                    <i class="fas fa-message text-xl text-gray-600 cursor-pointer hover:text-teal-600"></i>
+                    <i class="fas fa-ellipsis-vertical text-xl text-gray-600 cursor-pointer hover:text-teal-600"></i>
+                </div>
+            </div>
+            
+            <div class="search-container">
+    <input type="text" class="search-box" placeholder="Search or start new chat" id="searchInput">
+</div>
+            
+            <div class="chat-list" id="chatList">
+                <!-- Chat items will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="main-chat">
+            <div class="no-chat-selected" id="noChatSelected">
+                <i class="fab fa-whatsapp no-chat-icon"></i>
+                <div class="no-chat-text">WhatsApp Web</div>
+                <div class="no-chat-subtext">Send and receive messages without keeping your phone online.</div>
+            </div>
+            
+            <div class="chat-area" id="chatArea" style="display: none;">
+                <div class="chat-header">
+                    <i class="fas fa-arrow-left mobile-back" id="mobileBack"></i>
+                    <div class="profile-pic contact-pic" id="currentContactPic">
+                        <span id="currentContactInitial">J</span>
+                        <div class="online-indicator" id="currentContactOnline"></div>
+                    </div>
+                    <div class="chat-header-info">
+                        <div class="chat-header-name" id="currentContactName">John Smith</div>
+                        <div class="chat-header-status" id="currentContactStatus">online</div>
+                    </div>
+                    <div class="chat-actions">
+                        <i class="fas fa-search"></i>
+                        <i class="fas fa-phone"></i>
+                        <i class="fas fa-video"></i>
+                        <i class="fas fa-ellipsis-vertical"></i>
+                    </div>
+                </div>
+                
+                <div class="messages-container" id="messagesContainer">
+                    <div class="typing-indicator" id="typingIndicator">
+                        <div class="typing-dots">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-area">
+    <div class="input-actions">
+        <i class="fas fa-face-smile" id="emojiButton"></i>
+        <input type="file" id="fileInput" style="display: none;" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt">
+        <i class="fas fa-paperclip" id="attachButton"></i>
+    </div>
+    <textarea class="message-input" placeholder="Type a message" id="messageInput" rows="1"></textarea>
+    <button class="send-button" id="sendButton">
+        <i class="fas fa-paper-plane"></i>
+    </button>
+</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="emoji-picker" id="emojiPicker">
+        <div class="emoji-grid">
+            <div class="emoji">😀</div>
+            <div class="emoji">😃</div>
+            <div class="emoji">😄</div>
+            <div class="emoji">😁</div>
+            <div class="emoji">😆</div>
+            <div class="emoji">😅</div>
+            <div class="emoji">😂</div>
+            <div class="emoji">🤣</div>
+            <div class="emoji">😊</div>
+            <div class="emoji">😇</div>
+            <div class="emoji">🙂</div>
+            <div class="emoji">🙃</div>
+            <div class="emoji">😉</div>
+            <div class="emoji">😌</div>
+            <div class="emoji">😍</div>
+            <div class="emoji">🥰</div>
+            <div class="emoji">😘</div>
+            <div class="emoji">😗</div>
+            <div class="emoji">😙</div>
+            <div class="emoji">😚</div>
+            <div class="emoji">😋</div>
+            <div class="emoji">😛</div>
+            <div class="emoji">😝</div>
+            <div class="emoji">😜</div>
+            <div class="emoji">🤪</div>
+            <div class="emoji">🤨</div>
+            <div class="emoji">🧐</div>
+            <div class="emoji">🤓</div>
+            <div class="emoji">😎</div>
+            <div class="emoji">🤩</div>
+            <div class="emoji">👍</div>
+            <div class="emoji">👎</div>
+            <div class="emoji">👏</div>
+            <div class="emoji">🙌</div>
+            <div class="emoji">🤝</div>
+            <div class="emoji">❤️</div>
+        </div>
+    </div>
+
+    <script>
+    // Add these variables at the top of your script section
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzLOLoT3w83iJSL0QfVxqB5XtrXeE156f_4lXklpCP6OnPrrH6QB9AZfKxawPDziNAI/exec';
+let currentUserId = 'user_' + Math.random().toString(36).substr(2, 9);
+let currentSessionId = 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+
+    const chatData = {
+    'muhammed-faheem-np': {
+        name: 'MUHAMMED FAHEEM NP',
+        status: 'online',
+        lastSeen: '',
+        isOnline: true,
+        avatar: 'https://quaf.netlify.app/pic/pic/960.png',
+        color: '#ff6b6b',
+        messages: [
+            { type: 'received', content: 'Hey! How are you doing today?', time: '09:30', date: 'today' },
+            { type: 'sent', content: 'I\'m doing great, thanks for asking!', time: '09:32', date: 'today' },
+            { type: 'received', content: 'That\'s wonderful to hear!', time: '09:33', date: 'today' }
+        ]
+    },
+    'muhammed-yaseen-k': {
+        name: 'MUHAMMED YASEEN K',
+        status: 'last seen 5 minutes ago',
+        lastSeen: '5 minutes ago',
+        isOnline: false,
+        avatar: 'https://quaf.netlify.app/pic/pic/986.jpg',
+        color: '#4ecdc4',
+        messages: [
+            { type: 'received', content: 'Are you available for a quick call?', time: '14:20', date: 'today' },
+            { type: 'sent', content: 'Sure, I can talk now', time: '14:22', date: 'today' },
+            { type: 'received', content: 'Perfect! I\'ll call you in 5 minutes', time: '14:23', date: 'today' }
+        ]
+    },
+    'muhammed-lasin-kc': {
+        name: 'MUHAMMED LASIN KC',
+        status: 'online',
+        lastSeen: '',
+        isOnline: true,
+        avatar: 'https://quaf.netlify.app/pic/pic/987.jpg',
+        color: '#45b7d1',
+        messages: [
+            { type: 'received', content: 'Did you complete the project?', time: '22:15', date: 'yesterday' },
+            { type: 'sent', content: 'Yes, just finished it! 🎉', time: '22:16', date: 'yesterday' },
+            { type: 'received', content: 'Excellent work! Well done', time: '22:17', date: 'yesterday' }
+        ]
+    },
+    'mohammed-hadi-v': {
+        name: 'MOHAMMED HADI V',
+        status: 'last seen 1 hour ago',
+        lastSeen: '1 hour ago',
+        isOnline: false,
+        avatar: 'https://quaf.netlify.app/pic/pic/988.jpg',
+        color: '#f9ca24',
+        messages: [
+            { type: 'received', content: 'Can you help me with this issue?', time: '15:30', date: 'today' },
+            { type: 'sent', content: 'Of course! What do you need help with?', time: '15:32', date: 'today' },
+            { type: 'received', content: 'I\'ll send you the details', time: '15:33', date: 'today' }
+        ]
+    },
+    'muhammed-hayyan-vp': {
+        name: 'MUHAMMED HAYYAN VP',
+        status: 'online',
+        lastSeen: '',
+        isOnline: true,
+        avatar: 'https://quaf.netlify.app/pic/pic/989.jpg',
+        color: '#f0932b',
+        messages: [
+            { type: 'received', content: 'Meeting tomorrow at 10 AM?', time: '19:00', date: 'yesterday' },
+            { type: 'sent', content: 'Yes, I\'ll be there 👍', time: '19:02', date: 'yesterday' },
+            { type: 'received', content: 'Great! See you then', time: '19:03', date: 'yesterday' }
+        ]
+    },
+    'muhammed-ziyad-c': {
+        name: 'MUHAMMED ZIYAD C',
+        status: 'last seen 2 hours ago',
+        lastSeen: '2 hours ago',
+        isOnline: false,
+        avatar: 'https://quaf.netlify.app/pic/pic/991.jpg',
+        color: '#eb4d4b',
+        messages: [
+            { type: 'received', content: 'How\'s the new job going?', time: '11:00', date: 'today' },
+            { type: 'sent', content: 'It\'s going really well! Thanks for asking', time: '11:02', date: 'today' },
+            { type: 'received', content: 'That\'s fantastic! 🎉', time: '11:03', date: 'today' }
+        ]
+    },
+    'muhammed-shahal': {
+        name: 'MUHAMMED SHAHAL',
+        status: 'online',
+        lastSeen: '',
+        isOnline: true,
+        avatar: 'https://quaf.netlify.app/pic/pic/992.jpg',
+        color: '#6c5ce7',
+        messages: [
+            { type: 'received', content: 'Let\'s catch up soon!', time: '13:45', date: 'today' },
+            { type: 'sent', content: 'Absolutely! When are you free?', time: '13:47', date: 'today' },
+            { type: 'received', content: 'This weekend works for me', time: '13:48', date: 'today' }
+        ]
+    },
+    'aqib-muhammed-kt': {
+        name: 'AQIB MUHAMMED KT',
+        status: 'last seen yesterday',
+        lastSeen: 'yesterday',
+        isOnline: false,
+        avatar: 'https://quaf.netlify.app/pic/pic/993.jpg',
+        color: '#a29bfe',
+        messages: [
+            { type: 'received', content: 'Thanks for your help yesterday!', time: '16:20', date: 'yesterday' },
+            { type: 'sent', content: 'No problem, happy to help!', time: '16:22', date: 'yesterday' },
+            { type: 'received', content: 'You\'re the best! 🙏', time: '16:23', date: 'yesterday' }
+        ]
+    },
+    'muhammed-rabeeh-pp': {
+        name: 'MUHAMMED RABEEH PP',
+        status: 'online',
+        lastSeen: '',
+        isOnline: true,
+        avatar: 'https://quaf.netlify.app/pic/pic/995.jpg',
+        color: '#fd79a8',
+        messages: [
+            { type: 'received', content: 'Are you coming to the event?', time: '20:30', date: 'yesterday' },
+            { type: 'sent', content: 'Yes, I\'ll be there!', time: '20:32', date: 'yesterday' },
+            { type: 'received', content: 'Perfect! See you there 🎊', time: '20:33', date: 'yesterday' }
+        ]
+    },
+    'muhammed-shafeeque-t': {
+        name: 'MUHAMMED SHAFEEQUE T',
+        status: 'last seen 3 hours ago',
+        lastSeen: '3 hours ago',
+        isOnline: false,
+        avatar: 'https://quaf.netlify.app/pic/pic/996.jpg',
+        color: '#00b894',
+        messages: [
+            { type: 'received', content: 'How was your weekend?', time: '06:00', date: 'today' },
+            { type: 'sent', content: 'It was great! Very relaxing', time: '06:02', date: 'today' },
+            { type: 'received', content: 'That sounds wonderful!', time: '06:03', date: 'today' }
+        ]
+    },
+    'muhammed-qasim-mp': {
+        name: 'MUHAMMED QASIM MP',
+        status: 'online',
+        lastSeen: '',
+        isOnline: true,
+        avatar: 'https://quaf.netlify.app/pic/pic/997.jpg',
+        color: '#ff6b6b',
+        messages: [
+            { type: 'received', content: 'Did you see the latest update?', time: '08:15', date: 'today' },
+            { type: 'sent', content: 'Yes, it looks great!', time: '08:17', date: 'today' },
+            { type: 'received', content: 'I agree! Very impressive', time: '08:18', date: 'today' }
+        ]
+    },
+    'muhammed-hashim-v': {
+        name: 'MUHAMMED HASHIM V',
+        status: 'last seen 1 hour ago',
+        lastSeen: '1 hour ago',
+        isOnline: false,
+        avatar: 'https://quaf.netlify.app/pic/pic/998.jpg',
+        color: '#4ecdc4',
+        messages: [
+            { type: 'received', content: 'Let\'s plan the trip!', time: '12:30', date: 'today' },
+            { type: 'sent', content: 'Great idea! Where should we go?', time: '12:32', date: 'today' },
+            { type: 'received', content: 'How about the mountains?', time: '12:33', date: 'today' }
+        ]
+    },
+    'ali-rafi-ep': {
+        name: 'ALI RAFI EP',
+        status: 'online',
+        lastSeen: '',
+        isOnline: true,
+        avatar: 'https://quaf.netlify.app/pic/pic/1000.jpg',
+        color: '#45b7d1',
+        messages: [
+            { type: 'received', content: 'Good morning! How are you?', time: '07:00', date: 'today' },
+            { type: 'sent', content: 'Good morning! I\'m doing well', time: '07:02', date: 'today' },
+            { type: 'received', content: 'That\'s great to hear!', time: '07:03', date: 'today' }
+        ]
+    },
+    'muhammed-sinan-ck': {
+        name: 'MUHAMMED SINAN CK',
+        status: 'last seen 30 minutes ago',
+        lastSeen: '30 minutes ago',
+        isOnline: false,
+        avatar: 'https://quaf.netlify.app/pic/pic/1001.jpg',
+        color: '#f9ca24',
+        messages: [
+            { type: 'received', content: 'Can you review this document?', time: '10:45', date: 'today' },
+            { type: 'sent', content: 'Sure, I\'ll take a look', time: '10:47', date: 'today' },
+            { type: 'received', content: 'Thanks! Take your time', time: '10:48', date: 'today' }
+        ]
+    },
+    'hamdan-cc': {
+        name: 'HAMDAN CC',
+        status: 'online',
+        lastSeen: '',
+        isOnline: true,
+        avatar: 'https://quaf.netlify.app/pic/pic/1002.jpg',
+        color: '#f0932b',
+        messages: [
+            { type: 'received', content: 'Happy birthday! 🎂', time: '16:00', date: 'today' },
+            { type: 'sent', content: 'Thank you so much! 🎉', time: '16:02', date: 'today' },
+            { type: 'received', content: 'Hope you have a great day!', time: '16:03', date: 'today' }
+        ]
+    },
+    'muhammed-ali-m': {
+        name: 'MUHAMMED ALI M',
+        status: 'last seen 2 hours ago',
+        lastSeen: '2 hours ago',
+        isOnline: false,
+        avatar: 'https://quaf.netlify.app/pic/pic/1003.jpg',
+        color: '#eb4d4b',
+        messages: [
+            { type: 'received', content: 'How\'s everything going?', time: '14:30', date: 'today' },
+            { type: 'sent', content: 'All good! Thanks for checking in', time: '14:32', date: 'today' },
+            { type: 'received', content: 'Glad to hear that!', time: '14:33', date: 'today' }
+        ]
+    },
+    'muhammed-shafan-a': {
+        name: 'MUHAMMED SHAFAN A',
+        status: 'online',
+        lastSeen: '',
+        isOnline: true,
+        avatar: 'https://quaf.netlify.app/pic/pic/1004.jpg',
+        color: '#6c5ce7',
+        messages: [
+            { type: 'received', content: 'See you at the meeting!', time: '09:00', date: 'today' },
+            { type: 'sent', content: 'Yes, see you there!', time: '09:02', date: 'today' },
+            { type: 'received', content: 'Looking forward to it', time: '09:03', date: 'today' }
+        ]
+    },
+    'muhammed-anshad-vp': {
+        name: 'MUHAMMED ANSHAD VP',
+        status: 'last seen yesterday',
+        lastSeen: 'yesterday',
+        isOnline: false,
+        avatar: 'https://quaf.netlify.app/pic/pic/1005.jpg',
+        color: '#a29bfe',
+        messages: [
+            { type: 'received', content: 'Great work on the presentation!', time: '15:20', date: 'yesterday' },
+            { type: 'sent', content: 'Thank you! I appreciate it', time: '15:22', date: 'yesterday' },
+            { type: 'received', content: 'You did an amazing job!', time: '15:23', date: 'yesterday' }
+        ]
+    },
+    'hisham-rahmathullah-o': {
+        name: 'HISHAM RAHMATHULLAH O',
+        status: 'online',
+        lastSeen: '',
+        isOnline: true,
+        avatar: 'https://quaf.netlify.app/pic/pic/1008.jpg',
+        color: '#fd79a8',
+        messages: [
+            { type: 'received', content: 'Let\'s collaborate on this project', time: '11:30', date: 'today' },
+            { type: 'sent', content: 'Sounds great! When do we start?', time: '11:32', date: 'today' },
+            { type: 'received', content: 'How about tomorrow morning?', time: '11:33', date: 'today' }
+        ]
+    },
+    'sahl-shan-o': {
+        name: 'SAHL SHAN O',
+        status: 'last seen 1 hour ago',
+        lastSeen: '1 hour ago',
+        isOnline: false,
+        avatar: 'https://quaf.netlify.app/pic/pic/1009.jpg',
+        color: '#00b894',
+        messages: [
+            { type: 'received', content: 'Thanks for the recommendation!', time: '13:15', date: 'today' },
+            { type: 'sent', content: 'You\'re welcome! Hope it helps', time: '13:17', date: 'today' },
+            { type: 'received', content: 'It definitely will! 🙏', time: '13:18', date: 'today' }
+        ]
+    },
+    'sadhaqathulla-c': {
+        name: 'SADHAQATHULLA C',
+        status: 'online',
+        lastSeen: '',
+        isOnline: true,
+        avatar: 'https://quaf.netlify.app/pic/pic/1010.jpg',
+        color: '#ff6b6b',
+        messages: [
+            { type: 'received', content: 'Have a great day ahead!', time: '08:00', date: 'today' },
+            { type: 'sent', content: 'Thank you! You too! 😊', time: '08:02', date: 'today' },
+            { type: 'received', content: 'Thanks! Take care', time: '08:03', date: 'today' }
+        ]
+    },
+    'muhammed-sahl': {
+        name: 'MUHAMMED SAHL',
+        status: 'last seen 45 minutes ago',
+        lastSeen: '45 minutes ago',
+        isOnline: false,
+        avatar: 'https://quaf.netlify.app/pic/pic/1011.jpg',
+        color: '#4ecdc4',
+        messages: [
+            { type: 'received', content: 'How\'s the new project going?', time: '12:00', date: 'today' },
+            { type: 'sent', content: 'It\'s going well! Making good progress', time: '12:02', date: 'today' },
+            { type: 'received', content: 'That\'s excellent news!', time: '12:03', date: 'today' }
+        ]
+    },
+    'muhammed-hashim-kh': {
+        name: 'MUHAMMED HASHIM KH',
+        status: 'online',
+        lastSeen: '',
+        isOnline: true,
+        avatar: 'https://quaf.netlify.app/pic/pic/1012.jpg',
+        color: '#45b7d1',
+        messages: [
+            { type: 'received', content: 'Looking forward to our discussion', time: '16:30', date: 'today' },
+            { type: 'sent', content: 'Me too! It\'ll be productive', time: '16:32', date: 'today' },
+            { type: 'received', content: 'Absolutely! See you soon', time: '16:33', date: 'today' }
+        ]
+    },
+    'mishab-pt': {
+        name: 'MISHAB PT',
+        status: 'last seen 3 hours ago',
+        lastSeen: '3 hours ago',
+        isOnline: false,
+        avatar: 'https://quaf.netlify.app/pic/pic/1014.jpg',
+        color: '#f9ca24',
+        messages: [
+            { type: 'received', content: 'Thanks for the quick response!', time: '10:15', date: 'today' },
+            { type: 'sent', content: 'No problem at all!', time: '10:17', date: 'today' },
+            { type: 'received', content: 'Much appreciated! 👍', time: '10:18', date: 'today' }
+        ]
+    },
+    'muhammed-rasin-kp': {
+        name: 'MUHAMMED RASIN KP',
+        status: 'online',
+        lastSeen: '',
+        isOnline: true,
+        avatar: 'https://quaf.netlify.app/pic/pic/1015.jpg',
+        color: '#f0932b',
+        messages: [
+            { type: 'received', content: 'Hope you\'re doing well!', time: '14:45', date: 'today' },
+            { type: 'sent', content: 'I am, thank you! How about you?', time: '14:47', date: 'today' },
+            { type: 'received', content: 'All good here too!', time: '14:48', date: 'today' }
+        ]
+    },
+    'muhammed-aslam': {
+        name: 'MUHAMMED ASLAM',
+        status: 'last seen 2 hours ago',
+        lastSeen: '2 hours ago',
+        isOnline: false,
+        avatar: 'https://quaf.netlify.app/pic/pic/1016.jpg',
+        color: '#eb4d4b',
+        messages: [
+            { type: 'received', content: 'Let\'s schedule a call soon', time: '11:45', date: 'today' },
+            { type: 'sent', content: 'Sure! What time works for you?', time: '11:47', date: 'today' },
+            { type: 'received', content: 'Tomorrow afternoon would be perfect', time: '11:48', date: 'today' }
+        ]
+    },
+    'muhammed-musthafa-sm': {
+        name: 'MUHAMMED MUSTHAFA SM',
+        status: 'online',
+        lastSeen: '',
+        isOnline: true,
+        avatar: 'https://quaf.netlify.app/pic/pic/1017.jpg',
+        color: '#6c5ce7',
+        messages: [
+            { type: 'received', content: 'Great to connect with you!', time: '17:00', date: 'today' },
+            { type: 'sent', content: 'Likewise! Looking forward to working together', time: '17:02', date: 'today' },
+            { type: 'received', content: 'It\'s going to be great!', time: '17:03', date: 'today' }
+        ]
+    },
+    'muhammed-shafin': {
+        name: 'MUHAMMED SHAFIN',
+        status: 'last seen yesterday',
+        lastSeen: 'yesterday',
+        isOnline: false,
+        avatar: 'https://quaf.netlify.app/pic/pic/1018.jpg',
+        color: '#a29bfe',
+        messages: [
+            { type: 'received', content: 'How was your day?', time: '18:30', date: 'yesterday' },
+            { type: 'sent', content: 'It was productive! Thanks for asking', time: '18:32', date: 'yesterday' },
+            { type: 'received', content: 'That\'s wonderful to hear!', time: '18:33', date: 'yesterday' }
+        ]
+    },
+    'muhammed-ramees-vp': {
+        name: 'MUHAMMED RAMEES VP',
+        status: 'online',
+        lastSeen: '',
+        isOnline: true,
+        avatar: 'https://quaf.netlify.app/pic/pic/1019.jpg',
+        color: '#fd79a8',
+        messages: [
+            { type: 'received', content: 'Excited for tomorrow\'s event!', time: '19:15', date: 'today' },
+            { type: 'sent', content: 'Me too! It\'s going to be amazing', time: '19:17', date: 'today' },
+            { type: 'received', content: 'Can\'t wait! 🎉', time: '19:18', date: 'today' }
+        ]
+    },
+    'abdul-hadi': {
+        name: 'ABDUL HADI',
+        status: 'last seen 1 hour ago',
+        lastSeen: '1 hour ago',
+        isOnline: false,
+        avatar: 'https://quaf.netlify.app/pic/pic/1020.jpg',
+        color: '#00b894',
+        messages: [
+            { type: 'received', content: 'Thanks for all your support!', time: '15:45', date: 'today' },
+            { type: 'sent', content: 'Always happy to help!', time: '15:47', date: 'today' },
+            { type: 'received', content: 'You\'re amazing! 🙏', time: '15:48', date: 'today' }
+        ]
+    }
+};
+
+    let currentChatId = null;
+    let isTyping = false;
+
+    function initializeApp() {
+        renderChatList();
+        setupEventListeners();
+        setupEmojiPicker();
+        setupSearch();
+        setupMobileEnhancements();
+        handleResize();
+    }
+
+    function setupMobile() {
+        if (window.innerWidth <= 768) {
+            document.getElementById('sidebar').classList.add('mobile-active');
+        }
+    }
+
+    function setupMobileEnhancements() {
+        // Prevent zoom on input focus (iOS)
+        const inputs = document.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                if (window.innerWidth <= 768) {
+                    const viewport = document.querySelector('meta[name=viewport]');
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+                }
+            });
+            
+            input.addEventListener('blur', () => {
+                if (window.innerWidth <= 768) {
+                    const viewport = document.querySelector('meta[name=viewport]');
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+                }
+            });
+        });
+        
+        // Handle swipe gestures for mobile navigation
+        let startX = 0;
+        let currentX = 0;
+        let isSwipeActive = false;
+        
+        const sidebar = document.getElementById('sidebar');
+        
+        document.addEventListener('touchstart', (e) => {
+            if (window.innerWidth <= 768) {
+                startX = e.touches[0].clientX;
+                isSwipeActive = true;
+            }
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            if (!isSwipeActive || window.innerWidth > 768) return;
+            
+            currentX = e.touches[0].clientX;
+            const diffX = currentX - startX;
+            
+            // Swipe right to open sidebar
+            if (diffX > 50 && !sidebar.classList.contains('mobile-active')) {
+                sidebar.classList.add('mobile-active');
+            }
+            
+            // Swipe left to close sidebar
+            if (diffX < -50 && sidebar.classList.contains('mobile-active')) {
+                sidebar.classList.remove('mobile-active');
+            }
+        });
+        
+        document.addEventListener('touchend', () => {
+            isSwipeActive = false;
+        });
+    }
+
+    function renderChatList() {
+    const chatList = document.getElementById('chatList');
+    chatList.innerHTML = '';
+
+    Object.entries(chatData).forEach(([chatId, chat]) => {
+        const lastMessage = chat.messages[chat.messages.length - 1];
+        const chatItem = document.createElement('div');
+        chatItem.className = 'chat-item';
+        chatItem.dataset.chatId = chatId;
+        
+        const unreadCount = Math.floor(Math.random() * 5);
+        
+        chatItem.innerHTML = `
+            <div class="profile-pic contact-pic" style="background: ${chat.color};">
+                <img src="${chat.avatar}" alt="${chat.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <span style="display: none;">${chat.name.split(' ').map(n => n[0]).join('').substring(0, 2)}</span>
+                ${chat.isOnline ? '<div class="online-indicator"></div>' : ''}
+            </div>
+            <div class="chat-info">
+                <div class="chat-name">${chat.name}</div>
+                <div class="chat-preview">${lastMessage.content}</div>
+            </div>
+            <div class="chat-meta">
+                <div class="chat-time">${lastMessage.time}</div>
+                ${unreadCount > 0 ? `<div class="unread-badge">${unreadCount}</div>` : ''}
+            </div>
+        `;
+        
+        chatItem.addEventListener('click', () => openChat(chatId));
+        chatList.appendChild(chatItem);
+    });
+}
+
+    function openChat(chatId) {
+    currentChatId = chatId;
+    const chat = chatData[chatId];
+    
+    // Update active chat item
+    document.querySelectorAll('.chat-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    document.querySelector(`[data-chat-id="${chatId}"]`).classList.add('active');
+    
+    // Update chat header
+    const contactPic = document.getElementById('currentContactPic');
+    contactPic.style.background = chat.color;
+    contactPic.innerHTML = `
+        <img src="${chat.avatar}" alt="${chat.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <span style="display: none;">${chat.name.split(' ').map(n => n[0]).join('').substring(0, 2)}</span>
+        ${chat.isOnline ? '<div class="online-indicator"></div>' : ''}
+    `;
+    
+    document.getElementById('currentContactName').textContent = chat.name;
+    document.getElementById('currentContactStatus').textContent = chat.status;
+    
+    // Show chat area
+    document.getElementById('noChatSelected').style.display = 'none';
+    document.getElementById('chatArea').style.display = 'flex';
+    
+    // Render messages
+    renderMessages(chat.messages);
+    
+    // Hide sidebar on mobile
+    if (window.innerWidth <= 768) {
+        document.getElementById('sidebar').classList.remove('mobile-active');
+    }
+}
+
+    function renderMessages(messages) {
+        const container = document.getElementById('messagesContainer');
+        const typingIndicator = document.getElementById('typingIndicator');
+        container.innerHTML = '';
+        container.appendChild(typingIndicator);
+        
+        messages.forEach(message => {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${message.type}`;
+            
+            messageElement.innerHTML = `
+                <div class="message-content">${message.content}</div>
+                <div class="message-time">
+                    ${message.time}
+                    ${message.type === 'sent' ? '<i class="fas fa-check-double read-receipt"></i>' : ''}
+                </div>
+            `;
+            
+            container.appendChild(messageElement);
+        });
+        
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function sendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const messageText = messageInput.value.trim();
+    
+    if (messageText && currentChatId) {
+        const currentTime = new Date().toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false 
+        });
+        
+        const newMessage = {
+            type: 'sent',
+            content: messageText,
+            time: currentTime,
+            date: 'today'
+        };
+        
+        chatData[currentChatId].messages.push(newMessage);
+        renderMessages(chatData[currentChatId].messages);
+        messageInput.value = '';
+        
+        // Send message data to Google Sheets
+        sendMessageToGoogleSheets({
+            contactName: chatData[currentChatId].name,
+            content: messageText,
+            type: 'sent',
+            timestamp: new Date().toISOString(),
+            chatId: currentChatId
+        });
+        
+        // Simulate typing and auto-reply
+        setTimeout(() => {
+            showTypingIndicator();
+            setTimeout(() => {
+                hideTypingIndicator();
+                simulateReply();
+            }, 2000);
+        }, 500);
+        
+        // Update chat list
+        renderChatList();
+        document.querySelector(`[data-chat-id="${currentChatId}"]`).classList.add('active');
+    }
+}
+
+    function simulateReply() {
+    if (currentChatId) {
+        const replies = [
+            "Thanks for the message! 😊",
+            "Got it! 👍",
+            "Sounds good to me!",
+            "I'll get back to you soon",
+            "Perfect! 🎉",
+            "Let me check and let you know",
+            "That's awesome! 🔥",
+            "I agree with you",
+            "Thanks for letting me know!",
+            "Sure thing! 💪"
+        ];
+        
+        const randomReply = replies[Math.floor(Math.random() * replies.length)];
+        const currentTime = new Date().toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false 
+        });
+        
+        const replyMessage = {
+            type: 'received',
+            content: randomReply,
+            time: currentTime,
+            date: 'today'
+        };
+        
+        chatData[currentChatId].messages.push(replyMessage);
+        renderMessages(chatData[currentChatId].messages);
+        
+        // Send reply data to Google Sheets
+        sendMessageToGoogleSheets({
+            contactName: chatData[currentChatId].name,
+            content: randomReply,
+            type: 'received',
+            timestamp: new Date().toISOString(),
+            chatId: currentChatId
+        });
+        
+        renderChatList();
+        document.querySelector(`[data-chat-id="${currentChatId}"]`).classList.add('active');
+    }
+}
+
+    function showTypingIndicator() {
+        const typingIndicator = document.getElementById('typingIndicator');
+        typingIndicator.style.display = 'block';
+        document.getElementById('messagesContainer').scrollTop = document.getElementById('messagesContainer').scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+        const typingIndicator = document.getElementById('typingIndicator');
+        typingIndicator.style.display = 'none';
+    }
+
+    function setupEventListeners() {
+    const sendButton = document.getElementById('sendButton');
+    const messageInput = document.getElementById('messageInput');
+    const mobileBack = document.getElementById('mobileBack');
+    const attachButton = document.getElementById('attachButton'); // NEW: Add this
+    const fileInput = document.getElementById('fileInput'); // NEW: Add this
+    
+    // Existing event listeners
+    sendButton.addEventListener('click', sendMessage);
+    
+    messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+    
+    messageInput.addEventListener('input', (e) => {
+        const textarea = e.target;
+        textarea.style.height = 'auto';
+        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+    });
+    
+    mobileBack.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+            document.getElementById('sidebar').classList.add('mobile-active');
+            document.getElementById('chatArea').style.display = 'none';
+            document.getElementById('noChatSelected').style.display = 'flex';
+            currentChatId = null;
+            
+            // Clear active chat
+            document.querySelectorAll('.chat-item').forEach(item => {
+                item.classList.remove('active');
+            });
+        }
+    });
+    
+    // Enhanced window resize handler
+    window.addEventListener('resize', handleResize);
+    
+    // Handle orientation change
+    window.addEventListener('orientationchange', () => {
+        setTimeout(handleResize, 100);
+    });
+    
+    // NEW: File upload event listeners
+    attachButton.addEventListener('click', () => {
+        fileInput.click();
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file && currentChatId) {
+            const maxSize = 10 * 1024 * 1024; // 10MB limit
+            if (file.size > maxSize) {
+                alert('File size must be less than 10MB');
+                return;
+            }
+            
+            handleFileUpload(file, currentChatId, chatData[currentChatId].name);
+        }
+        e.target.value = ''; // Reset file input
+    });
+}
+
+    function handleResize() {
+        const sidebar = document.getElementById('sidebar');
+        const chatArea = document.getElementById('chatArea');
+        const noChatSelected = document.getElementById('noChatSelected');
+        
+        if (window.innerWidth > 768) {
+            // Desktop view
+            sidebar.classList.remove('mobile-active');
+            if (currentChatId) {
+                chatArea.style.display = 'flex';
+                noChatSelected.style.display = 'none';
+            } else {
+                chatArea.style.display = 'none';
+                noChatSelected.style.display = 'flex';
+            }
+        } else {
+            // Mobile view
+            if (currentChatId) {
+                sidebar.classList.remove('mobile-active');
+                chatArea.style.display = 'flex';
+                noChatSelected.style.display = 'none';
+            } else {
+                sidebar.classList.add('mobile-active');
+                chatArea.style.display = 'none';
+                noChatSelected.style.display = 'flex';
+            }
+        }
+    }
+
+    function setupEmojiPicker() {
+        const emojiButton = document.getElementById('emojiButton');
+        const emojiPicker = document.getElementById('emojiPicker');
+        const messageInput = document.getElementById('messageInput');
+        
+        emojiButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            emojiPicker.style.display = emojiPicker.style.display === 'block' ? 'none' : 'block';
+        });  
+        
+        document.addEventListener('click', (e) => {
+            if (!emojiPicker.contains(e.target) && e.target !== emojiButton) {
+                emojiPicker.style.display = 'none';
+            }
+        });
+        
+        emojiPicker.addEventListener('click', (e) => {
+            if (e.target.classList.contains('emoji')) {
+                messageInput.value += e.target.textContent;
+                messageInput.focus();
+            }
+        });
+    }
+
+    function setupSearch() {
+        const searchInput = document.getElementById('searchInput');
+        
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const chatItems = document.querySelectorAll('.chat-item');
+            
+            chatItems.forEach(item => {
+                const name = item.querySelector('.chat-name').textContent.toLowerCase();
+                const preview = item.querySelector('.chat-preview').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || preview.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }); 
+    }
+
+    // Initialize the app when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeApp();
+        setupMobile();
+    });
+    
+    // Function to send message data to Google Sheets
+function sendMessageToGoogleSheets(messageData) {
+    const formData = new FormData();
+    formData.append('action', 'whatsapp_message');
+    formData.append('userId', currentUserId);
+    formData.append('contactName', messageData.contactName);
+    formData.append('messageContent', messageData.content);
+    formData.append('messageType', messageData.type);
+    formData.append('timestamp', messageData.timestamp);
+    formData.append('sessionId', currentSessionId);
+    formData.append('chatId', messageData.chatId);
+    formData.append('ipAddress', 'Unknown'); // You can get this from a service if needed
+    formData.append('userAgent', navigator.userAgent);
+
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Message logged to Google Sheets:', data);
+    })
+    .catch(error => {
+        console.error('Error logging message:', error);
+    });
+}
+
+// Function to handle file uploads
+function handleFileUpload(file, chatId, contactName) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64Data = e.target.result;
+        
+        const formData = new FormData();
+        formData.append('action', 'file_upload');
+        formData.append('name', currentUserId);
+        formData.append('email', currentUserId + '@whatsapp.local');
+        formData.append('fileName', file.name);
+        formData.append('base64Data', base64Data);
+        formData.append('fileSize', file.size + ' bytes');
+        formData.append('fileType', file.type);
+        formData.append('uploadContext', 'WhatsApp');
+        formData.append('chatId', chatId);
+        formData.append('sessionId', currentSessionId);
+
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('File uploaded successfully:', data);
+            
+            // Add file message to chat
+            const fileMessage = {
+                type: 'sent',
+                content: `📎 ${file.name} (${formatFileSize(file.size)})`,
+                time: new Date().toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: false 
+                }),
+                date: 'today',
+                isFile: true,
+                fileUrl: data.fileUrl,
+                fileName: file.name
+            };
+            
+            if (currentChatId) {
+                chatData[currentChatId].messages.push(fileMessage);
+                renderMessages(chatData[currentChatId].messages);
+                
+                // Log file upload as message
+                sendMessageToGoogleSheets({
+                    contactName: contactName,
+                    content: `File uploaded: ${file.name}`,
+                    type: 'sent',
+                    timestamp: new Date().toISOString(),
+                    chatId: currentChatId
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error uploading file:', error);
+            alert('Error uploading file. Please try again.');
+        });
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+// Helper function to format file size
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+</script>
+</body>
+</html>
