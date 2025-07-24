@@ -16,6 +16,7 @@ const CONFIG = {
   BOT_TOKEN: "7352288690:AAEHWSSARHPNwL_nTOe3GOeExtpOLr7jFCk",
   MESSAGES_SHEET: "Messages", // Single sheet for messages + quiz results
   TELEGRAM_CHANNEL: "https://t.me/quafdhdc",
+  USER_STATE: PropertiesService.getScriptProperties(),  // for tracking quiz states
   
   // Column mapping for Google Sheets "Messages" Sheet (0 indexed for arrays)
   MESSAGES_COLUMNS: {
@@ -1710,6 +1711,20 @@ const subjectQuestions = {
                 }
             ]
 };
+
+function setUserState(chatId, state) {
+  CONFIG.USER_STATE.setProperty(String(chatId), JSON.stringify(state));
+}
+
+function getUserState(chatId) {
+  const state = CONFIG.USER_STATE.getProperty(String(chatId));
+  return state ? JSON.parse(state) : null;
+}
+
+function clearUserState(chatId) {
+  CONFIG.USER_STATE.deleteProperty(String(chatId));
+}
+
 // Subject names mapping
 const subjectNames = {
   "1": "Qur'an",
@@ -1995,6 +2010,52 @@ function answerCallbackQuery(callbackQueryId) {
   }
 }
 
+// Handle quiz start from subject selection (e.g., "quiz_1")
+if (callbackQuery && callbackQuery.data.startsWith("quiz_")) {
+  const subjectId = callbackQuery.data.split("_")[1];
+  const chatId = callbackQuery.message.chat.id;
+
+  const questions = subjectQuestions[subjectId];
+  if (!questions) return;
+
+  const state = {
+    subjectId,
+    questionIndex: 0,
+    score: 0
+  };
+  setUserState(chatId, state);
+
+  sendQuizQuestion(chatId, questions[0], 0);
+}
+
+// Handle answer selection like "answer_2"
+if (callbackQuery && callbackQuery.data.startsWith("answer_")) {
+  const chatId = callbackQuery.message.chat.id;
+  const selected = parseInt(callbackQuery.data.split("_")[1]);
+  const state = getUserState(chatId);
+
+  if (!state) return;
+
+  const questions = subjectQuestions[state.subjectId];
+  const current = questions[state.questionIndex];
+
+  if (selected === current.correctAnswer) state.score++;
+
+  state.questionIndex++;
+
+  if (state.questionIndex < questions.length) {
+    setUserState(chatId, state);
+    sendQuizQuestion(chatId, questions[state.questionIndex], state.questionIndex);
+  } else {
+    // Quiz complete
+    const percentage = Math.round((state.score / questions.length) * 100);
+    const messageText = `✅ Quiz Complete!\nSubject: ${state.subjectId}\nScore: ${state.score}/${questions.length} (${percentage}%)`;
+
+    sendMessage(chatId, messageText);
+    logQuizResult(chatId, state.subjectId, state.score, questions.length, percentage);
+    clearUserState(chatId);
+  }
+}
 // ==================== QUIZ FLOW FUNCTIONS ====================
 // When user clicks "🧠 Quiz" button or quiz_menu callback
 function handleQuizCommand(messageData) {
@@ -2835,6 +2896,26 @@ function logDebugInfo(title, data) {
   console.log(JSON.stringify(data, null, 2));
 }
 
+function sendQuizQuestion(chatId, questionObj, index) {
+  const options = questionObj.options.map((opt, i) => {
+    return [{ text: opt, callback_data: `answer_${i}` }];
+  });
+
+  const payload = {
+    method: "sendMessage",
+    chat_id: chatId,
+    text: `📚 Q${index + 1}: ${questionObj.question}`,
+    reply_markup: {
+      inline_keyboard: options
+    }
+  };
+
+  UrlFetchApp.fetch(`${CONFIG.API_BASE_URL}${CONFIG.BOT_TOKEN}/sendMessage`, {
+    method: "post",
+    contentType: "application/json",
+    payload: JSON.stringify(payload)
+  });
+}
 // ==================== TEST & SETUP FUNCTIONS ====================
 function testBotSetup() {
   console.log("🧪 Testing bot configuration...");
@@ -2895,4 +2976,10 @@ function setWebhook() {
   } catch (error) {
     console.error("🔴 Webhook setup failed:", error.toString());
   }
+}
+
+function logQuizResult(chatId, subjectId, score, total, percent) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.MESSAGES_SHEET);
+  const now = new Date();
+  sheet.appendRow(["", "", chatId, "", "", now, subjectId, score, total, percent]);
 }
