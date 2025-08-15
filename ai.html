@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUAF DHDC - Islamic Academic AI Assistant</title>
+    
+    <!-- CDN Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --islamic-green: #0d5f3c;
+            --islamic-gold: #d4af37;
+            --islamic-light-green: #e8f5e8;
+            --islamic-dark-green: #0a4a2e;
+            --islamic-cream: #fefdf7;
+            --islamic-pattern: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e8f5e8' fill-opacity='0.1'%3E%3Cpath d='M30 30c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm0 0c0 11.046 8.954 20 20 20s20-8.954 20-20-8.954-20-20-20-20 8.954-20 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--islamic-cream);
+            background-image: var(--islamic-pattern);
+        }
+
+        .arabic-text {
+            font-family: 'Amiri', serif;
+            font-size: 1.2em;
+            line-height: 1.8;
+            direction: rtl;
+        }
+
+        .islamic-border {
+            border: 2px solid var(--islamic-gold);
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .islamic-border::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: linear-gradient(45deg, var(--islamic-green), var(--islamic-gold));
+            border-radius: 16px;
+            z-index: -1;
+        }
+
+        .chat-message {
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .islamic-gradient {
+            background: linear-gradient(135deg, var(--islamic-green) 0%, var(--islamic-dark-green) 100%);
+        }
+
+        .gold-gradient {
+            background: linear-gradient(135deg, var(--islamic-gold) 0%, #b8941f 100%);
+        }
+
+        .commands-menu {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .inline-button {
+            background: var(--islamic-green);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            margin: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .inline-button:hover {
+            background: var(--islamic-dark-green);
+            transform: translateY(-1px);
+        }
+
+        .message-content {
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+
+        .quiz-container, .poll-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--islamic-light-green);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--islamic-green);
+            transition: width 0.3s ease;
+        }
+
+        .sidebar {
+            height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .chat-area {
+            height: calc(100vh - 180px);
+            overflow-y: auto;
+        }
+
+        .media-preview {
+            max-width: 300px;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .document-link {
+            background: var(--islamic-light-green);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid var(--islamic-green);
+        }
+
+        .translation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .bismillah {
+            font-family: 'Amiri', serif;
+            font-size: 1.5em;
+            color: var(--islamic-green);
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            padding: 10px;
+            color: var(--islamic-green);
+        }
+
+        .typing-dots {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--islamic-green);
+            margin: 0 2px;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dots:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .command-item {
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 2px 0;
+            transition: all 0.2s ease;
+        }
+
+        .command-item:hover {
+            background: var(--islamic-light-green);
+            color: var(--islamic-green);
+        }
+
+        .scroll-smooth {
+            scroll-behavior: smooth;
+        }
+
+        .registration-form {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px 0;
+            border: 1px solid var(--islamic-light-green);
+        }
+
+        .kitab-reader {
+            background: var(--islamic-cream);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="islamic-gradient text-white p-4 shadow-lg">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <button id="menu-toggle" class="md:hidden text-white">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-mosque text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">QUAF DHDC</h1>
+                        <p class="text-sm opacity-90">Islamic Academic AI Assistant</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bismillah text-right">
+                بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="flex container mx-auto bg-white shadow-xl rounded-lg overflow-hidden" style="height: calc(100vh - 100px);">
+        
+        <!-- Sidebar - Commands Menu -->
+        <div id="sidebar" class="sidebar w-80 islamic-gradient text-white p-4 overflow-y-auto">
+            <h3 class="text-lg font-semibold mb-4 flex items-center">
+                <i class="fas fa-list-ul mr-2"></i>
+                Commands Menu
+            </h3>
+            
+            <div class="space-y-2">
+                <!-- Registration -->
+                <div class="command-item" onclick="sendCommand('/start')">
+                    <i class="fas fa-play mr-2"></i> Start & Register
+                </div>
+                
+                <!-- Quran -->
+                <div class="mb-4">
+                    <h4 class="font-semibold text-sm opacity-75 mb-2">QURAN</h4>
+                    <div class="command-item" onclick="sendCommand('/quran')">
+                        <i class="fas fa-book-open mr-2"></i> Surah List
+                    </div>
+                    <div class="command-item" onclick="showQuranInput()">
+                        <i class="fas fa-search mr-2"></i> Verse Lookup
+                    </div>
+                    <div class="command-item" onclick="sendCommand('/about')">
+                        <i class="fas fa-globe mr-2"></i> Translations Info
+                    </div>
+                </div>
+
+                <!-- Learning -->
+                <div class="mb-4">
+                    <h4 class="font-semibold text-sm opacity-75 mb-2">LEARNING</h4>
+                    <div class="command-item" onclick="sendCommand('/quiz')">
+                        <i class="fas fa-brain mr-2"></i> Start Quiz
+                    </div>
+                    <div class="command-item" onclick="sendCommand('/poll')">
+                        <i class="fas fa-poll mr-2"></i> Tharbiyya Poll
+                    </div>
+                    <div class="command-item" onclick="sendCommand('/kitab')">
+                        <i class="fas fa-book mr-2"></i> Read Kitab
+                    </div>
+                    <div class="command-item" onclick="sendCommand('/thajweed')">
+                        <i class="fas fa-play-circle mr-2"></i> Thajweed Videos
+                    </div>
+                </div>
+
+                <!-- Media -->
+                <div class="mb-4">
+                    <h4 class="font-semibold text-sm opacity-75 mb-2">MEDIA</h4>
+                    <div class="command-item" onclick="sendCommand('/documents')">
+                        <i class="fas fa-file-pdf mr-2"></i> Documents
+                    </div>
+                    <div class="command-item" onclick="sendCommand('/audio')">
+                        <i class="fas fa-volume-up mr-2"></i> Audio Files
+                    </div>
+                    <div class="command-item" onclick="sendCommand('/talent')">
+                        <i class="fas fa-star mr-2"></i> Quaf Talent
+                    </div>
+                    <div class="command-item" onclick="sendCommand('/malabart')">
+                        <i class="fas fa-palette mr-2"></i> Arts Festival
+                    </div>
+                </div>
+
+                <!-- Utility -->
+                <div class="mb-4">
+                    <h4 class="font-semibold text-sm opacity-75 mb-2">UTILITY</h4>
+                    <div class="command-item" onclick="sendCommand('/restart')">
+                        <i class="fas fa-redo mr-2"></i> Reset Progress
+                    </div>
+                    <div class="command-item" onclick="sendCommand('/result')">
+                        <i class="fas fa-chart-line mr-2"></i> View Results
+                    </div>
+                    <div class="command-item" onclick="sendCommand('/socialmedia')">
+                        <i class="fas fa-share-alt mr-2"></i> Social Media
+                    </div>
+                    <div class="command-item" onclick="sendCommand('/help')">
+                        <i class="fas fa-question-circle mr-2"></i> Help
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="flex-1 flex flex-col">
+            <!-- Chat Messages -->
+            <div id="chat-area" class="chat-area flex-1 p-4 overflow-y-auto scroll-smooth">
+                <!-- Welcome Message -->
+                <div class="chat-message mb-4">
+                    <div class="bg-white rounded-lg p-6 shadow-md border-l-4 border-green-600">
+                        <div class="flex items-center mb-3">
+                            <div class="w-10 h-10 islamic-gradient rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-robot text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-green-800">QUAF DHDC Assistant</h3>
+                                <p class="text-sm text-gray-500">Islamic Academic AI</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bismillah mb-4">
+                            بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
+                        </div>
+                        
+                        <p class="mb-4">🌟 Welcome to QUAF DHDC - Qualitative Union For Academic Focus</p>
+                        <p class="mb-4">27th batch of Darul Hidaya Da'wa College, Manoor</p>
+                        
+                        <div class="flex flex-wrap gap-2 mt-4">
+                            <button class="inline-button" onclick="sendCommand('/start')">
+                                <i class="fas fa-user-plus mr-1"></i> Register
+                            </button>
+                            <button class="inline-button" onclick="sendCommand('/quiz')">
+                                <i class="fas fa-brain mr-1"></i> Start Quiz
+                            </button>
+                            <button class="inline-button" onclick="sendCommand('/poll')">
+                                <i class="fas fa-poll mr-1"></i> Take Poll
+                            </button>
+                            <button class="inline-button" onclick="sendCommand('/help')">
+                                <i class="fas fa-question-circle mr-1"></i> Help
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div id="typing-indicator" class="typing-indicator px-4">
+                <i class="fas fa-robot mr-2"></i>
+                <span>AI is typing</span>
+                <div class="ml-2">
+                    <span class="typing-dots"></span>
+                    <span class="typing-dots"></span>
+                    <span class="typing-dots"></span>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-4 bg-gray-50 border-t">
+                <div class="flex items-center space-x-3">
+                    <div class="flex-1 relative">
+                        <input 
+                            type="text" 
+                            id="message-input" 
+                            placeholder="Type your message or use commands from the menu..."
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            onkeypress="handleKeyPress(event)"
+                        >
+                    </div>
+                    <button 
+                        id="send-button"
+                        onclick="sendMessage()" 
+                        class="islamic-gradient text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center"
+                    >
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quran Input Modal -->
+    <div id="quran-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 m-4 max-w-md w-full">
+            <h3 class="text-lg font-semibold mb-4">Quran Verse Lookup</h3>
+            <p class="text-gray-600 mb-4">Enter verse reference (e.g., 1:1, 2:255, 112:1)</p>
+            <input 
+                type="text" 
+                id="verse-input" 
+                placeholder="Surah:Verse (e.g., 1:1)"
+                class="w-full px-3 py-2 border rounded-lg mb-4"
+                onkeypress="handleVerseKeyPress(event)"
+            >
+            <div class="flex justify-end space-x-2">
+                <button onclick="closeQuranModal()" class="px-4 py-2 text-gray-600 rounded-lg">Cancel</button>
+                <button onclick="lookupVerse()" class="px-4 py-2 bg-green-600 text-white rounded-lg">Lookup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global State Management
+        let userState = {
+            isRegistered: false,
+            userName: '',
+            adNo: '',
+            awaitingName: false,
+            awaitingAdNo: false,
+            currentQuiz: null,
+            currentQuizIndex: 0,
+            quizScore: 0,
+            currentPoll: null,
+            currentPollIndex: 0,
+            pollScore: 0,
+            completedSubjects: [],
+            currentKitab: 'kitab1',
+            kitabPage: 0
+        };
+
+        // Load state from localStorage
+        function loadState() {
+            const saved = localStorage.getItem('quaf_user_state');
+            if (saved) {
+                userState = { ...userState, ...JSON.parse(saved) };
+            }
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            localStorage.setItem('quaf_user_state', JSON.stringify(userState));
+        }
+
+        // Quiz Data
+        const QUIZ_DATA = {
+            "quiz_1": {
+                "subjectId": "Qur'an",
+                "questions": [
+                    {
+                        "question": "ഖുർആൻ അവതരിച്ചത് എത്ര കാലം കൊണ്ട്?",
+                        "options": ["20", "22", "23"],
+                        "correctAnswer": 2
+                    },
+                    {
+                        "question": "ഖുർആനിൽ ആകെ എത്ര സൂറത്തുകൾ ഉണ്ട്?",
+                        "options": ["111", "114", "117"],
+                        "correctAnswer": 1
+                    },
+                    {
+                        "question": "ഖുർആൻ അവതരണത്തിൻ്റെ മുമ്പ് അത് രേഖപ്പെടുത്തിയിരുന്നത് എവിടെ?",
+                        "options": ["ആകാശത്ത്", "ലൗഹുൽ മഹ്ഫൂളിൽ", "ഭൂമിയിൽ"],
+                        "correctAnswer": 1
+                    }
+                ]
+            },
+            "quiz_2": {
+                "subjectId": "Hadeeth",
+                "questions": [
+                    {
+                        "question": "ഖുർആൻ കഴിഞ്ഞാൽ ഏറ്റവും ശ്രേഷ്ഠതയുള്ള കിതാബ്?",
+                        "options": ["സ്വഹീഹ് ബുഖാരി", "സ്വഹീഹ് മുസ്‌ലിം", "തിർമുദി"],
+                        "correctAnswer": 0
+                    },
+                    {
+                        "question": "അല്ലാഹു മനുഷ്യൻ്റെ ഏത് ഭാഗത്തേക്കാണ് നോക്കുന്നത്?",
+                        "options": ["جسد", "جمال", "قلب"],
+                        "correctAnswer": 2
+                    }
+                ]
+            }
+        };
+
+        // Poll Data
+        const POLL_DATA = {
+            "questions": [
+                {
+                    "question": "ഖുർആൻ പാരായണം (സമയം)",
+                    "options": [
+                        { "text": "20", "points": 10 },
+                        { "text": "15", "points": 7 },
+                        { "text": "10", "points": 4 },
+                        { "text": "5", "points": 1 }
+                    ]
+                },
+                {
+                    "question": "തഹ്ജ്ജുദ്",
+                    "options": [
+                        { "text": "നിസ്കരിച്ചു", "points": 10 },
+                        { "text": "നിസ്കരിച്ചില്ല", "points": 0 }
+                    ]
+                }
+            ]
+        };
+
+        // Translation Languages
+        const TRANSLATIONS = {
+            'arabic': { name: 'Arabic', flag: '🇸🇦' },
+            'english': { name: 'English', flag: '🇬🇧' },
+            'malayalam': { name: 'Malayalam', flag: '🇮🇳' },
+            'urdu': { name: 'Urdu', flag: '🇵🇰' },
+            'hindi': { name: 'Hindi', flag: '🇮🇳' },
+            'french': { name: 'French', flag: '🇫🇷' },
+            'german': { name: 'German', flag: '🇩🇪' },
+            'spanish': { name: 'Spanish', flag: '🇪🇸' },
+            'turkish': { name: 'Turkish', flag: '🇹🇷' },
+            'persian': { name: 'Persian', flag: '🇮🇷' }
+        };
+
+        // Kitab Data
+        const KITABS = {
+            'kitab1': { name: 'معجزة القرآن (شعراوي)', content: 'Sample Arabic text content for demonstration...' },
+            'kitab2': { name: 'بيان إعجاز القرآن (الخطابي)', content: 'Sample Arabic text content for demonstration...' }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadState();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Mobile menu toggle
+            document.getElementById('menu-toggle').addEventListener('click', function() {
+                document.getElementById('sidebar').classList.toggle('open');
+            });
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(e) {
+                const sidebar = document.getElementById('sidebar');
+                const menuToggle = document.getElementById('menu-toggle');
+                
+                if (window.innerWidth <= 768 && 
+                    !sidebar.contains(e.target) && 
+                    !menuToggle.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            });
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function handleVerseKeyPress(event) {
+            if (event.key === 'Enter') {
+                lookupVerse();
+            }
+        }
+
+        function sendCommand(command) {
+            document.getElementById('message-input').value = command;
+            sendMessage();
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Show typing indicator
+            showTyping();
+
+            // Process message
+            setTimeout(() => {
+                hideTyping();
+                processMessage(message);
+            }, 1000);
+        }
+
+        function addMessage(content, sender, isHTML = false) {
+            const chatArea = document.getElementById('chat-area');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message mb-4';
+
+            const isUser = sender === 'user';
+            const alignment = isUser ? 'justify-end' : 'justify-start';
+            const bgColor = isUser ? 'bg-green-600 text-white' : 'bg-white';
+            const borderColor = isUser ? '' : 'border-l-4 border-green-600';
+
+            messageDiv.innerHTML = `
+                <div class="flex ${alignment}">
+                    <div class="${bgColor} ${borderColor} rounded-lg p-4 max-w-3xl shadow-md">
+                        ${isUser ? '' : `
+                            <div class="flex items-center mb-2">
+                                <div class="w-8 h-8 islamic-gradient rounded-full flex items-center justify-center mr-2">
+                                    <i class="fas fa-robot text-white text-sm"></i>
+                                </div>
+                                <span class="font-semibold text-green-800">Assistant</span>
+                            </div>
+                        `}
+                        <div class="message-content ${isHTML ? '' : 'whitespace-pre-wrap'}">
+                            ${isHTML ? content : escapeHtml(content)}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function addInteractiveMessage(content, buttons = []) {
+            const chatArea = document.getElementById('chat-area');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message mb-4';
+
+            let buttonsHTML = '';
+            if (buttons.length > 0) {
+                buttonsHTML = `
+                    <div class="flex flex-wrap gap-2 mt-4">
+                        ${buttons.map(btn => `
+                            <button class="inline-button" onclick="${btn.action}">
+                                ${btn.icon ? `<i class="${btn.icon} mr-1"></i>` : ''}
+                                ${btn.text}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            messageDiv.innerHTML = `
+                <div class="flex justify-start">
+                    <div class="bg-white border-l-4 border-green-600 rounded-lg p-4 max-w-3xl shadow-md">
+                        <div class="flex items-center mb-2">
+                            <div class="w-8 h-8 islamic-gradient rounded-full flex items-center justify-center mr-2">
+                                <i class="fas fa-robot text-white text-sm"></i>
+                            </div>
+                            <span class="font-semibold text-green-800">Assistant</span>
+                        </div>
+                        <div class="message-content">
+                            ${content}
+                        </div>
+                        ${buttonsHTML}
+                    </div>
+                </div>
+            `;
+
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function showTyping() {
+            document.getElementById('typing-indicator').style.display = 'flex';
+        }
+
+        function hideTyping() {
+            document.getElementById('typing-indicator').style.display = 'none';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function processMessage(message) {
+            const text = message.toLowerCase().trim();
+
+            // Registration flow
+            if (userState.awaitingName) {
+                handleNameInput(message);
+                return;
+            }
+
+            if (userState.awaitingAdNo) {
+                handleAdNoInput(message);
+                return;
+            }
+
+            // Commands
+            if (text === '/start') {
+                handleStartCommand();
+            } else if (text === '/quiz') {
+                handleQuizCommand();
+            } else if (text === '/poll') {
+                handlePollCommand();
+            } else if (text === '/kitab') {
+                handleKitabCommand();
+            } else if (text === '/help') {
+                handleHelpCommand();
+            } else if (text === '/quran') {
+                handleQuranListCommand();
+            } else if (text === '/about') {
+                handleAboutCommand();
+            } else if (text === '/documents') {
+                handleDocumentsCommand();
+            } else if (text === '/audio') {
+                handleAudioCommand();
+            } else if (text === '/thajweed') {
+                handleThajweedCommand();
+            } else if (text === '/socialmedia') {
+                handleSocialMediaCommand();
+            } else if (text === '/restart') {
+                handleRestartCommand();
+            } else if (text === '/result') {
+                handleResultCommand();
+            } else if (text === '/talent') {
+                handleTalentCommand();
+            } else if (text === '/malabart') {
+                handleMalabartCommand();
+            } else if (text.match(/^\d+:\d+$/)) {
+                handleVerseRequest(text);
+            } else {
+                handleUnknownCommand();
+            }
+        }
+
+        function handleStartCommand() {
+            if (userState.isRegistered) {
+                addMessage(`Welcome back ${userState.userName}! How can I help you today?`);
+                addMainMenuButtons();
+            } else {
+                addInteractiveMessage(
+                    '📝 Welcome to QUAF DHDC! Please complete your registration to access all features.',
+                    [{ text: 'Register Now', action: 'startRegistration()', icon: 'fas fa-user-plus' }]
+                );
+            }
+        }
+
+        function startRegistration() {
+            userState.awaitingName = true;
+            saveState();
+            addMessage('📝 Registration Started!\n\n👤 What is your name? (Please enter your full name):', 'bot');
+        }
+
+        function handleNameInput(name) {
+            if (/\d/.test(name)) {
+                addMessage('❌ Name should not contain numbers. Please enter your name (text only):', 'bot');
+                return;
+            }
+
+            if (name.length < 2) {
+                addMessage('❌ Name is too short. Please enter your full name:', 'bot');
+                return;
+            }
+
+            userState.userName = name;
+            userState.awaitingName = false;
+            userState.awaitingAdNo = true;
+            saveState();
+
+            addMessage('✅ Name saved!\n\n📝 Now please enter your AD:NO (numbers only):', 'bot');
+        }
+
+        function handleAdNoInput(adNo) {
+            const adNoInt = parseInt(adNo);
+            if (isNaN(adNoInt) || adNo !== adNoInt.toString()) {
+                addMessage('❌ Incorrect number. Please enter your AD:NO (numbers only):', 'bot');
+                return;
+            }
+
+            userState.adNo = adNoInt;
+            userState.awaitingAdNo = false;
+            userState.isRegistered = true;
+            saveState();
+
+            addMessage(`✅ Registration completed successfully!\n\n👤 Name: ${userState.userName}\n🔢 AD:NO: ${userState.adNo}\n\nWelcome to QUAF DHDC! You can now access all features.`, 'bot');
+            
+            setTimeout(() => {
+                addMainMenuButtons();
+            }, 2000);
+        }
+
+        function addMainMenuButtons() {
+            addInteractiveMessage(
+                '🏠 Main Menu - Choose an option:',
+                [
+                    { text: 'Start Quiz', action: 'handleQuizCommand()', icon: 'fas fa-brain' },
+                    { text: 'Take Poll', action: 'handlePollCommand()', icon: 'fas fa-poll' },
+                    { text: 'Read Kitab', action: 'handleKitabCommand()', icon: 'fas fa-book' },
+                    { text: 'Documents', action: 'handleDocumentsCommand()', icon: 'fas fa-file-pdf' },
+                    { text: 'Audio Files', action: 'handleAudioCommand()', icon: 'fas fa-volume-up' },
+                    { text: 'Help', action: 'handleHelpCommand()', icon: 'fas fa-question-circle' }
+                ]
+            );
+        }
+
+        function handleQuizCommand() {
+            if (!userState.isRegistered) {
+                addMessage('❌ Please complete registration first to take quizzes.', 'bot');
+                addInteractiveMessage('', [{ text: 'Register Now', action: 'startRegistration()', icon: 'fas fa-user-plus' }]);
+                return;
+            }
+
+            const availableQuizzes = Object.entries(QUIZ_DATA)
+                .filter(([key]) => !userState.completedSubjects.includes(key))
+                .map(([key, quiz]) => ({
+                    text: `${quiz.subjectId} Quiz`,
+                    action: `startQuiz('${key}')`,
+                    icon: 'fas fa-book-open'
+                }));
+
+            if (availableQuizzes.length === 0) {
+                addMessage('🎉 You\'ve completed all available quizzes!', 'bot');
+                return;
+            }
+
+            addInteractiveMessage('📚 Please choose a subject:', availableQuizzes);
+        }
+
+        function startQuiz(quizKey) {
+            const quiz = QUIZ_DATA[quizKey];
+            userState.currentQuiz = quizKey;
+            userState.currentQuizIndex = 0;
+            userState.quizScore = 0;
+            saveState();
+
+            showQuizQuestion(quiz.questions[0], 0, quiz.questions.length);
+        }
+
+        function showQuizQuestion(question, index, total) {
+            const progressPercent = ((index) / total) * 100;
+            
+            const buttons = question.options.map((option, i) => ({
+                text: option,
+                action: `answerQuiz(${i})`,
+                icon: ''
+            }));
+
+            const questionHTML = `
+                <div class="quiz-container">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-sm text-gray-600">Question ${index + 1} of ${total}</span>
+                        <span class="text-sm text-gray-600">${userState.quizScore} points</span>
+                    </div>
+                    <div class="progress-bar mb-4">
+                        <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-4">${question.question}</h3>
+                </div>
+            `;
+
+            addInteractiveMessage(questionHTML, buttons);
+        }
+
+        function answerQuiz(answerIndex) {
+            const quiz = QUIZ_DATA[userState.currentQuiz];
+            const question = quiz.questions[userState.currentQuizIndex];
+            const isCorrect = answerIndex === question.correctAnswer;
+
+            if (isCorrect) {
+                userState.quizScore++;
+                addMessage('✅ Correct!', 'bot');
+            } else {
+                addMessage(`❌ Incorrect! The correct answer was: ${question.options[question.correctAnswer]}`, 'bot');
+            }
+
+            userState.currentQuizIndex++;
+
+            if (userState.currentQuizIndex < quiz.questions.length) {
+                saveState();
+                setTimeout(() => {
+                    showQuizQuestion(quiz.questions[userState.currentQuizIndex], userState.currentQuizIndex, quiz.questions.length);
+                }, 1500);
+            } else {
+                completeQuiz(quiz);
+            }
+        }
+
+        function completeQuiz(quiz) {
+            const total = quiz.questions.length;
+            const percent = Math.round((userState.quizScore / total) * 100);
+            
+            addMessage(`🎉 Quiz completed!\nScore: ${userState.quizScore}/${total} (${percent}%)`, 'bot');
+
+            if (!userState.completedSubjects.includes(userState.currentQuiz)) {
+                userState.completedSubjects.push(userState.currentQuiz);
+            }
+
+            userState.currentQuiz = null;
+            userState.currentQuizIndex = 0;
+            userState.quizScore = 0;
+            saveState();
+
+            setTimeout(() => {
+                addInteractiveMessage(
+                    'What would you like to do next?',
+                    [
+                        { text: 'Take Another Quiz', action: 'handleQuizCommand()', icon: 'fas fa-brain' },
+                        { text: 'Main Menu', action: 'addMainMenuButtons()', icon: 'fas fa-home' }
+                    ]
+                );
+            }, 2000);
+        }
+
+        function handlePollCommand() {
+            if (!userState.isRegistered) {
+                addMessage('❌ Please complete registration first to take the poll.', 'bot');
+                addInteractiveMessage('', [{ text: 'Register Now', action: 'startRegistration()', icon: 'fas fa-user-plus' }]);
+                return;
+            }
+
+            addInteractiveMessage(
+                '📊 حاسبوا أنفسكم قبل أن تحاسبوا \n\nThis poll contains Islamic practices to assess your Daily life style. Each question has options with different points.\n\nചെയ്ত കാര്യങ്ങൾ സ്വന്തമായി വിലയിരുത്തുകയും സത്യം മാത്രം രേഖപ്പെടുത്തുകയും ചെയ്യുക, അള്ളാഹു തൗഫീഖ് ചെയ്യട്ടെ... ആമീൻ',
+                [{ text: 'حاسبوا قبل أن تحاسبوا', action: 'startPoll()', icon: 'fas fa-play' }]
+            );
+        }
+
+        function startPoll() {
+            userState.currentPollIndex = 0;
+            userState.pollScore = 0;
+            saveState();
+
+            showPollQuestion(POLL_DATA.questions[0], 0);
+        }
+
+        function showPollQuestion(question, index) {
+            const total = POLL_DATA.questions.length;
+            const progressPercent = ((index) / total) * 100;
+            
+            const buttons = question.options.map((option, i) => ({
+                text: option.text,
+                action: `answerPoll(${i})`,
+                icon: ''
+            }));
+
+            const questionHTML = `
+                <div class="poll-container">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-sm text-gray-600">Question ${index + 1} of ${total}</span>
+                        <span class="text-sm text-gray-600">${userState.pollScore} points</span>
+                    </div>
+                    <div class="progress-bar mb-4">
+                        <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-4">${question.question}</h3>
+                </div>
+            `;
+
+            addInteractiveMessage(questionHTML, buttons);
+        }
+
+        function answerPoll(answerIndex) {
+            const question = POLL_DATA.questions[userState.currentPollIndex];
+            const selectedOption = question.options[answerIndex];
+            const points = selectedOption.points;
+
+            userState.pollScore += points;
+            userState.currentPollIndex++;
+
+            if (userState.currentPollIndex < POLL_DATA.questions.length) {
+                saveState();
+                setTimeout(() => {
+                    showPollQuestion(POLL_DATA.questions[userState.currentPollIndex], userState.currentPollIndex);
+                }, 1000);
+            } else {
+                completePoll();
+            }
+        }
+
+        function completePoll() {
+            const totalQuestions = POLL_DATA.questions.length;
+            const maxPossibleScore = totalQuestions * 10;
+            const percentage = Math.round((userState.pollScore / maxPossibleScore) * 100);
+
+            let level, emoji;
+            if (percentage >= 90) {
+                level = "Excellent (ممتاز)";
+                emoji = "🌟";
+            } else if (percentage >= 75) {
+                level = "Very Good (جيد جداً)";
+                emoji = "⭐";
+            } else if (percentage >= 60) {
+                level = "Good (جيد)";
+                emoji = "👍";
+            } else if (percentage >= 40) {
+                level = "Average (متوسط)";
+                emoji = "📈";
+            } else {
+                level = "Needs Improvement (يحتاج تحسين)";
+                emoji = "📚";
+            }
+
+            const resultMessage = `📊 Poll Completed! ${emoji}
+
+🎯 Your Results:
+━━━━━━━━━━━━━━━
+📈 Score: ${userState.pollScore}/${maxPossibleScore}
+📊 Percentage: ${percentage}%
+🏆 Level: ${level}
+
+Thank you for participating! 🌟`;
+
+            addMessage(resultMessage, 'bot');
+
+            userState.currentPollIndex = 0;
+            userState.pollScore = 0;
+            saveState();
+        }
+
+        function handleKitabCommand() {
+            addInteractiveMessage(
+                '📚 Select a kitab to read:',
+                Object.entries(KITABS).map(([key, kitab]) => ({
+                    text: kitab.name,
+                    action: `readKitab('${key}')`,
+                    icon: 'fas fa-book-open'
+                }))
+            );
+        }
+
+        function readKitab(kitabKey) {
+            const kitab = KITABS[kitabKey];
+            userState.currentKitab = kitabKey;
+            userState.kitabPage = 0;
+            saveState();
+
+            showKitabPage(kitab, 0);
+        }
+
+        function showKitabPage(kitab, pageIndex) {
+            const pageSize = 1000;
+            const content = kitab.content;
+            const totalPages = Math.ceil(content.length / pageSize);
+            const pageContent = content.substring(pageIndex * pageSize, (pageIndex + 1) * pageSize);
+
+            const buttons = [];
+            if (pageIndex > 0) {
+                buttons.push({ text: '⬅️ Previous', action: `navigateKitab(${pageIndex - 1})`, icon: '' });
+            }
+            if (pageIndex < totalPages - 1) {
+                buttons.push({ text: 'Next ➡️', action: `navigateKitab(${pageIndex + 1})`, icon: '' });
+            }
+            buttons.push({ text: '📚 Back to List', action: 'handleKitabCommand()', icon: 'fas fa-list' });
+
+            const kitabHTML = `
+                <div class="kitab-reader">
+                    <h3 class="arabic-text text-xl font-bold mb-4">${kitab.name}</h3>
+                    <div class="text-center text-sm text-gray-600 mb-4">Page ${pageIndex + 1} of ${totalPages}</div>
+                    <div class="arabic-text text-justify leading-relaxed">${pageContent}</div>
+                </div>
+            `;
+
+            addInteractiveMessage(kitabHTML, buttons);
+        }
+
+        function navigateKitab(pageIndex) {
+            const kitab = KITABS[userState.currentKitab];
+            userState.kitabPage = pageIndex;
+            saveState();
+            showKitabPage(kitab, pageIndex);
+        }
+
+        function handleVerseRequest(verse) {
+            const [surah, ayah] = verse.split(':').map(Number);
+            
+            if (surah < 1 || surah > 114) {
+                addMessage('❌ Invalid Surah number. Please use 1-114.', 'bot');
+                return;
+            }
+
+            if (ayah < 1) {
+                addMessage('❌ Invalid verse number. Please use a positive number.', 'bot');
+                return;
+            }
+
+            // Simulate Quran verse lookup
+            const arabicText = 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ'; // Sample Arabic text
+
+            addMessage(`📖 Surah ${surah}, Verse ${ayah}\n\n${arabicText}`, 'bot');
+
+            // Show translation options
+            const translationButtons = Object.entries(TRANSLATIONS).slice(0, 10).map(([key, lang]) => ({
+                text: `${lang.flag} ${lang.name}`,
+                action: `showTranslation('${key}', ${surah}, ${ayah})`,
+                icon: ''
+            }));
+
+            addInteractiveMessage('📖 Select a translation:', translationButtons);
+        }
+
+        function showTranslation(langKey, surah, ayah) {
+            const lang = TRANSLATIONS[langKey];
+            const sampleTranslation = 'In the name of Allah, the Most Gracious, the Most Merciful.'; // Sample translation
+            
+            addMessage(`${lang.flag} ${lang.name} Translation [${surah}:${ayah}]\n\n${sampleTranslation}`, 'bot');
+        }
+
+        function handleQuranListCommand() {
+            const surahList = `📖 Quran Surahs (1-114):
+
+1 - Al-Fātiḥah (الفاتحة) (7 verses)
+2 - Al-Baqarah (البقرة) (286 verses)
+3 - Āl ʿImrān (آل عمران) (200 verses)
+4 - An-Nisā' (النساء) (176 verses)
+5 - Al-Mā'idah (المائدة) (120 verses)
+...and 109 more surahs
+
+To read a specific verse, type: Surah:Verse (e.g., 1:1, 2:255)`;
+
+            addMessage(surahList, 'bot');
+            
+            addInteractiveMessage('', [
+                { text: 'Verse Lookup', action: 'showQuranInput()', icon: 'fas fa-search' },
+                { text: 'Translation Info', action: 'handleAboutCommand()', icon: 'fas fa-globe' }
+            ]);
+        }
+
+        function handleAboutCommand() {
+            const aboutText = `📚 Quran Translation Information
+
+Available Translations: 45 languages
+
+🌍 Major Languages:
+• Arabic (العربية) - Original
+• English - Marmaduke Pickthall
+• Malayalam - Abdul Hameed  
+• Urdu - Kanzul Iman
+• Hindi - Farooq Khan
+• French - Muhammad Hamidullah
+• German - Abu Rida
+• Spanish - Isa Garcia
+• Turkish - Süleyman Ateş
+• Persian - Naser Makarem Shirazi
+
+And 35+ more languages including Chinese, Japanese, Russian, Indonesian, and many others.`;
+
+            addMessage(aboutText, 'bot');
+        }
+
+        function handleDocumentsCommand() {
+            addInteractiveMessage(
+                '📚 Available Documents:',
+                [
+                    { text: '📑 Quran PDF', action: 'downloadDocument("quranpdf")', icon: 'fas fa-file-pdf' },
+                    { text: '📋 Malabart Document', action: 'downloadDocument("malabartdoc")', icon: 'fas fa-file-alt' },
+                    { text: '📝 Quaf Talent Module', action: 'downloadDocument("talent")', icon: 'fas fa-graduation-cap' }
+                ]
+            );
+        }
+
+        function downloadDocument(docType) {
+            addMessage(`📄 Document "${docType}" would be downloaded in the actual implementation.`, 'bot');
+        }
+
+        function handleAudioCommand() {
+            addInteractiveMessage(
+                '🎵 Available Audio Files:',
+                [
+                    { text: '📢 Adhaan', action: 'playAudio("adhaan")', icon: 'fas fa-play' },
+                    { text: '📖 Fatiha Recitation', action: 'playAudio("fatiha")', icon: 'fas fa-play' },
+                    { text: '🎙️ Islamic Lecture', action: 'playAudio("lecture")', icon: 'fas fa-play' }
+                ]
+            );
+        }
+
+        function playAudio(audioType) {
+            addMessage(`🎵 Playing "${audioType}" audio file...`, 'bot');
+        }
+
+        function handleThajweedCommand() {
+            const surahButtons = [
+                'الفاتحة', 'الضحى', 'الشرح', 'التين', 'العلق', 'القدر', 
+                'البينة', 'الزلزلة', 'العاديات', 'القارعة', 'التكاثر', 'العصر'
+            ].map(surah => ({
+                text: surah,
+                action: `playThajweed('${surah}')`,
+                icon: 'fas fa-play'
+            }));
+
+            addInteractiveMessage('📖 Select a Surah for Thajweed recitation:', surahButtons);
+        }
+
+        function playThajweed(surah) {
+            addMessage(`🎵 Playing Thajweed recitation for ${surah}...`, 'bot');
+        }
+
+        function handleSocialMediaCommand() {
+            addInteractiveMessage(
+                '📲 Connect with us on social media:',
+                [
+                    { text: 'Facebook', action: 'openSocialMedia("facebook")', icon: 'fab fa-facebook' },
+                    { text: 'WhatsApp', action: 'openSocialMedia("whatsapp")', icon: 'fab fa-whatsapp' },
+                    { text: 'Instagram', action: 'openSocialMedia("instagram")', icon: 'fab fa-instagram' },
+                    { text: 'YouTube', action: 'openSocialMedia("youtube")', icon: 'fab fa-youtube' },
+                    { text: 'Telegram', action: 'openSocialMedia("telegram")', icon: 'fab fa-telegram' }
+                ]
+            );
+        }
+
+        function openSocialMedia(platform) {
+            const links = {
+                facebook: 'https://www.facebook.com/people/Quafdhdc/61576548098341/',
+                whatsapp: 'https://wa.me/message/76OKA3KAKHINC1',
+                instagram: 'https://www.instagram.com/quafdhdc/',
+                youtube: 'https://www.youtube.com/@quaf-dhdc',
+                telegram: 'https://t.me/quafdhdc'
+            };
+
+            addMessage(`🔗 ${platform.charAt(0).toUpperCase() + platform.slice(1)}: ${links[platform]}`, 'bot');
+        }
+
+        function handleRestartCommand() {
+            userState.completedSubjects = [];
+            userState.currentQuiz = null;
+            userState.currentQuizIndex = 0;
+            userState.quizScore = 0;
+            saveState();
+
+            addMessage('🔄 All quiz progress has been reset! You can now retake all quizzes.', 'bot');
+            
+            setTimeout(() => {
+                addInteractiveMessage(
+                    'What would you like to do?',
+                    [
+                        { text: 'Start Quiz', action: 'handleQuizCommand()', icon: 'fas fa-brain' },
+                        { text: 'Main Menu', action: 'addMainMenuButtons()', icon: 'fas fa-home' }
+                    ]
+                );
+            }, 1500);
+        }
+
+        function handleResultCommand() {
+            addMessage('📊 Current Results:\n\nResults feature would show actual data from the system in a real implementation.', 'bot');
+        }
+
+        function handleTalentCommand() {
+            addMessage('🌟 Welcome to Quaf-Talent!\n\nClick /start and Register for Quaf-Talent program.', 'bot');
+        }
+
+        function handleMalabartCommand() {
+            addMessage('🎨 Welcome to QUAF Arts Festival 2024-25!\n\nExplore our cultural and artistic programs.', 'bot');
+        }
+
+        function handleHelpCommand() {
+            const helpText = `🤖 Available Commands:
+
+📱 Basic Commands:
+• /start - Welcome & registration
+• /help - Show this help
+
+📖 Quran Features:
+• /quran - Surah list
+• Type verse ref (e.g., 1:1) - Get verse with translations
+• /about - Translation info
+
+🎓 Learning:
+• /quiz - Take subject quizzes  
+• /poll - Tharbiyya assessment
+• /restart - Reset quiz progress
+
+📚 Resources:
+• /kitab - Read Islamic books
+• /documents - Download PDFs
+• /audio - Listen to audio files
+• /thajweed - Quran recitation videos
+
+🌐 Connect:
+• /socialmedia - Our social platforms
+• /result - View current results
+
+🎨 Special:
+• /talent - Quaf-Talent program
+• /malabart - Arts festival info
+
+Use the menu on the left or type commands directly!`;
+
+            addMessage(helpText, 'bot');
+            addMainMenuButtons();
+        }
+
+        function handleUnknownCommand() {
+            addMessage(`🤖 Sorry, I didn't understand that command.
+
+Try using:
+• Commands from the left menu
+• /help for all available commands  
+• Verse references like 1:1, 2:255
+• Or ask me anything about Islam!`, 'bot');
+            
+            addMainMenuButtons();
+        }
+
+        function showQuranInput() {
+            document.getElementById('quran-modal').classList.remove('hidden');
+            document.getElementById('quran-modal').classList.add('flex');
+            document.getElementById('verse-input').focus();
+        }
+
+        function closeQuranModal() {
+            document.getElementById('quran-modal').classList.add('hidden');
+            document.getElementById('quran-modal').classList.remove('flex');
+        }
+
+        function lookupVerse() {
+            const verse = document.getElementById('verse-input').value.trim();
+            if (verse) {
+                closeQuranModal();
+                document.getElementById('verse-input').value = '';
+                addMessage(verse, 'user');
+                showTyping();
+                setTimeout(() => {
+                    hideTyping();
+                    handleVerseRequest(verse);
+                }, 1000);
+            }
+        }
+
+        // Initialize the app
+        loadState();
+    </script>
+</body>
+</html>
