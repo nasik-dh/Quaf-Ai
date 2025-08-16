@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUAF Bot - Islamic Learning Telegram Bot</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .gif-showcase {
+            max-width: 800px;
+            width: 100%;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            margin: 0 auto;
+        }
+        
+        .gif-showcase img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 20px;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .floating-dots {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(102, 126, 234, 0.5);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .dot:nth-child(1) { top: 20%; left: 20%; animation-delay: 0s; }
+        .dot:nth-child(2) { top: 80%; left: 80%; animation-delay: 2s; }
+        .dot:nth-child(3) { top: 40%; left: 70%; animation-delay: 4s; }
+        .dot:nth-child(4) { top: 70%; left: 30%; animation-delay: 1s; }
+        .dot:nth-child(5) { top: 30%; left: 50%; animation-delay: 3s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); opacity: 0.5; }
+            50% { transform: translateY(-20px); opacity: 1; }
+        }
+        
+        .zoom-out-animation {
+            opacity: 0;
+            transform: scale(1.2);
+            transition: all 1s ease-out;
+        }
+        
+        .zoom-out-animation.animate {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .stagger-animation {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+        
+        .stagger-animation.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 768px) {
+            .gif-showcase {
+                max-width: 90%;
+                margin: 20px auto;
+            }
+        }
+    </style>
+</head>
+<body class="text-white overflow-x-hidden">
+    <div class="floating-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="min-h-screen flex items-center justify-center px-4">
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="mb-8">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6">
+                    <span class="gradient-text">QUAF</span> Bot
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                    Your comprehensive Islamic learning companion on Telegram. Access Qur'an translations, interactive quizzes, educational content, and build your Islamic knowledge journey.
+                </p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
+                <a href="https://t.me/quaf_bot" target="_blank" class="btn-primary text-lg">
+                    <i class="fab fa-telegram-plane mr-2"></i>
+                    Join Bot
+                </a>
+                <a href="https://t.me/quaf_dhdc" target="_blank" class="btn-secondary text-lg">
+                    <i class="fas fa-users mr-2"></i>
+                    Join Community
+                </a>
+            </div>
+
+            <!-- GIF Showcase -->
+            <div class="flex justify-center">
+                <div class="gif-showcase zoom-out-animation" id="gifShowcase">
+                    <img src="https://quafai.vercel.app/Colorful%20Illustrative%20Career%20Plans%20Planner%20Presentation.gif" alt="QUAF Bot Features Presentation" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="py-20 px-4" id="featuresSection">
+        <div class="max-w-6xl mx-auto">
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="feature-card stagger-animation">
+                    <div class="text-4xl mb-4">📖</div>
+                    <h3 class="text-xl font-bold mb-3">Digital Library</h3>
+                    <p class="text-gray-300">Complete Qur'an with translations in 45 languages plus classical Islamic texts for comprehensive study.</p>
+                </div>
+
+                <div class="feature-card stagger-animation">
+                    <div class="text-4xl mb-4">🎯</div>
+                    <h3 class="text-xl font-bold mb-3">Quiz System</h3>
+                    <p class="text-gray-300">Test your knowledge with 16 different categories and earn certificates for your achievements.</p>
+                </div>
+
+                <div class="feature-card stagger-animation">
+                    <div class="text-4xl mb-4">🎵</div>
+                    <h3 class="text-xl font-bold mb-3">Audio & Video Content</h3>
+                    <p class="text-gray-300">Learn proper Tajweed with videos and listen to educational lectures from renowned scholars.</p>
+                </div>
+
+                <div class="feature-card stagger-animation">
+                    <div class="text-4xl mb-4">📂</div>
+                    <h3 class="text-xl font-bold mb-3">Study Materials</h3>
+                    <p class="text-gray-300">Access research papers, syllabi, and comprehensive study guides for structured learning.</p>
+                </div>
+
+                <div class="feature-card stagger-animation">
+                    <div class="text-4xl mb-4">📱</div>
+                    <h3 class="text-xl font-bold mb-3">Community Hub</h3>
+                    <p class="text-gray-300">Connect with fellow learners through integrated social media links and community channels.</p>
+                </div>
+
+                <div class="feature-card stagger-animation">
+                    <div class="text-4xl mb-4">📊</div>
+                    <h3 class="text-xl font-bold mb-3">Progress Tracking</h3>
+                    <p class="text-gray-300">Monitor your learning journey with detailed analytics and progress reports.</p>
+                </div>
+            </div>
+
+            <div class="text-center mt-16">
+                <div class="feature-card inline-block">
+                    <h3 class="text-2xl font-bold mb-4">Ready to Start?</h3>
+                    <p class="text-gray-300 mb-6">Begin your Islamic learning journey today with a simple command</p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <div class="bg-gray-800 px-4 py-2 rounded-lg">
+                            <span class="text-green-400">🚀 Start learning:</span> /start
+                        </div>
+                        <div class="bg-gray-800 px-4 py-2 rounded-lg">
+                            <span class="text-blue-400">📞 Support:</span> Built-in help menu
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+ 
+    <script>
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                }
+            });
+        }, observerOptions);
+
+        // Observe GIF showcase
+        const gifShowcase = document.getElementById('gifShowcase');
+        observer.observe(gifShowcase);
+
+        // Observe feature cards
+        const featureCards = document.querySelectorAll('.feature-card');
+        featureCards.forEach((card, index) => {
+            card.style.transitionDelay = `${index * 0.1}s`;
+            observer.observe(card);
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add parallax effect to floating dots
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const dots = document.querySelectorAll('.dot');
+            
+            dots.forEach((dot, index) => {
+                const speed = 0.5 + (index * 0.1);
+                dot.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+    </script>
+</body>
+</html>
