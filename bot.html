@@ -6,7 +6,7 @@
     <title>QUAF Bot - Islamic Learning Telegram Bot</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * {
             font-family: 'Inter', sans-serif;
@@ -15,6 +15,96 @@
         body {
             background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
             min-height: 100vh;
+        }
+        
+        .enhanced-heading {
+            position: relative;
+            display: inline-block;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            line-height: 0.9;
+            text-transform: uppercase;
+            font-size: clamp(3rem, 8vw, 7rem);
+            animation: heroGlow 3s ease-in-out infinite alternate;
+        }
+        
+        .enhanced-heading .quaf-text {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dda0dd, #ff7675);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .enhanced-heading .bot-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #a8e6cf 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-left: 0.2em;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .enhanced-heading::before {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            background: linear-gradient(45deg, rgba(255, 107, 107, 0.1), rgba(78, 205, 196, 0.1), rgba(69, 183, 209, 0.1));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transform: scale(1.02) translate(3px, 3px);
+            opacity: 0.7;
+            filter: blur(1px);
+        }
+        
+        .enhanced-heading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(ellipse, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+            animation: pulseGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes heroGlow {
+            0% { 
+                transform: scale(1);
+                filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.3));
+            }
+            100% { 
+                transform: scale(1.02);
+                filter: drop-shadow(0 0 40px rgba(102, 126, 234, 0.6));
+            }
+        }
+        
+        @keyframes pulseGlow {
+            0% { 
+                opacity: 0.3;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% { 
+                opacity: 0.6;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
         }
         
         .gradient-text {
@@ -162,11 +252,11 @@
     </div>
 
     <!-- Hero Section -->
-    <div class="min-h-screen flex items-center justify-center px-4">
+    <div class="min-h-screen flex items-center justify-center px-4 pt-16">
         <div class="max-w-6xl mx-auto text-center">
             <div class="mb-8">
-                <h1 class="text-5xl md:text-7xl font-bold mb-6">
-                    <span class="gradient-text">QUAF</span> Bot
+                <h1 class="enhanced-heading mb-6" data-text="QUAF Bot">
+                    <span class="quaf-text">QUAF</span><span class="bot-text">Bot</span>
                 </h1>
                 <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
                     Your comprehensive Islamic learning companion on Telegram. Access Qur'an translations, interactive quizzes, educational content, and build your Islamic knowledge journey.
