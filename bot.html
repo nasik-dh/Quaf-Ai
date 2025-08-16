@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * {
             font-family: 'Inter', sans-serif;
@@ -26,60 +27,45 @@
             text-transform: uppercase;
             font-size: clamp(3rem, 8vw, 7rem);
             animation: heroGlow 3s ease-in-out infinite alternate;
+            overflow: hidden;
         }
         
         .enhanced-heading .quaf-text {
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dda0dd, #ff7675);
-            background-size: 400% 400%;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dda0dd, #ff7675, #fd79a8, #fdcb6e, #6c5ce7);
+            background-size: 1000% 1000%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: gradientShift 4s ease-in-out infinite;
-            text-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+            color: transparent;
+            animation: gradientShift 3s ease-in-out infinite;
             position: relative;
             z-index: 2;
+            filter: drop-shadow(0 0 20px rgba(255, 107, 107, 0.8)) drop-shadow(0 0 30px rgba(78, 205, 196, 0.6));
         }
         
         .enhanced-heading .bot-text {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #a8e6cf 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #a8e6cf 50%, #ff9a9e 75%, #fecfef 100%);
+            background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            color: transparent;
             margin-left: 0.2em;
             position: relative;
             z-index: 2;
-        }
-        
-        .enhanced-heading::before {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
-            background: linear-gradient(45deg, rgba(255, 107, 107, 0.1), rgba(78, 205, 196, 0.1), rgba(69, 183, 209, 0.1));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            transform: scale(1.02) translate(3px, 3px);
-            opacity: 0.7;
-            filter: blur(1px);
-        }
-        
-        .enhanced-heading::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 120%;
-            height: 120%;
-            background: radial-gradient(ellipse, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
-            border-radius: 50%;
-            z-index: 0;
-            animation: pulseGlow 2s ease-in-out infinite alternate;
+            animation: botTextShift 4s ease-in-out infinite reverse;
+            filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.8)) drop-shadow(0 0 30px rgba(118, 75, 162, 0.6));
         }
         
         @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 100% 25%; }
+            50% { background-position: 50% 100%; }
+            75% { background-position: 25% 0%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes botTextShift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
@@ -88,23 +74,28 @@
         @keyframes heroGlow {
             0% { 
                 transform: scale(1);
-                filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.3));
             }
             100% { 
                 transform: scale(1.02);
-                filter: drop-shadow(0 0 40px rgba(102, 126, 234, 0.6));
             }
         }
         
-        @keyframes pulseGlow {
-            0% { 
-                opacity: 0.3;
-                transform: translate(-50%, -50%) scale(1);
-            }
-            100% { 
-                opacity: 0.6;
-                transform: translate(-50%, -50%) scale(1.1);
-            }
+        .arabic-verse {
+            font-family: 'Amiri', serif;
+            font-size: 1.8rem;
+            line-height: 1.8;
+            direction: rtl;
+            text-align: center;
+            color: #e2e8f0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            margin: 20px 0;
+        }
+        
+        .verse-translation {
+            font-size: 1rem;
+            color: #94a3b8;
+            font-style: italic;
+            margin-top: 10px;
         }
         
         .gradient-text {
@@ -147,34 +138,68 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #ff6b6b 100%);
+            background-size: 200% 200%;
             border: none;
             color: white;
-            padding: 15px 30px;
+            padding: 16px 30px;
             border-radius: 50px;
-            font-weight: 600;
+            font-weight: 700;
             text-decoration: none;
             display: inline-block;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5), 0 0 20px rgba(255, 107, 107, 0.3);
+            font-size: 16px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+            animation: primaryButtonGlow 2s ease-in-out infinite alternate;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
         }
         
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.7), 0 0 30px rgba(255, 107, 107, 0.5);
             color: white;
+            background-position: 100% 0;
+        }
+        
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        
+        @keyframes primaryButtonGlow {
+            0% { 
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5), 0 0 20px rgba(255, 107, 107, 0.3);
+            }
+            100% { 
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.7), 0 0 25px rgba(255, 107, 107, 0.5);
+            }
         }
         
         .btn-secondary {
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 12px 25px;
+            padding: 14px 28px;
             border-radius: 50px;
             font-weight: 500;
             text-decoration: none;
             display: inline-block;
             transition: all 0.3s ease;
+            font-size: 16px;
+            white-space: nowrap;
         }
         
         .btn-secondary:hover {
@@ -234,10 +259,161 @@
             transform: translateY(0);
         }
         
+        .speaker-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+        }
+        
+        .speaker-control:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .speaker-control i {
+            color: white;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-btn {
+            position: fixed;
+            top: 20px;
+            right: 80px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1001;
+        }
+        
+        .mobile-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .mobile-menu-btn i {
+            color: white;
+            font-size: 20px;
+        }
+        
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100vh;
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(20px);
+            transition: left 0.3s ease;
+            z-index: 1000;
+            padding: 80px 30px 30px;
+        }
+        
+        .mobile-menu.open {
+            left: 0;
+        }
+        
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+        
+        .mobile-menu-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .mobile-menu-item {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 15px 0;
+            font-size: 18px;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: color 0.3s ease;
+        }
+        
+        .mobile-menu-item:hover {
+            color: #667eea;
+        }
+        
+        .button-container {
+            margin-bottom: 50px;
+        }
+        
         @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            .arabic-verse {
+                font-size: 1.4rem;
+                line-height: 1.6;
+            }
+            
+            .verse-translation {
+                font-size: 0.9rem;
+            }
+            
+            .btn-primary, .btn-secondary {
+                padding: 12px 20px;
+                font-size: 14px;
+                margin: 0 8px;
+            }
+            
+            .button-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 16px;
+                flex-wrap: nowrap;
+                margin-bottom: 60px;
+            }
+            
             .gif-showcase {
                 max-width: 90%;
-                margin: 20px auto;
+                margin: 0 auto;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .btn-primary, .btn-secondary {
+                padding: 10px 16px;
+                font-size: 13px;
+                margin: 0 6px;
+            }
+            
+            .button-container {
+                gap: 12px;
             }
         }
     </style>
@@ -251,24 +427,51 @@
         <div class="dot"></div>
     </div>
 
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#home" class="mobile-menu-item">Home</a>
+        <a href="#about" class="mobile-menu-item">About</a>
+    </div>
+    
+    <!-- Mobile Menu Button -->
+    <div class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Speaker Control -->
+    <div class="speaker-control" id="speakerControl">
+        <i class="fas fa-volume-mute" id="speakerIcon"></i>
+    </div>
+
+    <!-- Hidden Audio Element -->
+    <audio id="backgroundAudio" loop>
+        <source src="https://quafai.vercel.app/bg.mp3" type="audio/mpeg">
+    </audio>
+
     <!-- Hero Section -->
-    <div class="min-h-screen flex items-center justify-center px-4 pt-16">
+    <div class="min-h-screen flex items-center justify-center px-4 pt-16" id="home">
         <div class="max-w-6xl mx-auto text-center">
             <div class="mb-8">
                 <h1 class="enhanced-heading mb-6" data-text="QUAF Bot">
                     <span class="quaf-text">QUAF</span><span class="bot-text">Bot</span>
                 </h1>
-                <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-                    Your comprehensive Islamic learning companion on Telegram. Access Qur'an translations, interactive quizzes, educational content, and build your Islamic knowledge journey.
+                <div class="arabic-verse">
+                    وَنُنَزِّلُ مِنَ الْقُرْآنِ مَا هُوَ شِفَاءٌ وَرَحْمَةٌ لِّلْمُؤْمِنِينَ
+                </div>
+                <p class="verse-translation max-w-3xl mx-auto">
+                    "And We send down of the Qur'an that which is healing and mercy for the believers" (17:82)
                 </p>
             </div>
 
-            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-                <a href="https://t.me/quaf_bot" target="_blank" class="btn-primary text-lg">
+            <div class="button-container">
+                <a href="https://t.me/quaf_bot" target="_blank" class="btn-primary">
                     <i class="fab fa-telegram-plane mr-2"></i>
                     Join Bot
                 </a>
-                <a href="https://t.me/quaf_dhdc" target="_blank" class="btn-secondary text-lg">
+                <a href="https://t.me/quaf_dhdc" target="_blank" class="btn-secondary">
                     <i class="fas fa-users mr-2"></i>
                     Join Community
                 </a>
@@ -284,7 +487,7 @@
     </div>
 
     <!-- Features Section -->
-    <div class="py-20 px-4" id="featuresSection">
+    <div class="py-20 px-4" id="about">
         <div class="max-w-6xl mx-auto">
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -344,6 +547,42 @@
 
  
     <script>
+        // Audio Control
+        const speakerControl = document.getElementById('speakerControl');
+        const speakerIcon = document.getElementById('speakerIcon');
+        const backgroundAudio = document.getElementById('backgroundAudio');
+        let isPlaying = false;
+
+        speakerControl.addEventListener('click', function() {
+            if (isPlaying) {
+                backgroundAudio.pause();
+                speakerIcon.className = 'fas fa-volume-mute';
+                isPlaying = false;
+            } else {
+                backgroundAudio.play().catch(e => console.log('Audio play failed:', e));
+                speakerIcon.className = 'fas fa-volume-up';
+                isPlaying = true;
+            }
+        });
+
+        // Mobile Menu
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('open');
+            mobileMenuOverlay.classList.toggle('open');
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        mobileMenuOverlay.addEventListener('click', toggleMobileMenu);
+
+        // Close menu when clicking on menu items
+        document.querySelectorAll('.mobile-menu-item').forEach(item => {
+            item.addEventListener('click', toggleMobileMenu);
+        });
+
         // Scroll animations
         const observerOptions = {
             threshold: 0.1,
