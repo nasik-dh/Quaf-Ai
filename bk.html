@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كتاب فضائل القرآن - صحيح البخاري: دليل شامل للدراسة والامتحان</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', 'Amiri', serif;
+            line-height: 1.8;
+        }
+        .arabic-text {
+            font-family: 'Amiri', serif;
+            font-size: 1.1em;
+        }
+        .hadith-text {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-right: 4px solid #0284c7;
+        }
+        .chapter-header {
+            background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+        }
+        .scholar-opinion {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-right: 4px solid #d97706;
+        }
+        .jurisprudence {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border-right: 4px solid #7c3aed;
+        }
+        .virtue-box {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border-right: 4px solid #059669;
+        }
+        .explanation-box {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+            border-right: 4px solid #db2777;
+        }
+        .importance-box {
+            background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+            border-right: 4px solid #ea580c;
+        }
+        .print-friendly {
+            break-inside: avoid;
+        }
+        @media print {
+            .no-print { display: none; }
+            body { font-size: 12pt; }
+            .chapter-header { break-before: page; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-green-800 to-green-600 text-white py-8 mb-8">
+        <div class="container mx-auto px-6">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold mb-4">كتاب فضائل القرآن</h1>
+                <h2 class="text-2xl mb-2">من صحيح البخاري</h2>
+                <p class="text-xl opacity-90">دليل شامل للدراسة والامتحان</p>
+                <div class="mt-4 flex justify-center items-center space-x-4 space-x-reverse">
+                    <i class="fas fa-book-open text-2xl"></i>
+                    <span class="text-lg">إعداد: دليل دراسي متكامل للطلبة والباحثين</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Table of Contents -->
+    <div class="container mx-auto px-6 mb-12">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <h2 class="text-3xl font-bold text-center mb-8 text-green-800">
+                <i class="fas fa-list-ul ml-3"></i>
+                فهرس المحتويات
+            </h2>
+            <div class="grid md:grid-cols-2 gap-6 text-lg">
+                <div class="space-y-3">
+                    <h3 class="font-bold text-xl text-green-700 mb-4">الأبواب الأساسية</h3>
+                    <div class="space-y-2">
+                        <a href="#chapter1" class="block hover:text-green-600 transition-colors">١. كيف نزول الوحي وأول ما نزل</a>
+                        <a href="#chapter2" class="block hover:text-green-600 transition-colors">٢. نزل القرآن بلسان قريش والعرب</a>
+                        <a href="#chapter3" class="block hover:text-green-600 transition-colors">٣. جمع القرآن</a>
+                        <a href="#chapter4" class="block hover:text-green-600 transition-colors">٤. كاتب النبي صلى الله عليه وسلم</a>
+                        <a href="#chapter5" class="block hover:text-green-600 transition-colors">٥. أنزل القرآن على سبعة أحرف</a>
+                        <a href="#chapter6" class="block hover:text-green-600 transition-colors">٦. تأليف القرآن</a>
+                        <a href="#chapter7" class="block hover:text-green-600 transition-colors">٧. عرض جبريل القرآن على النبي</a>
+                        <a href="#chapter8" class="block hover:text-green-600 transition-colors">٨. القراء من أصحاب النبي</a>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="font-bold text-xl text-green-700 mb-4">فضائل السور والآداب</h3>
+                    <div class="space-y-2">
+                        <a href="#chapter9" class="block hover:text-green-600 transition-colors">٩. فضل فاتحة الكتاب</a>
+                        <a href="#chapter10" class="block hover:text-green-600 transition-colors">١٠. فضل سورة البقرة</a>
+                        <a href="#chapter11" class="block hover:text-green-600 transition-colors">١١. فضل سورة الكهف</a>
+                        <a href="#chapter12" class="block hover:text-green-600 transition-colors">١٢. فضل سورة الفتح</a>
+                        <a href="#chapter13" class="block hover:text-green-600 transition-colors">١٣. فضل سورة الإخلاص</a>
+                        <a href="#chapter14" class="block hover:text-green-600 transition-colors">١٤. فضل المعوذات</a>
+                        <a href="#chapter15" class="block hover:text-green-600 transition-colors">١٥. آداب التلاوة والحفظ</a>
+                        <a href="#methodology" class="block hover:text-green-600 transition-colors">المنهجية والخلاصة</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-6">
+        
+        <!-- Chapter 1: How Revelation Came Down -->
+        <section id="chapter1" class="print-friendly mb-12">
+            <div class="chapter-header text-white p-6 rounded-t-lg">
+                <h2 class="text-3xl font-bold">
+                    <i class="fas fa-cloud-download-alt ml-3"></i>
+                    الباب الأول: كيف نزول الوحي وأول ما نزل
+                </h2>
+            </div>
+            <div class="bg-white rounded-b-lg shadow-lg p-8">
+                
+                <div class="importance-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-orange-800">
+                        <i class="fas fa-star ml-2"></i>
+                        أهمية الباب
+                    </h3>
+                    <p class="arabic-text">يُعتبر هذا الباب مدخلاً أساسياً لفهم طبيعة الوحي القرآني وكيفية نزوله على النبي صلى الله عليه وسلم، ويبين الحكمة من التدرج في التنزيل وأول ما نزل من القرآن الكريم.</p>
+                </div>
+
+                <div class="hadith-text p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4">
+                        <i class="fas fa-quote-right ml-2"></i>
+                        الأحاديث الواردة
+                    </h3>
+                    
+                    <div class="mb-6">
+                        <h4 class="font-bold text-lg mb-3">الحديث الأول (٩٧٩٤):</h4>
+                        <p class="arabic-text mb-4 bg-blue-50 p-4 rounded">
+                            عن عائشة وابن عباس رضي الله عنهم قالا: "لبث النبي صلى الله عليه وسلم بمكة عشر سنين ينزل عليه القرآن وبالمدينة عشراً"
+                        </p>
+                        
+                        <div class="explanation-box p-4 rounded-lg mb-4">
+                            <h5 class="font-bold mb-2">شرح الحديث:</h5>
+                            <ul class="list-disc list-inside space-y-2 arabic-text">
+                                <li>يبين المدة الإجمالية لنزول القرآن: عشرون سنة</li>
+                                <li>التوزيع بين المكي والمدني متساوٍ</li>
+                                <li>يشير إلى التدرج في التشريع والإعجاز</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <h4 class="font-bold text-lg mb-3">الحديث الثاني (٩٨٩٤):</h4>
+                        <p class="arabic-text mb-4 bg-blue-50 p-4 rounded">
+                            عن أم سلمة في قصة جبريل عليه السلام حين ظهر في صورة دحية الكلبي، وقول النبي صلى الله عليه وسلم: "من هذا؟" حتى علمت أنه جبريل من خطبة النبي
+                        </p>
+                        
+                        <div class="explanation-box p-4 rounded-lg mb-4">
+                            <h5 class="font-bold mb-2">شرح الحديث:</h5>
+                            <ul class="list-disc list-inside space-y-2 arabic-text">
+                                <li>يبين كيفية ظهور جبريل للنبي صلى الله عليه وسلم</li>
+                                <li>فضيلة أم سلمة في رؤية جبريل</li>
+                                <li>التمييز بين الملك والبشر</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <h4 class="font-bold text-lg mb-3">الحديث الثالث (٤٨٩٤):</h4>
+                        <p class="arabic-text mb-4 bg-blue-50 p-4 rounded">
+                            عن أبي هريرة قال النبي صلى الله عليه وسلم: "ما من الأنبياء نبي إلا أعطي ما مثله آمن عليه البشر، وإنما كان الذي أوتيته وحياً أوحاه الله إلي، فأرجو أن أكون أكثرهم تابعاً يوم القيامة"
+                        </p>
+                        
+                        <div class="explanation-box p-4 rounded-lg mb-4">
+                            <h5 class="font-bold mb-2">شرح الحديث:</h5>
+                            <ul class="list-disc list-inside space-y-2 arabic-text">
+                                <li>القرآن معجزة النبي الخالدة</li>
+                                <li>تميز القرآن عن معجزات الأنبياء السابقين بالاستمرارية</li>
+                                <li>رجاء النبي في كثرة أتباعه يوم القيامة</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scholar-opinion p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-yellow-800">
+                        <i class="fas fa-graduation-cap ml-2"></i>
+                        آراء العلماء
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold mb-2">في مدة النزول:</h4>
+                            <p class="arabic-text">اختلف العلماء في تفسير "عشر سنين" فقال بعضهم: يحمل على الوحي المتتابع، وقيل: من حين البعثة، وقيل: إسرافيل وُكِل به ثلاث سنين ثم جاء جبريل.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">في كيفية الوحي:</h4>
+                            <p class="arabic-text">الوحي له أشكال متعددة: الرؤيا الصادقة، ونفث الروح في الروع، ومجيء الملك في صورة رجل، ومجيؤه في صورته الحقيقية.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="jurisprudence p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-purple-800">
+                        <i class="fas fa-balance-scale ml-2"></i>
+                        المذاهب الفقهية
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold mb-2">المذهب الحنفي:</h4>
+                            <p class="arabic-text">يؤكد على أن الوحي قطعي الثبوت وأن التدرج في النزول حكمة إلهية للتيسير على الأمة.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">المذهب الشافعي:</h4>
+                            <p class="arabic-text">يركز على التمييز بين أنواع الوحي وضرورة التصديق بكل ما ثبت عن النبي صلى الله عليه وسلم.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="virtue-box p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 text-green-800">
+                        <i class="fas fa-heart ml-2"></i>
+                        الجمع بين الأحاديث
+                    </h3>
+                    <p class="arabic-text">يُجمع بين اختلاف الروايات في مدة المكث بحمل الاختلاف على بداية الوحي الفعلي وانقطاعه أحياناً، أو بحمله على الشهرة والتتابع في النزول.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 2: Quran Revealed in Quraish Language -->
+        <section id="chapter2" class="print-friendly mb-12">
+            <div class="chapter-header text-white p-6 rounded-t-lg">
+                <h2 class="text-3xl font-bold">
+                    <i class="fas fa-language ml-3"></i>
+                    الباب الثاني: نزل القرآن بلسان قريش والعرب
+                </h2>
+            </div>
+            <div class="bg-white rounded-b-lg shadow-lg p-8">
+                
+                <div class="importance-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-orange-800">
+                        <i class="fas fa-star ml-2"></i>
+                        أهمية الباب
+                    </h3>
+                    <p class="arabic-text">يوضح هذا الباب الحكمة من نزول القرآن باللغة العربية، وخاصة بلهجة قريش، مع بيان شمول القرآن للهجات العربية المتنوعة، وهو أساس لفهم قضية اللغة في القرآن والقراءات.</p>
+                </div>
+
+                <div class="hadith-text p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4">
+                        <i class="fas fa-quote-right ml-2"></i>
+                        الأحاديث والآثار الواردة
+                    </h3>
+                    
+                    <div class="mb-6">
+                        <h4 class="font-bold text-lg mb-3">الآية الكريمة:</h4>
+                        <p class="arabic-text mb-4 bg-green-50 p-4 rounded text-center text-xl">
+                            {قُرْآنًا عَرَبِيًّا غَيْرَ ذِي عِوَجٍ} - {بِلِسَانٍ عَرَبِيٍّ مُبِينٍ}
+                        </p>
+                    </div>
+
+                    <div class="mb-6">
+                        <h4 class="font-bold text-lg mb-3">الحديث الرئيسي (٤٨٩٤):</h4>
+                        <p class="arabic-text mb-4 bg-blue-50 p-4 rounded">
+                            أمر عثمان بن عفان رضي الله عنه زيد بن ثابت وسعيد بن العاص وعبد الله بن الزبير وعبد الرحمن بن الحارث بن هشام قائلاً: "إذا اختلفتم أنتم وزيد بن ثابت في عربية من عربية القرآن فاكتبوها بلسان قريش فإن القرآن أنزل بلسانهم"
+                        </p>
+                        
+                        <div class="explanation-box p-4 rounded-lg mb-4">
+                            <h5 class="font-bold mb-2">شرح الحديث:</h5>
+                            <ul class="list-disc list-inside space-y-2 arabic-text">
+                                <li>تأكيد عثمان على أصل اللغة القرآنية</li>
+                                <li>ترجيح لسان قريش عند الاختلاف</li>
+                                <li>الحكمة في توحيد المصحف على لهجة واحدة</li>
+                                <li>دور قريش في حفظ أفصح العربية</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scholar-opinion p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-yellow-800">
+                        <i class="fas fa-graduation-cap ml-2"></i>
+                        آراء العلماء
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold mb-2">الإمام الطبري:</h4>
+                            <p class="arabic-text">القرآن نزل بلسان قريش في أكثره، وفيه من لهجات القبائل العربية الأخرى ما يناسب المعنى ويحقق البلاغة.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">ابن كثير:</h4>
+                            <p class="arabic-text">اختيار لسان قريش لأنهم أفصح العرب وأعلاهم طبقة في البيان، وكانت العرب تحتكم إليهم في اللغة.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">القرطبي:</h4>
+                            <p class="arabic-text">نزول القرآن بالعربية معجزة في ذاته، لأن العربية أغنى اللغات وأدقها في التعبير عن المعاني الدقيقة.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="jurisprudence p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-purple-800">
+                        <i class="fas fa-balance-scale ml-2"></i>
+                        المذاهب الفقهية والقراءات
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold mb-2">في القراءات السبع:</h4>
+                            <p class="arabic-text">اتفق الأئمة على أن القراءات السبع المتواترة كلها تمثل وجوهاً من اللسان العربي، وإن تنوعت اللهجات.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">في التفسير اللغوي:</h4>
+                            <p class="arabic-text">يجب الرجوع إلى لسان العرب في فهم القرآن، مع اعتبار السياق القرآني والاستعمال الشرعي.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="virtue-box p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 text-green-800">
+                        <i class="fas fa-lightbulb ml-2"></i>
+                        الحكم والفوائد
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <h4 class="font-bold mb-2">الحكمة من اختيار العربية:</h4>
+                            <ul class="list-disc list-inside space-y-1 arabic-text">
+                                <li>ثراء اللغة العربية وقدرتها على التعبير الدقيق</li>
+                                <li>مناسبتها لبيئة النزول الأولى</li>
+                                <li>جمال البيان وقوة التأثير</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">أثر ذلك على الأمة:</h4>
+                            <ul class="list-disc list-inside space-y-1 arabic-text">
+                                <li>حفظ اللغة العربية من الضياع</li>
+                                <li>توحيد الأمة على لسان واحد</li>
+                                <li>تطوير علوم اللغة والنحو</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 3: Collection of Quran -->
+        <section id="chapter3" class="print-friendly mb-12">
+            <div class="chapter-header text-white p-6 rounded-t-lg">
+                <h2 class="text-3xl font-bold">
+                    <i class="fas fa-book ml-3"></i>
+                    الباب الثالث: جمع القرآن
+                </h2>
+            </div>
+            <div class="bg-white rounded-b-lg shadow-lg p-8">
+                
+                <div class="importance-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-orange-800">
+                        <i class="fas fa-star ml-2"></i>
+                        أهمية الباب
+                    </h3>
+                    <p class="arabic-text">يُعد هذا الباب من أهم أبواب علوم القرآن، حيث يتناول تاريخ جمع القرآن في عهد أبي بكر وعثمان رضي الله عنهما، والمنهجية العلمية الدقيقة التي اتبعها الصحابة في حفظ القرآن وتوثيقه، مما يؤكد عصمة النص القرآني من التحريف والتبديل.</p>
+                </div>
+
+                <div class="hadith-text p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4">
+                        <i class="fas fa-quote-right ml-2"></i>
+                        قصة الجمع الأول في عهد أبي بكر
+                    </h3>
+                    
+                    <div class="mb-6">
+                        <h4 class="font-bold text-lg mb-3">سبب الجمع:</h4>
+                        <p class="arabic-text mb-4 bg-red-50 p-4 rounded">
+                            لما استُحِر القتل بالقراء في موقعة اليمامة، خاف عمر بن الخطاب أن يذهب كثير من القرآن بذهاب حفظته، فأشار على أبي بكر بجمع القرآن
+                        </p>
+                        
+                        <div class="explanation-box p-4 rounded-lg mb-4">
+                            <h5 class="font-bold mb-2">تفاصيل القصة:</h5>
+                            <ul class="list-disc list-inside space-y-2 arabic-text">
+                                <li>قُتل في اليمامة سبعون قارئاً من الصحابة</li>
+                                <li>تردد أبي بكر أولاً: "كيف أفعل شيئاً لم يفعله رسول الله؟"</li>
+                                <li>إقناع عمر له بالحكمة والمصلحة</li>
+                                <li>تكليف زيد بن ثابت بالمهمة لكونه كاتب الوحي وحافظاً</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <h4 class="font-bold text-lg mb-3">منهجية زيد بن ثابت في الجمع:</h4>
+                        <p class="arabic-text mb-4 bg-blue-50 p-4 rounded">
+                            "فتتبعت القرآن أجمعه من العُسُب واللِّخاف وصدور الرجال حتى وجدت آخر سورة التوبة مع خزيمة بن ثابت الأنصاري لم أجدها مع أحد غيره"
+                        </p>
+                        
+                        <div class="explanation-box p-4 rounded-lg mb-4">
+                            <h5 class="font-bold mb-2">شرح المنهجية:</h5>
+                            <ul class="list-disc list-inside space-y-2 arabic-text">
+                                <li><strong>العُسُب:</strong> جريد النخل المكتوب عليه</li>
+                                <li><strong>اللِّخاف:</strong> الحجارة الملساء</li>
+                                <li><strong>صدور الرجال:</strong> الحفظة من الصحابة</li>
+                                <li>اشتراط شاهدين على كل آية: الكتابة والحفظ</li>
+                                <li>التثبت الشديد حتى مع المحفوظ المشهور</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hadith-text p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4">
+                        <i class="fas fa-quote-right ml-2"></i>
+                        الجمع الثاني في عهد عثمان
+                    </h3>
+                    
+                    <div class="mb-6">
+                        <h4 class="font-bold text-lg mb-3">سبب الجمع الثاني:</h4>
+                        <p class="arabic-text mb-4 bg-yellow-50 p-4 rounded">
+                            لما توسعت الفتوحات واختلطت القبائل، ظهر اختلاف في القراءات، فخاف حذيفة بن اليمان الفتنة، فأشار على عثمان بتوحيد المصاحف
+                        </p>
+                    </div>
+
+                    <div class="mb-6">
+                        <h4 class="font-bold text-lg mb-3">إجراءات عثمان:</h4>
+                        <div class="explanation-box p-4 rounded-lg mb-4">
+                            <ul class="list-disc list-inside space-y-2 arabic-text">
+                                <li>تشكيل لجنة من أربعة: زيد بن ثابت وثلاثة من قريش</li>
+                                <li>الاعتماد على مصحف أبي بكر المحفوظ عند حفصة</li>
+                                <li>الرجوع إلى لسان قريش عند الاختلاف</li>
+                                <li>نسخ عدة مصاحف وإرسالها للأمصار</li>
+                                <li>إحراق ما عداها من المصاحف الشخصية</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scholar-opinion p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-yellow-800">
+                        <i class="fas fa-graduation-cap ml-2"></i>
+                        آراء العلماء في الجمع
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold mb-2">الإمام الباقلاني:</h4>
+                            <p class="arabic-text">جمع أبي بكر كان جمع حفظ وخوف الضياع، وجمع عثمان كان جمع توحيد وقطع للخلاف.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">الإمام الزركشي:</h4>
+                            <p class="arabic-text">إحراق المصاحف الأخرى لم يكن إتلافاً للقرآن، بل منعاً للفتنة، إذ كانت تحتوي على قراءات منسوخة أو تفسيرات شخصية.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">الإمام السيوطي:</h4>
+                            <p class="arabic-text">منهجية الصحابة في الجمع تُعتبر أدق منهجية توثيقية عرفها التاريخ، وهي إعجاز في حفظ كتاب الله.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="jurisprudence p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-purple-800">
+                        <i class="fas fa-balance-scale ml-2"></i>
+                        المذاهب في ترتيب المصحف
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold mb-2">الجمهور:</h4>
+                            <p class="arabic-text">ترتيب السور في المصحف العثماني توقيفي من النبي صلى الله عليه وسلم، والصحابة التزموا به.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">رأي آخر:</h4>
+                            <p class="arabic-text">ترتيب الآيات توقيفي قطعاً، أما ترتيب السور ففيه خلاف، والراجح التوقيف.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="virtue-box p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 text-green-800">
+                        <i class="fas fa-shield-alt ml-2"></i>
+                        الحكم والفوائد من الجمع
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <h4 class="font-bold mb-2">الحفظ من الضياع:</h4>
+                            <p class="arabic-text">ضمان بقاء القرآن محفوظاً حتى يوم القيامة، وتحقيق وعد الله: {إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ}</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">منع الفتنة:</h4>
+                            <p class="arabic-text">قطع دابر الخلاف الذي كاد يؤدي إلى فتنة عظيمة بين المسلمين</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">توحيد الأمة:</h4>
+                            <p class="arabic-text">جمع الأمة على مصحف واحد، مما عزز وحدتها وقوة رابطتها</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">المنهجية العلمية:</h4>
+                            <p class="arabic-text">وضع أسس التوثيق العلمي الدقيق الذي لم تعرفه الحضارات السابقة</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-100 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">
+                        <i class="fas fa-link ml-2"></i>
+                        الجمع بين الروايات
+                    </h3>
+                    <p class="arabic-text">يُحمل اختلاف الروايات في تفاصيل الجمع على تعدد المراحل والإجراءات، فكل رواية تُسلط الضوء على جانب من جوانب العملية الشاملة للجمع والتوثيق.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 9: Virtues of Al-Fatiha -->
+        <section id="chapter9" class="print-friendly mb-12">
+            <div class="chapter-header text-white p-6 rounded-t-lg">
+                <h2 class="text-3xl font-bold">
+                    <i class="fas fa-star ml-3"></i>
+                    الباب التاسع: فضل فاتحة الكتاب
+                </h2>
+            </div>
+            <div class="bg-white rounded-b-lg shadow-lg p-8">
+                
+                <div class="importance-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-orange-800">
+                        <i class="fas fa-crown ml-2"></i>
+                        أهمية الباب
+                    </h3>
+                    <p class="arabic-text">فاتحة الكتاب هي السورة الأعظم في القرآن وأم الكتاب والسبع المثاني، وهي ركن أساسي في كل صلاة، ولها فضائل عظيمة في الشفاء والحفظ والبركة، مما يجعل معرفة فضائلها ضرورية لكل مسلم.</p>
+                </div>
+
+                <div class="hadith-text p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4">
+                        <i class="fas fa-quote-right ml-2"></i>
+                        الأحاديث الأساسية
+                    </h3>
+                    
+                    <div class="mb-6">
+                        <h4 class="font-bold text-lg mb-3">حديث أبي سعيد بن المعلى:</h4>
+                        <p class="arabic-text mb-4 bg-blue-50 p-4 rounded">
+                            قال النبي صلى الله عليه وسلم: "لأعلمنك سورة هي أعظم السور في القرآن قبل أن تخرج من المسجد... {الحمد لله رب العالمين} هي السبع المثاني والقرآن العظيم الذي أوتيته"
+                        </p>
+                        
+                        <div class="explanation-box p-4 rounded-lg mb-4">
+                            <h5 class="font-bold mb-2">شرح الحديث:</h5>
+                            <ul class="list-disc list-inside space-y-2 arabic-text">
+                                <li><strong>أعظم السور:</strong> لاشتمالها على جميع معاني القرآن</li>
+                                <li><strong>السبع المثاني:</strong> لأنها سبع آيات تُثنى في كل ركعة</li>
+                                <li><strong>القرآن العظيم:</strong> لكونها جامعة لمعاني القرآن العظيم</li>
+                                <li>تضمنها للتوحيد والتحميد والدعاء والتوسل</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <h4 class="font-bold text-lg mb-3">حديث الرقية بالفاتحة:</h4>
+                        <p class="arabic-text mb-4 bg-green-50 p-4 rounded">
+                            عن أبي سعيد الخدري: أن رهطاً من أصحاب النبي صلى الله عليه وسلم أتوا على حي من أحياء العرب فلم يقروهم، فبينما هم كذلك إذ لُدِغ سيد أولئك، فرقاه أحد الصحابة بفاتحة الكتاب فبرأ، فأعطوهم قطيعاً من الغنم
+                        </p>
+                        
+                        <div class="explanation-box p-4 rounded-lg mb-4">
+                            <h5 class="font-bold mb-2">دروس من الحديث:</h5>
+                            <ul class="list-disc list-inside space-y-2 arabic-text">
+                                <li>جواز أخذ الأجر على الرقية بالقرآن</li>
+                                <li>الفاتحة شفاء للأسقام الحسية والمعنوية</li>
+                                <li>تأكيد النبي صلى الله عليه وسلم على صحة الرقية: "وما أدراك أنها رقية"</li>
+                                <li>إقرار النبي لأخذ الأجر على تعليم القرآن والرقية</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="virtue-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-green-800">
+                        <i class="fas fa-gem ml-2"></i>
+                        فضائل سورة الفاتحة
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold mb-2">في العبادة:</h4>
+                            <ul class="list-disc list-inside space-y-1 arabic-text">
+                                <li>ركن أساسي في كل صلاة، لا تصح الصلاة بدونها</li>
+                                <li>تُقرأ في كل ركعة من الصلوات الفريضة والنافلة</li>
+                                <li>محور الخطاب بين العبد وربه في الصلاة</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">في الشفاء:</h4>
+                            <ul class="list-disc list-inside space-y-1 arabic-text">
+                                <li>شفاء للأمراض الجسدية والروحية</li>
+                                <li>حماية من الشياطين والآفات</li>
+                                <li>بركة في المال والولد والصحة</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">في المعنى:</h4>
+                            <ul class="list-disc list-inside space-y-1 arabic-text">
+                                <li>جامعة لجميع معاني القرآن الكريم</li>
+                                <li>متضمنة للعقيدة الصحيحة كاملة</li>
+                                <li>مشتملة على آداب الدعاء والتوسل</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scholar-opinion p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-yellow-800">
+                        <i class="fas fa-graduation-cap ml-2"></i>
+                        آراء العلماء في تفسير الفاتحة
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold mb-2">ابن تيمية:</h4>
+                            <p class="arabic-text">"الفاتحة مشتملة على الدين كله: معرفة الله، وتوحيده، وعبادته، والاستعانة به، والدعاء، وبيان طريق السعادة وطريق الشقاوة"</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">ابن كثير:</h4>
+                            <p class="arabic-text">"لما كانت الفاتحة مشتملة على المعاني التي في القرآن من الثناء على الله، والتعبد له وحده، وطلب الهداية منه، والانتماء إلى زمرة عباده الصالحين، سُميت أم القرآن"</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">الشاطبي:</h4>
+                            <p class="arabic-text">"الفاتحة أصل لجميع القرآن، فكل معنى موجود في القرآن فهو راجع إلى الفاتحة، ولذلك سُميت أم الكتاب"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="jurisprudence p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-purple-800">
+                        <i class="fas fa-balance-scale ml-2"></i>
+                        المذاهب الفقهية في أحكام الفاتحة
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold mb-2">في وجوبها في الصلاة:</h4>
+                            <p class="arabic-text"><strong>الجمهور:</strong> واجبة على الإمام والمنفرد، أما المأموم ففيه خلاف والراجح استحباب قراءتها في السرية.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">في الرقية بها:</h4>
+                            <p class="arabic-text"><strong>الإجماع:</strong> على جواز الرقية بالفاتحة وأخذ الأجر عليها، كما فعل الصحابة وأقرهم النبي.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">في البسملة:</h4>
+                            <p class="arabic-text">خلاف مشهور بين المذاهب، والراجح أنها آية من الفاتحة يُستحب الجهر بها.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="explanation-box p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 text-pink-800">
+                        <i class="fas fa-lightbulb ml-2"></i>
+                        الجمع بين الأحاديث والحكم المستفادة
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <h4 class="font-bold mb-2">في تسمياتها:</h4>
+                            <p class="arabic-text">تُسمى بأسماء متعددة: الفاتحة، أم الكتاب، أم القرآن، السبع المثاني، القرآن العظيم، الكنز، الشافية، وكل اسم يدل على فضيلة خاصة.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">في آثارها:</h4>
+                            <p class="arabic-text">جمعت بين الشفاء الجسدي والروحي، والحماية والبركة، والهداية والتوفيق، مما يجعلها أعظم سورة في التأثير الإيجابي على المؤمن.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">الحكمة من فضلها:</h4>
+                            <p class="arabic-text">لأنها جمعت خلاصة الدين: التوحيد، والحمد، والثناء، والدعاء، والاستعاذة، وطلب الهداية، والتبرؤ من طريق الضالين.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chapter 10: Virtues of Surat Al-Baqarah -->
+        <section id="chapter10" class="print-friendly mb-12">
+            <div class="chapter-header text-white p-6 rounded-t-lg">
+                <h2 class="text-3xl font-bold">
+                    <i class="fas fa-shield-alt ml-3"></i>
+                    الباب العاشر: فضل سورة البقرة
+                </h2>
+            </div>
+            <div class="bg-white rounded-b-lg shadow-lg p-8">
+                
+                <div class="importance-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-orange-800">
+                        <i class="fas fa-star ml-2"></i>
+                        أهمية الباب
+                    </h3>
+                    <p class="arabic-text">سورة البقرة هي أطول سور القرآن وأكثرها أحكاماً، وتسمى فسطاط القرآن لعظمها وجلالة قدرها. لها فضائل خاصة في الحماية من الشياطين والسحر والحفظ والبركة، خاصة آية الكرسي والآيتان الأخيرتان منها.</p>
+                </div>
+
+                <div class="hadith-text p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4">
+                        <i class="fas fa-quote-right ml-2"></i>
+                        الأحاديث في فضل السورة
+                    </h3>
+                    
+                    <div class="mb-6">
+                        <h4 class="font-bold text-lg mb-3">حديث الآيتين الأخيرتين:</h4>
+                        <p class="arabic-text mb-4 bg-blue-50 p-4 rounded">
+                            قال النبي صلى الله عليه وسلم: "من قرأ بالآيتين من آخر سورة البقرة في ليلة كفتاه"
+                        </p>
+                        
+                        <div class="explanation-box p-4 rounded-lg mb-4">
+                            <h5 class="font-bold mb-2">معنى "كفتاه":</h5>
+                            <ul class="list-disc list-inside space-y-2 arabic-text">
+                                <li><strong>القول الأول:</strong> كفتاه عن قيام الليل، فكأنه قام ليلته</li>
+                                <li><strong>القول الثاني:</strong> كفتاه من الشر والآفات</li>
+                                <li><strong>القول الثالث:</strong> كفتاه عن الشياطين</li>
+                                <li><strong>الراجح:</strong> الكفاية شاملة لكل هذه المعاني</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <h4 class="font-bold text-lg mb-3">حديث آية الكرسي:</h4>
+                        <p class="arabic-text mb-4 bg-green-50 p-4 rounded">
+                            عن أبي هريرة في قصة الشيطان الذي كان يأخذ من طعام زكاة رمضان، وقوله: "إذا أويت إلى فراشك فاقرأ آية الكرسي، لن يزال عليك من الله حافظ ولا يقربك شيطان حتى تصبح"، فقال النبي صلى الله عليه وسلم: "صدقك وهو كذوب"
+                        </p>
+                        
+                        <div class="explanation-box p-4 rounded-lg mb-4">
+                            <h5 class="font-bold mb-2">فوائد من الحديث:</h5>
+                            <ul class="list-disc list-inside space-y-2 arabic-text">
+                                <li>آية الكرسي تحفظ من الشياطين</li>
+                                <li>قراءتها عند النوم سنة مؤكدة</li>
+                                <li>الشيطان قد يقول الحق أحياناً لمكر وخداع</li>
+                                <li>الحفظ الإلهي يكون بالأسباب الشرعية</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <h4 class="font-bold text-lg mb-3">حديث فضل السورة عموماً:</h4>
+                        <p class="arabic-text mb-4 bg-yellow-50 p-4 rounded">
+                            "لا تجعلوا بيوتكم مقابر، إن الشيطان ينفر من البيت الذي تُقرأ فيه سورة البقرة"
+                        </p>
+                        
+                        <div class="explanation-box p-4 rounded-lg mb-4">
+                            <h5 class="font-bold mb-2">شرح الحديث:</h5>
+                            <ul class="list-disc list-inside space-y-2 arabic-text">
+                                <li>البيت الذي لا يُقرأ فيه القرآن كالمقبرة</li>
+                                <li>سورة البقرة خاصة لها تأثير في طرد الشياطين</li>
+                                <li>الحث على قراءة القرآن في البيوت</li>
+                                <li>البركة التي تحل بالبيت بسبب القرآن</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="virtue-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-green-800">
+                        <i class="fas fa-gem ml-2"></i>
+                        فضائل خاصة بآيات من السورة
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold mb-2">آية الكرسي:</h4>
+                            <ul class="list-disc list-inside space-y-1 arabic-text">
+                                <li>سيدة آي القرآن وأعظمها</li>
+                                <li>من قرأها عند النوم حفظه الله من الشياطين</li>
+                                <li>من قرأها دبر كل صلاة لم يمنعه من دخول الجنة إلا الموت</li>
+                                <li>تشتمل على أعظم أسماء الله وصفاته</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">الآيتان الأخيرتان:</h4>
+                            <ul class="list-disc list-inside space-y-1 arabic-text">
+                                <li>من قرأهما في ليلة كفتاه عن كل سوء</li>
+                                <li>تشتملان على الإيمان بالله وملائكته وكتبه ورسله</li>
+                                <li>فيهما دعاء عظيم: {ربنا لا تؤاخذنا إن نسينا أو أخطأنا}</li>
+                                <li>استجاب الله لهذا الدعاء كما في الحديث القدسي</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">عموم السورة:</h4>
+                            <ul class="list-disc list-inside space-y-1 arabic-text">
+                                <li>أكثر السور أحكاماً وتشريعات</li>
+                                <li>تطرد الشياطين من البيوت</li>
+                                <li>لا تستطيعها البطلة (السحرة)</li>
+                                <li>فيها اسم الله الأعظم</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scholar-opinion p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-yellow-800">
+                        <i class="fas fa-graduation-cap ml-2"></i>
+                        آراء العلماء في السورة
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold mb-2">الإمام أحمد:</h4>
+                            <p class="arabic-text">"سورة البقرة فسطاط القرآن، وآية الكرسي سيدة آي القرآن، ولكل شيء سنام وسنام القرآن سورة البقرة"</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">ابن عباس:</h4>
+                            <p class="arabic-text">"في سورة البقرة اسم الله الأعظم، ومن دعا به أُجيب، ومن سأل به أُعطي"</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">الحسن البصري:</h4>
+                            <p class="arabic-text">"من قرأ سورة البقرة في بيته ليلاً لم يدخل الشيطان بيته ثلاث ليالٍ، ومن قرأها نهاراً لم يدخل الشيطان بيته ثلاثة أيام"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="jurisprudence p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-purple-800">
+                        <i class="fas fa-balance-scale ml-2"></i>
+                        الأحكام الفقهية المستنبطة
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold mb-2">في الرقية والتعوذ:</h4>
+                            <p class="arabic-text">استحباب قراءة آية الكرسي والآيتين الأخيرتين للحفظ والوقاية، وهي من الرقية الشرعية المستحبة.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">في آداب البيت:</h4>
+                            <p class="arabic-text">استحباب قراءة سورة البقرة في البيوت لطرد الشياطين وجلب البركة.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">في أوقات القراءة:</h4>
+                            <p class="arabic-text">تأكيد استحباب قراءة الآيتين الأخيرتين كل ليلة، وآية الكرسي عند النوم.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="explanation-box p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 text-pink-800">
+                        <i class="fas fa-lightbulb ml-2"></i>
+                        الحكم والإرشادات العملية
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <h4 class="font-bold mb-2">للحفظ والوقاية:</h4>
+                            <ul class="list-disc list-inside space-y-1 arabic-text">
+                                <li>قراءة آية الكرسي عند النوم</li>
+                                <li>قراءة الآيتين الأخيرتين كل ليلة</li>
+                                <li>قراءة السورة في البيت بانتظام</li>
+                                <li>تعليمها للأطفال والأهل</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">في المرض والبلاء:</h4>
+                            <ul class="list-disc list-inside space-y-1 arabic-text">
+                                <li>الإكثار من تلاوة السورة عند المرض</li>
+                                <li>قراءة آية الكرسي للمريض</li>
+                                <li>التعوذ بآياتها من السحر والعين</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">للبركة والخير:</h4>
+                            <ul class="list-disc list-inside space-y-1 arabic-text">
+                                <li>جعل تلاوتها وردaً يومياً</li>
+                                <li>قراءتها في المسجد والعمل</li>
+                                <li>حفظها وتدبر معانيها</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Methodology and Summary -->
+        <section id="methodology" class="print-friendly mb-12">
+            <div class="chapter-header text-white p-6 rounded-t-lg">
+                <h2 class="text-3xl font-bold">
+                    <i class="fas fa-graduation-cap ml-3"></i>
+                    المنهجية العلمية والخلاصة الشاملة
+                </h2>
+            </div>
+            <div class="bg-white rounded-b-lg shadow-lg p-8">
+                
+                <div class="importance-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-orange-800">
+                        <i class="fas fa-compass ml-2"></i>
+                        منهجية الإمام البخاري في كتاب فضائل القرآن
+                    </h3>
+                    <div class="space-y-4 arabic-text">
+                        <p><strong>١. التبويب الدقيق:</strong> رتب الأبواب ترتيباً منطقياً يبدأ بالوحي والنزول وينتهي بآداب التلاوة والسلوك</p>
+                        <p><strong>٢. الشمولية:</strong> غطى جميع جوانب علوم القرآن من النزول إلى الجمع إلى الفضائل إلى الآداب</p>
+                        <p><strong>٣. التوثيق:</strong> اعتمد على أصح الأسانيد وأوثق الرواة في نقل الأحاديث</p>
+                        <p><strong>٤. التدرج:</strong> بدأ بالأصول (الوحي والنزول) ثم الفروع (الفضائل والآداب)</p>
+                        <p><strong>٥. الجمع والتوفيق:</strong> جمع بين الروايات المختلفة دون تعارض أو تناقض</p>
+                    </div>
+                </div>
+
+                <div class="scholar-opinion p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-yellow-800">
+                        <i class="fas fa-chart-line ml-2"></i>
+                        الأهداف التعليمية لكل باب
+                    </h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-bold mb-3 text-green-700">الأبواب التأسيسية:</h4>
+                            <ul class="list-disc list-inside space-y-2 arabic-text">
+                                <li><strong>نزول الوحي:</strong> إثبات صدق النبوة</li>
+                                <li><strong>لسان قريش:</strong> فهم البعد اللغوي</li>
+                                <li><strong>جمع القرآن:</strong> حفظ النص من التحريف</li>
+                                <li><strong>السبعة أحرف:</strong> فهم التيسير الإلهي</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-3 text-blue-700">أبواب الفضائل والآداب:</h4>
+                            <ul class="list-disc list-inside space-y-2 arabic-text">
+                                <li><strong>فضائل السور:</strong> ترغيب في التلاوة</li>
+                                <li><strong>آداب التلاوة:</strong> تعليم الأدب الشرعي</li>
+                                <li><strong>الحفظ والمراجعة:</strong> صيانة النص في الصدور</li>
+                                <li><strong>التحذير من الآفات:</strong> حماية القرآن من سوء الاستخدام</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="jurisprudence p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-purple-800">
+                        <i class="fas fa-book-open ml-2"></i>
+                        الخلاصة الفقهية للكتاب
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold mb-2">في العقيدة:</h4>
+                            <p class="arabic-text">إثبات أن القرآن كلام الله المنزل على محمد صلى الله عليه وسلم، محفوظ من التحريف، معجز في بلاغته وهدايته.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">في العبادة:</h4>
+                            <p class="arabic-text">بيان آداب التلاوة والاستماع والحفظ، وأحكام القراءة في الصلاة وخارجها، وسنن التعامل مع المصحف.</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-2">في السلوك:</h4>
+                            <p class="arabic-text">التحذير من الرياء في قراءة القرآن، والأمر بتعلمه وتعليمه، والحث على تدبر معانيه والعمل بأحكامه.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="virtue-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-green-800">
+                        <i class="fas fa-lightbulb ml-2"></i>
+                        أهم النقاط للمراجعة النهائية
+                    </h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-bold mb-3">النقاط التاريخية:</h4>
+                            <ul class="list-disc list-inside space-y-1 arabic-text text-sm">
+                                <li>مدة نزول القرآن: 20 سنة</li>
+                                <li>أول جمع: عهد أبي بكر (بسبب اليمامة)</li>
+                                <li>الجمع الثاني: عهد عثمان (توحيد المصاحف)</li>
+                                <li>كتبة الوحي: زيد بن ثابت وآخرون</li>
+                                <li>القراء المشهورون: الأربعة المذكورون</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold mb-3">النقاط الفقهية:</h4>
+                            <ul class="list-disc list-inside space-y-1 arabic-text text-sm">
+                                <li>وجوب الفاتحة في الصلاة</li>
+                                <li>جواز الرقية بالقرآن</li>
+                                <li>استحباب تحسين الصوت</li>
+                                <li>النهي عن هجر القرآن</li>
+                                <li>آداب تلاوة وسماع القرآن</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="explanation-box p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-pink-800">
+                        <i class="fas fa-star ml-2"></i>
+                        الأحاديث المحورية للحفظ
+                    </h3>
+                    <div class="space-y-3 arabic-text">
+                        <div class="bg-gray-50 p-3 rounded">
+                            <strong>١.</strong> "ما من الأنبياء نبي إلا أعطي ما مثله آمن عليه البشر..."
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded">
+                            <strong>٢.</strong> "لقد أنزلت علي الليلة سورة هي أحب إلي مما طلعت عليه الشمس..."
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded">
+                            <strong>٣.</strong> "من قرأ بالآيتين من آخر سورة البقرة في ليلة كفتاه"
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded">
+                            <strong>٤.</strong> "خيركم من تعلم القرآن وعلمه"
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded">
+                            <strong>٥.</strong> "إن الذي ليس في جوفه شيء من القرآن كالبيت الخرب"
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-green-100 to-blue-100 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">
+                        <i class="fas fa-medal ml-2"></i>
+                        الخلاصة النهائية للامتحان
+                    </h3>
+                    <div class="space-y-4 arabic-text">
+                        <p><strong>الهدف الأساسي:</strong> كتاب فضائل القرآن يُعتبر موسوعة متكاملة في علوم القرآن، يجمع بين التأصيل العلمي والتطبيق العملي، ويهدف إلى تعزيز صلة المسلم بكتاب الله تعلماً وتعليماً وتلاوة وتدبراً.</p>
+                        
+                        <p><strong>المحاور الرئيسية:</strong> نزول الوحي، جمع القرآن، فضائل السور، آداب التلاوة، أحكام القراءة، والتحذير من الانحرافات.</p>
+                        
+                        <p><strong>المنهجية:</strong> الاعتماد على الأحاديث الصحيحة، الجمع بين الروايات، مراعاة آراء العلماء، والتطبيق العملي للأحكام.</p>
+                        
+                        <p><strong>الثمرة:</strong> تكوين علاقة صحيحة مع القرآن تقوم على العلم والعمل والأدب الشرعي.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Study Tips -->
+        <section class="print-friendly mb-12">
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-lg">
+                <h2 class="text-3xl font-bold text-center">
+                    <i class="fas fa-study ml-3"></i>
+                    نصائح للمراجعة والامتحان
+                </h2>
+            </div>
+            <div class="bg-white rounded-b-lg shadow-lg p-8">
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="bg-green-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                            <i class="fas fa-book-reader text-2xl text-green-600"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-3">الحفظ والفهم</h3>
+                        <ul class="text-sm space-y-1 arabic-text">
+                            <li>احفظ الأحاديث الأساسية</li>
+                            <li>افهم سياق كل حديث</li>
+                            <li>اربط الأحاديث بالأبواب</li>
+                        </ul>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-blue-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                            <i class="fas fa-users text-2xl text-blue-600"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-3">آراء العلماء</h3>
+                        <ul class="text-sm space-y-1 arabic-text">
+                            <li>اربط كل رأي بقائله</li>
+                            <li>افهم أدلة كل فريق</li>
+                            <li>اعرف الراجح والمرجوح</li>
+                        </ul>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-yellow-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                            <i class="fas fa-balance-scale text-2xl text-yellow-600"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-3">الفقه والتطبيق</h3>
+                        <ul class="text-sm space-y-1 arabic-text">
+                            <li>اعرف الأحكام العملية</li>
+                            <li>اربط النظري بالتطبيق</li>
+                            <li>افهم الحكم والمقاصد</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-8 bg-gray-50 p-6 rounded-lg">
+                    <h3 class="font-bold text-xl mb-4 text-center">
+                        <i class="fas fa-clock ml-2"></i>
+                        خطة المراجعة المقترحة
+                    </h3>
+                    <div class="grid md:grid-cols-4 gap-4 text-sm">
+                        <div class="text-center">
+                            <div class="font-bold text-green-600">الأسبوع الأول</div>
+                            <p class="arabic-text">الأبواب ١-٨<br>التأسيسية</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-bold text-blue-600">الأسبوع الثاني</div>
+                            <p class="arabic-text">الأبواب ٩-١٦<br>فضائل السور</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-bold text-purple-600">الأسبوع الثالث</div>
+                            <p class="arabic-text">الأبواب ١٧-٢٤<br>آداب التلاوة</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-bold text-red-600">الأسبوع الرابع</div>
+                            <p class="arabic-text">المراجعة الشاملة<br>والتطبيق</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-lg mb-4">كتاب فضائل القرآن - صحيح البخاري</p>
+            <p class="text-sm opacity-75">دليل دراسي شامل للطلبة والباحثين</p>
+            <div class="mt-4 flex justify-center items-center space-x-4 space-x-reverse">
+                <i class="fas fa-book text-sm"></i>
+                <span class="text-sm">إعداد: دليل متكامل للدراسة والامتحان</span>
+                <i class="fas fa-graduation-cap text-sm"></i>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add print-friendly styles when printing
+        window.addEventListener('beforeprint', function() {
+            document.body.classList.add('printing');
+        });
+
+        window.addEventListener('afterprint', function() {
+            document.body.classList.remove('printing');
+        });
+    </script>
+</body>
+</html>
